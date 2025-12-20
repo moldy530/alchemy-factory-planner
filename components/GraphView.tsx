@@ -17,7 +17,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import dagre from "@dagrejs/dagre";
 import { ProductionNode } from "../engine/types";
-import { Flame, Settings, AlertTriangle } from "lucide-react";
+import { Flame, Settings, AlertTriangle, RotateCcw } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -420,6 +420,23 @@ export function GraphView({
     [VP_KEY],
   );
 
+  // Handle Reset Layout
+  const resetLayout = useCallback(() => {
+    // 1. Clear State
+    setSavedPositions({});
+    localStorage.removeItem(POS_KEY);
+
+    // 2. Re-Run Layout
+    // We can't just call setNodes because useMemo derives nodes from (rootNodes + savedPositions).
+    // By clearing savedPositions, the useMemo will re-run and return default dagre layout positions!
+
+    // 3. Fit View
+    // Tiny delay to allow render cycle to update positions before fitting
+    setTimeout(() => {
+      rfInstance?.fitView({ duration: 800 });
+    }, 50);
+  }, [POS_KEY, rfInstance]);
+
   return (
     <div className="absolute inset-0 bg-stone-950/50">
       <ReactFlow
@@ -437,6 +454,18 @@ export function GraphView({
         <Background color="#44403c" gap={20} size={1} />
         <Controls className="bg-stone-800 border-stone-700 fill-stone-400 text-stone-400" />
       </ReactFlow>
+
+      <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <button
+          onClick={resetLayout}
+          className="flex items-center gap-2 bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-md border border-stone-700 shadow-lg text-xs font-bold transition-colors"
+          title="Reset Layout"
+        >
+          <RotateCcw size={14} />
+          Reset Layout
+        </button>
+      </div>
     </div>
   );
 }
+
