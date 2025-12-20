@@ -373,28 +373,7 @@ export default function PlannerPage() {
             </div>
           </div>
 
-          {/* Top Stats */}
-          <div className="flex gap-6 items-center bg-stone-900/50 px-4 py-2 rounded-lg border border-stone-800">
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] text-stone-500 uppercase tracking-wider font-bold">
-                Total Machines
-              </span>
-              <span className="text-xl font-mono text-amber-400">
-                {stats.totalMachines.toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </div>
-            <div className="w-[1px] h-8 bg-stone-800"></div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] text-stone-500 uppercase tracking-wider font-bold">
-                Total Heat
-              </span>
-              <span className="text-xl font-mono text-orange-400">
-                {stats.totalPower.toLocaleString()}
-              </span>
-            </div>
-          </div>
+
         </div>
 
         {/* Global Research Panel */}
@@ -697,10 +676,34 @@ export default function PlannerPage() {
         </div>
 
         {/* Panel 3: IO Summary */}
-        <div className="bg-stone-900 p-4 rounded-lg border border-stone-800 flex flex-col">
-          <h3 className="font-semibold text-stone-300 flex items-center gap-2 text-sm mb-3">
-            <LayoutList size={14} /> Input / Output Summary
+        <div className="bg-stone-900 p-4 rounded-lg border border-stone-800 flex flex-col gap-4">
+          <h3 className="font-semibold text-stone-300 flex items-center gap-2 text-sm justify-between">
+            <span className="flex items-center gap-2"><LayoutList size={14} /> Input / Output Summary</span>
+            <div className="flex gap-4 items-center bg-stone-950/50 px-3 py-2 rounded border border-stone-800/50 justify-center">
+              <div className="flex flex-col items-center">
+                <span className="text-[9px] text-stone-500 uppercase tracking-wider font-bold">
+                  Machines
+                </span>
+                <span className="text-sm font-mono text-amber-400">
+                  {stats.totalMachines.toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+              <div className="w-[1px] h-6 bg-stone-800"></div>
+              <div className="flex flex-col items-center">
+                <span className="text-[9px] text-stone-500 uppercase tracking-wider font-bold">
+                  Total Heat
+                </span>
+                <span className="text-sm font-mono text-orange-400">
+                  {stats.totalPower.toLocaleString()}
+                </span>
+              </div>
+            </div>
           </h3>
+
+
+
           <div className="flex-1 overflow-y-auto custom-scrollbar max-h-[160px] grid grid-cols-2 gap-4">
             {/* Inputs */}
             <div>
