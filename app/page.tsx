@@ -175,7 +175,7 @@ export default function PlannerPage() {
                 </div>
               )
             ) : (
-              <div className="flex items-center justify-center h-full text-stone-500 flex-col gap-4">
+              <div className="absolute inset-0 flex items-center justify-center text-stone-500 flex-col gap-4">
                 <div className="p-4 bg-stone-800/50 rounded-full">
                   <Calculator className="w-8 h-8 opacity-50" />
                 </div>
