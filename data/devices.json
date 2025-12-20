@@ -1,0 +1,189 @@
+[
+  {
+    "id": "table-saw",
+    "name": "Table Saw",
+    "category": "raw material production"
+  },
+  {
+    "id": "stone-crusher",
+    "name": "Stone Crusher",
+    "category": "raw material production"
+  },
+  {
+    "id": "seed-plot",
+    "name": "Seed Plot",
+    "category": "raw material production"
+  },
+  {
+    "id": "iron-smelter",
+    "name": "Iron Smelter",
+    "category": "raw material production",
+    "heat_consuming_speed": 9
+  },
+  {
+    "id": "purchasing-portal",
+    "name": "Purchasing Portal",
+    "category": "raw material production"
+  },
+  {
+    "id": "nursery",
+    "name": "Nursery",
+    "category": "raw material production"
+  },
+  {
+    "id": "bank-portal",
+    "name": "Bank Portal",
+    "category": "raw material production"
+  },
+  {
+    "id": "dispatch-portal",
+    "name": "Dispatch Portal",
+    "category": "raw material production"
+  },
+  {
+    "id": "world-tree-nursery",
+    "name": "World Tree Nursery",
+    "category": "raw material production"
+  },
+  {
+    "id": "grinder",
+    "name": "Grinder",
+    "category": "automated processing"
+  },
+  {
+    "id": "enhanced-grinder",
+    "name": "Enhanced Grinder",
+    "category": "automated processing"
+  },
+  {
+    "id": "crucible",
+    "name": "Crucible",
+    "category": "automated processing",
+    "heat_consuming_speed": 4
+  },
+  {
+    "id": "stackable-crucible",
+    "name": "Stackable Crucible",
+    "category": "automated processing",
+    "heat_consuming_speed": 6
+  },
+  {
+    "id": "extractor",
+    "name": "Extractor",
+    "category": "automated processing"
+  },
+  {
+    "id": "thermal-extractor",
+    "name": "Thermal Extractor",
+    "category": "automated processing",
+    "heat_consuming_speed": 80
+  },
+  {
+    "id": "refiner",
+    "name": "Refiner",
+    "category": "automated processing"
+  },
+  {
+    "id": "knowledge-altar",
+    "name": "Knowledge Altar",
+    "category": "automated processing"
+  },
+  {
+    "id": "cauldron",
+    "name": "Cauldron",
+    "category": "automated processing"
+  },
+  {
+    "id": "paradox-crucible",
+    "name": "Paradox Crucible",
+    "category": "automated processing",
+    "heat_consuming_speed": 1200
+  },
+  {
+    "id": "processor",
+    "name": "Processor",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "kiln",
+    "name": "Kiln",
+    "category": "advanced crafting",
+    "heat_consuming_speed": 15
+  },
+  {
+    "id": "blender",
+    "name": "Blender",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "assembler",
+    "name": "Assembler",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "alembic",
+    "name": "Alembic",
+    "category": "advanced crafting",
+    "heat_consuming_speed": 108
+  },
+  {
+    "id": "athanor",
+    "name": "Athanor",
+    "category": "advanced crafting",
+    "heat_consuming_speed": 32
+  },
+  {
+    "id": "advanced-blender",
+    "name": "Advanced Blender",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "advanced-assembler",
+    "name": "Advanced Assembler",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "shaper",
+    "name": "Shaper",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "advanced-shaper",
+    "name": "Advanced Shaper",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "advanced-alembic",
+    "name": "Advanced Alembic",
+    "category": "advanced crafting",
+    "heat_consuming_speed": 270
+  },
+  {
+    "id": "advanced-athanor",
+    "name": "Advanced Athanor",
+    "category": "advanced crafting",
+    "heat_consuming_speed": 360
+  },
+  {
+    "id": "arcane-processor",
+    "name": "Arcane Processor",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "arcane-shaper",
+    "name": "Arcane Shaper",
+    "category": "advanced crafting"
+  },
+  {
+    "id": "stone-furnace",
+    "name": "Stone Furnace",
+    "category": "heating",
+    "heat_consuming_speed": 1
+  },
+  {
+    "id": "blast-furnace",
+    "name": "Blast Furnace",
+    "category": "heating",
+    "heat_consuming_speed": 4
+  }
+]
