@@ -42,14 +42,14 @@ export function FactoryTabs() {
                     className={cn(
                         "group flex items-center gap-2 px-4 py-2.5 rounded-t-lg border-b-2 transition-all cursor-pointer min-w-[140px] select-none",
                         activeFactoryId === factory.id
-                            ? "bg-stone-900 border-amber-500 text-amber-100 font-medium"
-                            : "bg-stone-950/30 border-transparent text-stone-500 hover:bg-stone-900/50 hover:text-stone-300",
+                            ? "bg-[var(--surface)] border-[var(--accent-gold)] text-[var(--accent-gold-bright)] font-medium"
+                            : "bg-[var(--background)]/30 border-transparent text-[var(--text-muted)] hover:bg-[var(--surface)]/50 hover:text-[var(--text-secondary)]",
                     )}
                 >
                     {isRenaming === factory.id ? (
                         <input
                             autoFocus
-                            className="bg-stone-950 text-xs px-1 py-0.5 rounded border border-amber-500/50 outline-none w-24"
+                            className="bg-[var(--background)] text-xs px-1 py-0.5 rounded border border-[var(--accent-gold)]/50 outline-none w-24 text-[var(--text-primary)]"
                             value={renameValue}
                             onChange={(e) => setRenameValue(e.target.value)}
                             onBlur={finishRename}
@@ -75,7 +75,7 @@ export function FactoryTabs() {
                                     e.stopPropagation();
                                     removeFactory(factory.id);
                                 }}
-                                className="text-stone-600 hover:text-red-400 p-0.5 hover:bg-stone-800 rounded"
+                                className="text-[var(--text-muted)] hover:text-red-400 p-0.5 hover:bg-[var(--surface-elevated)] rounded"
                             >
                                 <X size={12} />
                             </button>
@@ -85,23 +85,23 @@ export function FactoryTabs() {
             ))}
             <button
                 onClick={addFactory}
-                className="px-3 py-2 text-stone-600 hover:text-amber-400 hover:bg-stone-900/50 rounded-t-lg transition-colors border-b-2 border-transparent cursor-pointer"
+                className="px-3 py-2 text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:bg-[var(--surface)]/50 rounded-t-lg transition-colors border-b-2 border-transparent cursor-pointer"
             >
                 <PlusCircle size={18} />
             </button>
-            <div className="flex-1 border-b-2 border-stone-900/50"></div>
+            <div className="flex-1 border-b-2 border-[var(--surface)]/50"></div>
 
             {/* View Toggle Bar */}
             {activeFactory && (
                 <div className="flex justify-end ml-2">
-                    <div className="flex bg-stone-900 p-1 rounded-md border border-stone-800">
+                    <div className="flex bg-[var(--surface)] p-1 rounded-md border border-[var(--border)]">
                         <button
                             onClick={() => setViewMode(activeFactory.id, "graph")}
                             className={cn(
                                 "p-1.5 rounded flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer",
                                 activeFactory.viewMode === "graph"
-                                    ? "bg-amber-600/20 text-amber-500"
-                                    : "text-stone-500 hover:text-stone-300",
+                                    ? "bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]"
+                                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
                             )}
                         >
                             <GitGraph size={14} /> Graph
@@ -111,8 +111,8 @@ export function FactoryTabs() {
                             className={cn(
                                 "p-1.5 rounded flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer",
                                 activeFactory.viewMode === "list"
-                                    ? "bg-amber-600/20 text-amber-500"
-                                    : "text-stone-500 hover:text-stone-300",
+                                    ? "bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]"
+                                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
                             )}
                         >
                             <LayoutList size={14} /> List

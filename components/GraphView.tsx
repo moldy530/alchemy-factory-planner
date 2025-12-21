@@ -31,7 +31,7 @@ export function GraphView() {
   const { nodes, edges, viewport: defaultViewport } = activeFactory;
 
   return (
-    <div className="absolute inset-0 bg-stone-950/50">
+    <div className="absolute inset-0 bg-[var(--background)]/50">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -40,20 +40,20 @@ export function GraphView() {
         onMoveEnd={(e, viewport) => onViewportChange?.(viewport)}
         defaultViewport={defaultViewport}
         nodeTypes={nodeTypes}
-        className="bg-dots-stone-800"
+        className="bg-dots-[var(--border)]"
         style={{ width: "100%", height: "100%" }}
         minZoom={0.1}
         maxZoom={4}
       >
-        <Background color="#44403c" gap={20} size={1} />
-        <Controls className="bg-stone-800 border-stone-700 fill-stone-400 text-stone-400" />
+        <Background color="#1a4a5c" gap={20} size={1} />
+        <Controls className="bg-[var(--surface)] border-[var(--border)] fill-[var(--text-secondary)] text-[var(--text-secondary)]" />
       </ReactFlow>
 
       {/* Reset Layout Button (Restored) */}
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <button
           onClick={() => resetFactoryLayout(activeFactoryId!)}
-          className="flex items-center gap-2 bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-md border border-stone-700 shadow-lg text-xs font-bold transition-colors"
+          className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-md border border-[var(--border)] shadow-lg text-xs font-bold transition-colors"
           title="Reset Layout"
         >
           <RotateCcw size={14} />

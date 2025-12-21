@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Calculator } from "lucide-react";
+import { FlaskConical } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { GraphView } from "../components/GraphView";
 import {
@@ -113,21 +113,21 @@ export default function PlannerPage() {
   }, [productionTrees]);
 
   if (!isLoaded || !activeFactory)
-    return <div className="p-10 text-stone-500">Loading Planner...</div>;
+    return <div className="p-10 text-[var(--text-muted)]">Loading Planner...</div>;
 
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-200 font-sans p-2 lg:p-8 flex flex-col gap-4">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 flex flex-col gap-4">
       {/* Header & Tabs */}
       <header className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-amber-600 rounded-lg shadow-lg shadow-amber-900/20">
-              <Calculator className="w-6 h-6 text-white" />
+            <div className="p-3 bg-gradient-to-br from-[var(--accent-gold)] to-[var(--accent-gold-dim)] rounded-lg shadow-lg glow-gold">
+              <FlaskConical className="w-6 h-6 text-[var(--background)]" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
-                Alchemy Planner
+              <h1 className="text-3xl font-bold font-[family-name:var(--font-cinzel)] bg-gradient-to-r from-[var(--accent-gold-bright)] via-[var(--accent-gold)] to-[var(--accent-gold-dim)] bg-clip-text text-transparent">
+                Alchemy Factory Planner
               </h1>
             </div>
           </div>
@@ -157,8 +157,8 @@ export default function PlannerPage() {
 
       <main className="flex-1 flex flex-col gap-6 min-h-0">
         {/* View Area */}
-        <section className="flex-1 bg-stone-900 rounded-xl border border-stone-800 shadow-xl overflow-hidden min-h-[600px] flex flex-col relative">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500/50 to-transparent z-10 w-full pointer-events-none"></div>
+        <section className="flex-1 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-xl overflow-hidden min-h-[600px] flex flex-col relative">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--accent-gold)] via-[var(--accent-gold-bright)] to-transparent z-10 w-full pointer-events-none"></div>
 
           <div className="flex-1 w-full h-full relative">
             {productionTrees && productionTrees.length > 0 ? (
@@ -168,8 +168,8 @@ export default function PlannerPage() {
                 <div className="p-8 overflow-auto custom-scrollbar h-full pt-16">
                   <div className="min-w-max space-y-8">
                     {productionTrees.map((root, i) => (
-                      <div key={i} className="border-l-4 border-stone-800 pl-4">
-                        <h3 className="text-stone-500 font-bold mb-4 uppercase text-xs tracking-widest">
+                      <div key={i} className="border-l-4 border-[var(--border)] pl-4">
+                        <h3 className="text-[var(--text-muted)] font-bold mb-4 uppercase text-xs tracking-widest">
                           Target: {root.itemName}
                         </h3>
                         <NodeView node={root} depth={0} />
@@ -179,9 +179,9 @@ export default function PlannerPage() {
                 </div>
               )
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-stone-500 flex-col gap-4">
-                <div className="p-4 bg-stone-800/50 rounded-full">
-                  <Calculator className="w-8 h-8 opacity-50" />
+              <div className="absolute inset-0 flex items-center justify-center text-[var(--text-muted)] flex-col gap-4">
+                <div className="p-4 bg-[var(--surface-elevated)] rounded-full border border-[var(--border)]">
+                  <FlaskConical className="w-8 h-8 opacity-50" />
                 </div>
                 <p>Add a target to begin planning</p>
               </div>

@@ -14,25 +14,25 @@ export function CustomNode({ data }: { data: ProductionNode }) {
     return (
         <div
             className={cn(
-                "p-3 rounded-lg border-2 shadow-lg min-w-[220px] bg-stone-900 transition-colors",
+                "p-3 rounded-lg border-2 shadow-lg min-w-[220px] bg-[var(--surface)] transition-colors",
                 isTarget
-                    ? "border-green-500 bg-green-950/20"
+                    ? "border-emerald-500 bg-emerald-950/20"
                     : isMachine
-                        ? "border-amber-600/50"
-                        : "border-stone-700",
+                        ? "border-[var(--accent-gold)]/50"
+                        : "border-[var(--border)]",
                 isSaturated && !isTarget && "border-red-500 shadow-red-500/20",
             )}
         >
             {/* Header */}
-            <div className="flex justify-between items-start mb-2 border-b border-stone-800 pb-2">
+            <div className="flex justify-between items-start mb-2 border-b border-[var(--border)] pb-2">
                 <span
                     className={cn(
                         "font-bold text-sm truncate",
                         isTarget
-                            ? "text-green-400"
+                            ? "text-emerald-400"
                             : isMachine
-                                ? "text-amber-100"
-                                : "text-stone-400",
+                                ? "text-[var(--accent-gold-bright)]"
+                                : "text-[var(--text-secondary)]",
                     )}
                 >
                     {isTarget ? "Production Target" : nodeData.itemName}
@@ -42,10 +42,10 @@ export function CustomNode({ data }: { data: ProductionNode }) {
                         className={cn(
                             "text-xs font-mono font-bold",
                             isTarget
-                                ? "text-green-400"
+                                ? "text-emerald-400"
                                 : isSaturated
                                     ? "text-red-400"
-                                    : "text-amber-400",
+                                    : "text-[var(--accent-gold)]",
                         )}
                     >
                         {nodeData.rate.toLocaleString(undefined, {
@@ -64,15 +64,15 @@ export function CustomNode({ data }: { data: ProductionNode }) {
             {/* Body */}
             <div className="space-y-1">
                 {isTarget && (
-                    <div className="flex items-center gap-2 text-xs text-green-300">
+                    <div className="flex items-center gap-2 text-xs text-emerald-300">
                         <span className="font-bold">{nodeData.itemName}</span>
                     </div>
                 )}
 
                 {isMachine && (
-                    <div className="flex items-center gap-2 text-xs text-stone-400">
-                        <Settings size={12} className="text-stone-500" />
-                        <span className="text-stone-200 font-bold">
+                    <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                        <Settings size={12} className="text-[var(--text-muted)]" />
+                        <span className="text-[var(--text-primary)] font-bold">
                             {nodeData.deviceCount.toLocaleString(undefined, {
                                 maximumFractionDigits: 2,
                             })}
@@ -94,14 +94,14 @@ export function CustomNode({ data }: { data: ProductionNode }) {
             <Handle
                 type="target"
                 position={Position.Left}
-                className="w-3 h-3 bg-stone-500 border-2 border-stone-800"
+                className="w-3 h-3 bg-[var(--text-muted)] border-2 border-[var(--surface)]"
             />
             {/* Targets usually don't have source, but we leave it flexible */}
             {!isTarget && (
                 <Handle
                     type="source"
                     position={Position.Right}
-                    className="w-3 h-3 bg-stone-500 border-2 border-stone-800"
+                    className="w-3 h-3 bg-[var(--text-muted)] border-2 border-[var(--surface)]"
                 />
             )}
         </div>

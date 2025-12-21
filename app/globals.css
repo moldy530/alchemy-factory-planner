@@ -1,37 +1,87 @@
 @import "tailwindcss";
 
 :root {
-  --background: #1c1917;
-  --foreground: #f5f5f4;
+  /* Alchemy Factory Theme - Deep Teal & Gold */
+  --background: #0a1a24;
+  --surface: #0d2836;
+  --surface-elevated: #112f40;
+  --border: #1a4a5c;
+  --border-subtle: #153a4a;
+
+  /* Gold accents */
+  --accent-gold: #d4a43a;
+  --accent-gold-bright: #e8c878;
+  --accent-gold-dim: #a67c2e;
+
+  /* Text colors */
+  --text-primary: #e8dcc8;
+  --text-secondary: #8b9da8;
+  --text-muted: #5a7080;
+
+  /* Semantic colors */
+  --success: #4ade80;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #38bdf8;
 }
 
 body {
-  color: var(--foreground);
+  color: var(--text-primary);
   background: var(--background);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+/* Custom scrollbar - Alchemy theme */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #292524;
+  background: var(--surface);
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #44403c;
+  background: var(--border);
   border-radius: 4px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #57534e;
+  background: var(--accent-gold-dim);
 }
 
 /* Hide number input spinners */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[type=number] {
+  appearance: textfield;
   -moz-appearance: textfield;
+}
+
+/* Golden glow effect for special elements */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 164, 58, 0.3);
+}
+
+/* Subtle shimmer animation */
+@keyframes shimmer {
+  0% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.shimmer {
+  animation: shimmer 3s ease-in-out infinite;
 }

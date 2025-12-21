@@ -1,5 +1,5 @@
 import { ChevronDown, Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "../../lib/utils";
 
@@ -128,7 +128,7 @@ export function SearchableSelect({
                 }}
                 className={cn(
                     "flex items-center justify-between w-full text-left px-2 py-1 rounded border border-transparent transition-colors outline-none cursor-pointer",
-                    "hover:bg-stone-900/50 focus:border-amber-500/50",
+                    "hover:bg-[var(--surface-elevated)]/50 focus:border-[var(--accent-gold)]/50",
                     className
                 )}
             >
@@ -148,17 +148,17 @@ export function SearchableSelect({
                         width: dropdownStyles.width
                     }}
                     className={cn(
-                        "fixed z-[9999] bg-stone-950 border border-stone-800 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[250px]",
+                        "fixed z-[9999] bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[250px]",
                         dropdownClassName
                     )}
                 >
                     {/* Search Input */}
-                    <div className="p-2 border-b border-stone-900 flex items-center gap-2 bg-stone-950 sticky top-0">
-                        <Search size={12} className="text-stone-500" />
+                    <div className="p-2 border-b border-[var(--border-subtle)] flex items-center gap-2 bg-[var(--surface)] sticky top-0">
+                        <Search size={12} className="text-[var(--text-muted)]" />
                         <input
                             ref={searchInputRef}
                             type="text"
-                            className="bg-transparent w-full text-xs text-stone-200 outline-none placeholder:text-stone-600"
+                            className="bg-transparent w-full text-xs text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
                             placeholder="Search..."
                             value={search}
                             onChange={(e) => {
@@ -193,7 +193,7 @@ export function SearchableSelect({
                                     setSearch("");
                                     setHighlightedIndex(0);
                                 }}
-                                className="text-stone-600 hover:text-stone-400"
+                                className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                             >
                                 <X size={12} />
                             </button>
@@ -203,7 +203,7 @@ export function SearchableSelect({
                     {/* Options List */}
                     <div className="overflow-y-auto custom-scrollbar flex-1 p-1">
                         {filteredOptions.length === 0 ? (
-                            <div className="text-[10px] text-stone-500 text-center py-2">
+                            <div className="text-[10px] text-[var(--text-muted)] text-center py-2">
                                 No matches found
                             </div>
                         ) : (
@@ -218,12 +218,12 @@ export function SearchableSelect({
                                     }}
                                     onMouseEnter={() => setHighlightedIndex(index)}
                                     className={cn(
-                                        "w-full text-left px-2 py-1.5 text-xs rounded hover:bg-stone-800 transition-colors block truncate",
+                                        "w-full text-left px-2 py-1.5 text-xs rounded hover:bg-[var(--surface-elevated)] transition-colors block truncate",
                                         opt.value === value
-                                            ? "text-amber-400 bg-amber-950/20"
+                                            ? "text-[var(--accent-gold)] bg-[var(--accent-gold)]/10"
                                             : index === highlightedIndex
-                                                ? "bg-stone-800 text-stone-200"
-                                                : "text-stone-300"
+                                                ? "bg-[var(--surface-elevated)] text-[var(--text-primary)]"
+                                                : "text-[var(--text-secondary)]"
                                     )}
                                 >
                                     {opt.label}
