@@ -145,16 +145,19 @@ export function SearchableSelect({
                     style={{
                         top: dropdownStyles.top,
                         left: dropdownStyles.left,
-                        width: dropdownStyles.width
+                        width: Math.max(dropdownStyles.width, 200)
                     }}
                     className={cn(
                         "fixed z-[9999] bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[250px]",
                         dropdownClassName
                     )}
                 >
+                    {/* Ornate top accent */}
+                    <div className="absolute top-0 left-4 right-4 h-[1px] bg-gradient-to-r from-transparent via-[var(--accent-gold-dim)] to-transparent"></div>
+
                     {/* Search Input */}
-                    <div className="p-2 border-b border-[var(--border-subtle)] flex items-center gap-2 bg-[var(--surface)] sticky top-0">
-                        <Search size={12} className="text-[var(--text-muted)]" />
+                    <div className="p-2.5 border-b border-[var(--border-subtle)] flex items-center gap-2 bg-[var(--surface)] sticky top-0">
+                        <Search size={12} className="text-[var(--accent-purple-dim)]" />
                         <input
                             ref={searchInputRef}
                             type="text"
@@ -193,7 +196,7 @@ export function SearchableSelect({
                                     setSearch("");
                                     setHighlightedIndex(0);
                                 }}
-                                className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                                className="text-[var(--text-muted)] hover:text-[var(--accent-gold)] transition-colors"
                             >
                                 <X size={12} />
                             </button>
@@ -203,7 +206,7 @@ export function SearchableSelect({
                     {/* Options List */}
                     <div className="overflow-y-auto custom-scrollbar flex-1 p-1">
                         {filteredOptions.length === 0 ? (
-                            <div className="text-[10px] text-[var(--text-muted)] text-center py-2">
+                            <div className="text-[10px] text-[var(--text-muted)] text-center py-3 italic">
                                 No matches found
                             </div>
                         ) : (
@@ -218,12 +221,12 @@ export function SearchableSelect({
                                     }}
                                     onMouseEnter={() => setHighlightedIndex(index)}
                                     className={cn(
-                                        "w-full text-left px-2 py-1.5 text-xs rounded hover:bg-[var(--surface-elevated)] transition-colors block truncate",
+                                        "w-full text-left px-2.5 py-1.5 text-xs rounded-md transition-all block truncate",
                                         opt.value === value
-                                            ? "text-[var(--accent-gold)] bg-[var(--accent-gold)]/10"
+                                            ? "text-[var(--accent-gold)] bg-gradient-to-r from-[var(--accent-gold)]/15 to-transparent border-l-2 border-[var(--accent-gold)]"
                                             : index === highlightedIndex
-                                                ? "bg-[var(--surface-elevated)] text-[var(--text-primary)]"
-                                                : "text-[var(--text-secondary)]"
+                                                ? "bg-[var(--surface-elevated)] text-[var(--text-primary)] border-l-2 border-[var(--accent-purple-dim)]"
+                                                : "text-[var(--text-secondary)] border-l-2 border-transparent hover:border-[var(--border)]"
                                     )}
                                 >
                                     {opt.label}
@@ -231,6 +234,10 @@ export function SearchableSelect({
                             ))
                         )}
                     </div>
+
+                    {/* Ornate bottom corners */}
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-l border-b border-[var(--accent-gold-dim)]/50 rounded-bl pointer-events-none"></div>
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-r border-b border-[var(--accent-gold-dim)]/50 rounded-br pointer-events-none"></div>
                 </div>,
                 document.body
             )}

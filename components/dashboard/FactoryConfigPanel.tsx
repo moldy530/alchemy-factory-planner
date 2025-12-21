@@ -1,6 +1,7 @@
 import { Plus, Settings, Trash2 } from "lucide-react";
 import { Item } from "../../engine/types";
 import { useFactoryStore } from "../../store/useFactoryStore";
+import { OrnatePanel } from "../ui/OrnatePanel";
 import { SearchableSelect } from "../ui/SearchableSelect";
 
 interface ProductionTargetsPanelProps {
@@ -36,14 +37,14 @@ export function ProductionTargetsPanel({
     };
 
     return (
-        <div className="bg-[var(--surface)] p-4 rounded-lg border border-[var(--border)] space-y-3 flex flex-col">
+        <OrnatePanel className="p-4 space-y-3 flex flex-col" accentColor="gold">
             <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
-                    <Settings size={12} /> Production Targets
+                <h2 className="text-xs font-bold text-[var(--accent-gold)] uppercase flex items-center gap-2 tracking-wider">
+                    <Settings size={12} className="text-[var(--accent-purple)]" /> Production Targets
                 </h2>
                 <button
                     onClick={addTarget}
-                    className="text-xs flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] font-bold px-2 py-1 rounded border border-[var(--border)] border-dashed hover:border-[var(--accent-gold)]/50 transition-colors cursor-pointer"
+                    className="text-xs flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--accent-gold)] font-bold px-2 py-1 rounded border border-[var(--border)] border-dashed hover:border-[var(--accent-gold)]/50 hover:bg-[var(--accent-gold)]/5 transition-all cursor-pointer"
                 >
                     <Plus size={12} /> Add
                 </button>
@@ -53,7 +54,7 @@ export function ProductionTargetsPanel({
                 {targets.map((target, idx) => (
                     <div
                         key={idx}
-                        className="flex gap-2 items-center bg-[var(--background)]/50 p-2 rounded border border-[var(--border)]/50 text-sm"
+                        className="flex gap-2 items-center bg-[var(--background-deep)]/60 p-2.5 rounded-lg border border-[var(--border-subtle)] text-sm hover:border-[var(--accent-gold-dim)]/50 transition-colors group"
                     >
                         <div className="flex-1 w-24">
                             <SearchableSelect
@@ -63,7 +64,7 @@ export function ProductionTargetsPanel({
                                 className="bg-transparent text-[var(--accent-gold-bright)] font-medium text-xs hover:bg-[var(--surface)] border-none p-0 h-auto"
                             />
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center bg-[var(--surface)]/50 px-2 py-1 rounded">
                             <input
                                 type="number"
                                 className="bg-transparent text-[var(--accent-gold-bright)] font-medium outline-none w-12 text-right focus:text-[var(--accent-gold)] text-xs"
@@ -79,7 +80,7 @@ export function ProductionTargetsPanel({
                         {targets.length > 1 && (
                             <button
                                 onClick={() => removeTarget(idx)}
-                                className="text-[var(--text-muted)] hover:text-red-500 transition-colors p-1 cursor-pointer"
+                                className="text-[var(--text-muted)] hover:text-[var(--error)] transition-colors p-1 cursor-pointer opacity-0 group-hover:opacity-100"
                             >
                                 <Trash2 size={12} />
                             </button>
@@ -87,7 +88,7 @@ export function ProductionTargetsPanel({
                     </div>
                 ))}
             </div>
-        </div>
+        </OrnatePanel>
     );
 }
 
@@ -117,52 +118,56 @@ export function FactorySettingsPanel({
         updateFactoryConfig(activeFactory.id, { [field]: value });
     };
 
+    const fertilizerOptions = [
+        { value: "", label: "No Fertilizer" },
+        ...sortedFertilizers.map((f) => ({
+            value: f.name,
+            label: `${f.name} (Val: ${f.nutrient_value})`,
+        })),
+    ];
+
+    const fuelOptions = [
+        { value: "", label: "No Fuel Selected" },
+        ...sortedFuels.map((f) => ({
+            value: f.name,
+            label: `${f.name} (Heat: ${f.heat_value})`,
+        })),
+    ];
+
     return (
-        <div className="bg-[var(--surface)] p-4 rounded-lg border border-[var(--border)] space-y-4">
-            <h3 className="font-semibold text-[var(--text-secondary)] flex items-center gap-2 text-sm">
-                <Settings size={14} /> Factory Configuration
+        <OrnatePanel className="p-4 space-y-4" accentColor="gold">
+            <h3 className="font-semibold text-[var(--accent-gold)] flex items-center gap-2 text-xs uppercase tracking-wider">
+                <Settings size={14} className="text-[var(--accent-purple)]" /> Factory Configuration
             </h3>
 
             <div className="space-y-3">
                 <div>
-                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1 block">
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 block tracking-wide">
                         Fertilizer Strategy
                     </label>
-                    <select
-                        className="w-full bg-[var(--background)] border border-[var(--border)] rounded px-2 py-1.5 text-xs focus:border-[var(--accent-gold)]/50 outline-none text-[var(--text-secondary)] cursor-pointer"
+                    <SearchableSelect
+                        options={fertilizerOptions}
                         value={config.selectedFertilizer}
-                        onChange={(e) =>
-                            updateConfig("selectedFertilizer", e.target.value)
-                        }
-                    >
-                        <option value="">-- No Fertilizer --</option>
-                        {sortedFertilizers.map((f) => (
-                            <option key={f.id} value={f.name}>
-                                {f.name} (Val: {f.nutrient_value})
-                            </option>
-                        ))}
-                    </select>
+                        onChange={(val) => updateConfig("selectedFertilizer", val)}
+                        placeholder="Select Fertilizer..."
+                        className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
+                    />
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1 block">
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 block tracking-wide">
                         Fuel Type
                     </label>
-                    <select
-                        className="w-full bg-[var(--background)] border border-[var(--border)] rounded px-2 py-1.5 text-xs focus:border-[var(--accent-gold)]/50 outline-none text-[var(--text-secondary)] cursor-pointer"
+                    <SearchableSelect
+                        options={fuelOptions}
                         value={config.selectedFuel}
-                        onChange={(e) => updateConfig("selectedFuel", e.target.value)}
-                    >
-                        <option value="">-- Select Fuel --</option>
-                        {sortedFuels.map((f) => (
-                            <option key={f.id} value={f.name}>
-                                {f.name} (Heat: {f.heat_value})
-                            </option>
-                        ))}
-                    </select>
+                        onChange={(val) => updateConfig("selectedFuel", val)}
+                        placeholder="Select Fuel..."
+                        className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
+                    />
                 </div>
             </div>
-        </div>
+        </OrnatePanel>
     );
 }
 
@@ -201,14 +206,14 @@ export function AvailableResourcesPanel({ items }: AvailableResourcesPanelProps)
     };
 
     return (
-        <div className="bg-[var(--surface)] p-4 rounded-lg border border-[var(--border)] space-y-3 flex flex-col">
+        <OrnatePanel className="p-4 space-y-3 flex flex-col" accentColor="green">
             <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
-                    <Settings size={12} /> Available Input Resources
+                <h2 className="text-xs font-bold text-[var(--success)] uppercase flex items-center gap-2 tracking-wider">
+                    <Settings size={12} className="text-[var(--accent-purple)]" /> Available Input Resources
                 </h2>
                 <button
                     onClick={addResource}
-                    className="text-xs flex items-center gap-1 text-[var(--text-muted)] hover:text-emerald-400 font-bold px-2 py-1 rounded border border-[var(--border)] border-dashed hover:border-emerald-500/50 transition-colors cursor-pointer"
+                    className="text-xs flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--success)] font-bold px-2 py-1 rounded border border-[var(--border)] border-dashed hover:border-[var(--success)]/50 hover:bg-[var(--success)]/5 transition-all cursor-pointer"
                 >
                     <Plus size={12} /> Add
                 </button>
@@ -218,20 +223,20 @@ export function AvailableResourcesPanel({ items }: AvailableResourcesPanelProps)
                 {resources.map((res, idx) => (
                     <div
                         key={idx}
-                        className="flex gap-2 items-center bg-[var(--background)]/50 p-2 rounded border border-[var(--border)]/50 text-sm"
+                        className="flex gap-2 items-center bg-[var(--background-deep)]/60 p-2.5 rounded-lg border border-[var(--border-subtle)] text-sm hover:border-[var(--success)]/30 transition-colors group"
                     >
                         <div className="flex-1 w-24">
                             <SearchableSelect
                                 options={items.map((i) => ({ value: i.name, label: i.name }))}
                                 value={res.item}
                                 onChange={(val) => updateResource(idx, "item", val)}
-                                className="bg-transparent text-emerald-300 font-medium text-xs hover:bg-[var(--surface)] border-none p-0 h-auto"
+                                className="bg-transparent text-[var(--success)] font-medium text-xs hover:bg-[var(--surface)] border-none p-0 h-auto"
                             />
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center bg-[var(--surface)]/50 px-2 py-1 rounded">
                             <input
                                 type="number"
-                                className="bg-transparent text-emerald-300 font-medium outline-none w-12 text-right focus:text-emerald-400 text-xs"
+                                className="bg-transparent text-[var(--success)] font-medium outline-none w-12 text-right text-xs"
                                 value={res.rate}
                                 onChange={(e) =>
                                     updateResource(idx, "rate", parseFloat(e.target.value) || 0)
@@ -243,18 +248,18 @@ export function AvailableResourcesPanel({ items }: AvailableResourcesPanelProps)
                         </div>
                         <button
                             onClick={() => removeResource(idx)}
-                            className="text-[var(--text-muted)] hover:text-red-500 transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-muted)] hover:text-[var(--error)] transition-colors p-1 cursor-pointer opacity-0 group-hover:opacity-100"
                         >
                             <Trash2 size={12} />
                         </button>
                     </div>
                 ))}
                 {resources.length === 0 && (
-                    <div className="text-[10px] text-[var(--text-muted)] italic text-center py-2">
+                    <div className="text-[10px] text-[var(--text-muted)] italic text-center py-4 border border-dashed border-[var(--border-subtle)] rounded-lg">
                         No available resources configured.
                     </div>
                 )}
             </div>
-        </div>
+        </OrnatePanel>
     );
 }

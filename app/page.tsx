@@ -1,7 +1,8 @@
 
 "use client";
 
-import { FlaskConical } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { AlchemyIcon } from "../components/ui/AlchemyIcon";
 import { useEffect, useMemo, useState } from "react";
 import { GraphView } from "../components/GraphView";
 import {
@@ -117,18 +118,47 @@ export default function PlannerPage() {
 
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 flex flex-col gap-4">
+    <div className="min-h-screen bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 flex flex-col gap-4 bg-arcane-pattern">
       {/* Header & Tabs */}
       <header className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-[var(--accent-gold)] to-[var(--accent-gold-dim)] rounded-lg shadow-lg glow-gold">
-              <FlaskConical className="w-6 h-6 text-[var(--background)]" />
+          <div className="flex items-center gap-5">
+            {/* Mystical logo container */}
+            <div className="relative">
+              {/* Outer glow ring */}
+              <div className="absolute -inset-2 bg-gradient-to-br from-[var(--accent-gold)]/20 via-[var(--accent-purple)]/10 to-transparent rounded-full blur-md"></div>
+
+              {/* Main icon container */}
+              <div className="relative p-3 bg-gradient-to-br from-[var(--surface-elevated)] to-[var(--surface)] rounded-xl border border-[var(--accent-gold-dim)]/50 glow-gold">
+                {/* Corner accents */}
+                <div className="absolute -top-[1px] -left-[1px] w-3 h-3 border-t-2 border-l-2 border-[var(--accent-gold)] rounded-tl-lg"></div>
+                <div className="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-[var(--accent-gold)] rounded-tr-lg"></div>
+                <div className="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-[var(--accent-gold)] rounded-bl-lg"></div>
+                <div className="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-[var(--accent-gold)] rounded-br-lg"></div>
+
+                <AlchemyIcon className="w-9 h-9 text-[var(--accent-gold)]" />
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold font-[family-name:var(--font-cinzel)] bg-gradient-to-r from-[var(--accent-gold-bright)] via-[var(--accent-gold)] to-[var(--accent-gold-dim)] bg-clip-text text-transparent">
-                Alchemy Factory Planner
-              </h1>
+
+            {/* Title section */}
+            <div className="relative">
+              {/* Decorative line above title */}
+              <div className="absolute -top-2 left-0 right-0 h-[1px] bg-gradient-to-r from-[var(--accent-gold-dim)] via-[var(--accent-gold)]/50 to-transparent"></div>
+
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-cinzel)] text-gradient-gold tracking-wide">
+                  Alchemy Factory Planner
+                </h1>
+                <Sparkles className="w-4 h-4 text-[var(--accent-purple)] opacity-60 hidden md:block" />
+              </div>
+
+              <div className="flex items-center gap-3 mt-1">
+                <div className="w-8 h-[1px] bg-gradient-to-r from-[var(--accent-gold-dim)] to-transparent"></div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)]">
+                  Production Calculator & Optimizer
+                </p>
+                <div className="w-8 h-[1px] bg-gradient-to-l from-[var(--accent-gold-dim)] to-transparent hidden sm:block"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -157,8 +187,15 @@ export default function PlannerPage() {
 
       <main className="flex-1 flex flex-col gap-6 min-h-0">
         {/* View Area */}
-        <section className="flex-1 bg-[var(--surface)] rounded-xl border border-[var(--border)] shadow-xl overflow-hidden min-h-[600px] flex flex-col relative">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[var(--accent-gold)] via-[var(--accent-gold-bright)] to-transparent z-10 w-full pointer-events-none"></div>
+        <section className="flex-1 panel-ornate rounded-xl shadow-xl overflow-hidden min-h-[600px] flex flex-col relative">
+          {/* Ornate top accent */}
+          <div className="absolute top-0 left-8 right-8 h-[2px] bg-gradient-to-r from-transparent via-[var(--accent-gold)] to-transparent z-10 pointer-events-none"></div>
+
+          {/* Corner accent elements */}
+          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-[var(--accent-purple-dim)] rounded-tl opacity-60 pointer-events-none"></div>
+          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-[var(--accent-purple-dim)] rounded-tr opacity-60 pointer-events-none"></div>
+          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-[var(--accent-purple-dim)] rounded-bl opacity-60 pointer-events-none"></div>
+          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-[var(--accent-purple-dim)] rounded-br opacity-60 pointer-events-none"></div>
 
           <div className="flex-1 w-full h-full relative">
             {productionTrees && productionTrees.length > 0 ? (
@@ -168,8 +205,9 @@ export default function PlannerPage() {
                 <div className="p-8 overflow-auto custom-scrollbar h-full pt-16">
                   <div className="min-w-max space-y-8">
                     {productionTrees.map((root, i) => (
-                      <div key={i} className="border-l-4 border-[var(--border)] pl-4">
-                        <h3 className="text-[var(--text-muted)] font-bold mb-4 uppercase text-xs tracking-widest">
+                      <div key={i} className="border-l-2 border-[var(--accent-gold-dim)] pl-4">
+                        <h3 className="text-[var(--accent-gold)] font-bold mb-4 uppercase text-xs tracking-widest flex items-center gap-2">
+                          <span className="w-2 h-2 bg-[var(--accent-gold)] rounded-full"></span>
                           Target: {root.itemName}
                         </h3>
                         <NodeView node={root} depth={0} />
@@ -180,10 +218,14 @@ export default function PlannerPage() {
               )
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-[var(--text-muted)] flex-col gap-4">
-                <div className="p-4 bg-[var(--surface-elevated)] rounded-full border border-[var(--border)]">
-                  <FlaskConical className="w-8 h-8 opacity-50" />
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-[var(--accent-purple)]/10 rounded-full blur-xl"></div>
+                  <div className="relative p-5 bg-[var(--surface-elevated)] rounded-full border border-[var(--border)] glow-purple pulse-mystic">
+                    <AlchemyIcon className="w-12 h-12 opacity-50 text-[var(--accent-purple)]" />
+                  </div>
                 </div>
-                <p>Add a target to begin planning</p>
+                <p className="text-sm font-[family-name:var(--font-cinzel)]">Add a target to begin planning</p>
+                <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)]">Select an item above to calculate production</p>
               </div>
             )}
           </div>

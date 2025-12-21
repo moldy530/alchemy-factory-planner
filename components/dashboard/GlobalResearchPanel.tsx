@@ -1,32 +1,36 @@
 import { Coins, Flame, Leaf, Settings, Truck, Zap } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useFactoryStore } from "../../store/useFactoryStore";
+import { OrnatePanel } from "../ui/OrnatePanel";
 
 export function GlobalResearchPanel() {
     const { research, setResearch, resetResearch } = useFactoryStore();
 
     return (
-        <div className="bg-[var(--surface)] px-6 py-4 rounded-xl border border-[var(--border)] shadow-xl relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <OrnatePanel className="px-6 py-4 rounded-xl shadow-xl group" accentColor="purple">
+            {/* Arcane background pattern - clipped to panel bounds */}
+            <div className="absolute inset-0 bg-arcane-pattern opacity-30 pointer-events-none rounded-xl overflow-hidden"></div>
+
+            <div className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                 <button
-                    className="text-[10px] text-[var(--text-muted)] hover:text-[var(--accent-gold)] font-bold uppercase tracking-wider bg-[var(--background)]/80 px-2 py-1 rounded"
+                    className="text-[10px] text-[var(--text-muted)] hover:text-[var(--accent-gold)] font-bold uppercase tracking-wider bg-[var(--background-deep)]/90 px-2 py-1 rounded border border-[var(--border-subtle)] hover:border-[var(--accent-gold-dim)] transition-colors"
                     onClick={resetResearch}
                 >
-                    Reset Research
+                    Reset Skills
                 </button>
             </div>
-            <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-purple-500/10 rounded-md">
-                    <Zap size={14} className="text-purple-400" />
+            <div className="flex items-center gap-3 mb-4 relative">
+                <div className="p-2 bg-gradient-to-br from-[var(--accent-purple)]/20 to-[var(--accent-gold)]/10 rounded-lg border border-[var(--accent-purple-dim)]/30 glow-purple">
+                    <Zap size={14} className="text-[var(--accent-purple)]" />
                 </div>
-                <h3 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-widest">
-                    Global Research
+                <h3 className="text-xs font-bold text-[var(--accent-gold)] uppercase tracking-[0.2em] font-[family-name:var(--font-cinzel)]">
+                    Skills
                 </h3>
-                <div className="h-[1px] flex-1 bg-[var(--border)]/50"></div>
+                <div className="divider-ornate flex-1"></div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                <ResearchSlider
+            <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1">
+                <ResearchControl
                     label="Logistics"
                     icon={<Truck size={12} />}
                     value={research.logisticsEfficiency}
@@ -34,7 +38,7 @@ export function GlobalResearchPanel() {
                     color="text-cyan-400"
                     description={`Belt Speed ${60 + research.logisticsEfficiency * 15}/min`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Throwing"
                     icon={<Zap size={12} />}
                     value={research.throwingEfficiency}
@@ -42,7 +46,7 @@ export function GlobalResearchPanel() {
                     color="text-sky-400"
                     description={`Catapult Rate ${100 + research.throwingEfficiency * 25}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Factory Eff"
                     icon={<Settings size={12} />}
                     value={research.factoryEfficiency}
@@ -50,7 +54,7 @@ export function GlobalResearchPanel() {
                     color="text-[var(--accent-gold)]"
                     description={`Prod Speed ${100 + research.factoryEfficiency * 25}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Alchemy"
                     icon={<Zap size={12} />}
                     value={research.alchemySkill}
@@ -58,7 +62,7 @@ export function GlobalResearchPanel() {
                     color="text-violet-400"
                     description={`Extractor Output +${100 + research.alchemySkill * 6}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Fuel Eff"
                     icon={<Flame size={12} />}
                     value={research.fuelEfficiency}
@@ -66,7 +70,7 @@ export function GlobalResearchPanel() {
                     color="text-orange-400"
                     description={`Fuel Heat +${research.fuelEfficiency * 10}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Fertilizer"
                     icon={<Leaf size={12} />}
                     value={research.fertilizerEfficiency}
@@ -74,7 +78,7 @@ export function GlobalResearchPanel() {
                     color="text-emerald-400"
                     description={`Nutrient Value +${research.fertilizerEfficiency * 10}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Sales"
                     icon={<Coins size={12} />}
                     value={research.salesAbility}
@@ -82,7 +86,7 @@ export function GlobalResearchPanel() {
                     color="text-[var(--accent-gold-bright)]"
                     description={`Shop Profit ${100 + research.salesAbility * 3}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Negotiation"
                     icon={<Coins size={12} />}
                     value={research.negotiationSkill}
@@ -90,7 +94,7 @@ export function GlobalResearchPanel() {
                     color="text-teal-400"
                     description={`Contract Amount ${100 + research.negotiationSkill * 25}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Customer"
                     icon={<Coins size={12} />}
                     value={research.customerMgmt}
@@ -98,7 +102,7 @@ export function GlobalResearchPanel() {
                     color="text-rose-400"
                     description={`Quest Rewards ${100 + research.customerMgmt * 6}%`}
                 />
-                <ResearchSlider
+                <ResearchControl
                     label="Relic"
                     icon={<Zap size={12} />}
                     value={research.relicKnowledge}
@@ -107,11 +111,11 @@ export function GlobalResearchPanel() {
                     description={`Withdrawal Bonus ${100 + research.relicKnowledge * 10}%`}
                 />
             </div>
-        </div>
+        </OrnatePanel>
     );
 }
 
-function ResearchSlider({
+function ResearchControl({
     label,
     value,
     onChange,
@@ -126,23 +130,50 @@ function ResearchSlider({
     color: string;
     description: string;
 }) {
+    const decrement = () => onChange(Math.max(0, value - 1));
+    const increment = () => onChange(Math.min(10, value + 1));
+
     return (
-        <div className="bg-[var(--background)]/30 p-2 rounded border border-[var(--border)]/50">
-            <div className="flex justify-between text-xs mb-1">
-                <span className="flex items-center gap-1.5 text-[var(--text-secondary)] font-bold">
-                    {icon} {label}
-                </span>
-                <span className={cn("font-mono font-bold", color)}>{value}</span>
+        <div className="flex-1 bg-[var(--background-deep)]/60 p-2.5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--border)] transition-colors group/slider relative">
+            {/* Subtle corner accent */}
+            <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-[var(--accent-gold-dim)]/30 rounded-tl pointer-events-none"></div>
+
+            {/* Label */}
+            <div className="flex items-center justify-center gap-1.5 text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wide mb-2">
+                <span className={cn("opacity-80", color)}>{icon}</span>
+                <span>{label}</span>
             </div>
-            <input
-                type="range"
-                min="0"
-                max="10"
-                value={value}
-                onChange={(e) => onChange(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-[var(--border)] rounded-lg appearance-none cursor-pointer accent-[var(--accent-gold)] mb-1"
-            />
-            <div className="text-[10px] text-[var(--text-muted)] text-right font-mono truncate">
+
+            {/* Level control with medieval arrow buttons */}
+            <div className="flex items-center justify-center gap-2 mb-2">
+                <button
+                    onClick={decrement}
+                    disabled={value <= 0}
+                    className="group/btn relative w-7 h-7 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                >
+                    <div className="absolute inset-0 rotate-45 border border-[var(--accent-gold-dim)]/60 bg-[var(--surface)]/60 group-hover/btn:border-[var(--accent-gold)] group-hover/btn:bg-[var(--accent-gold)]/10 transition-all scale-[0.7]" />
+                    <svg className="relative w-3 h-3 text-[var(--accent-gold)] group-hover/btn:text-[var(--accent-gold-bright)] transition-colors" viewBox="0 0 12 12" fill="none">
+                        <path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+                <div className="flex items-center justify-center min-w-[2.5rem]">
+                    <span className={cn("font-mono font-bold text-lg tabular-nums", color)}>{value}</span>
+                    <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/10</span>
+                </div>
+                <button
+                    onClick={increment}
+                    disabled={value >= 10}
+                    className="group/btn relative w-7 h-7 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+                >
+                    <div className="absolute inset-0 rotate-45 border border-[var(--accent-gold-dim)]/60 bg-[var(--surface)]/60 group-hover/btn:border-[var(--accent-gold)] group-hover/btn:bg-[var(--accent-gold)]/10 transition-all scale-[0.7]" />
+                    <svg className="relative w-3 h-3 text-[var(--accent-gold)] group-hover/btn:text-[var(--accent-gold-bright)] transition-colors" viewBox="0 0 12 12" fill="none">
+                        <path d="M4 2L8 6L4 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </button>
+            </div>
+
+            {/* Description - readable */}
+            <div className="text-[9px] text-[var(--text-secondary)] text-center font-medium bg-[var(--surface)]/40 rounded px-1.5 py-1 border border-[var(--border-subtle)]/50">
                 {description}
             </div>
         </div>

@@ -1,28 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  /* Alchemy Factory Theme - Deep Teal & Gold */
-  --background: #0a1a24;
-  --surface: #0d2836;
-  --surface-elevated: #112f40;
-  --border: #1a4a5c;
-  --border-subtle: #153a4a;
+  /* Alchemy Factory Theme - Mystical Purple & Gold */
+  --background: #0c0814;
+  --background-deep: #08050e;
+  --surface: #14101f;
+  --surface-elevated: #1e1730;
+  --border: #352a4d;
+  --border-subtle: #251d38;
+  --border-glow: #4a3a6e;
 
-  /* Gold accents */
+  /* Gold accents - Transmuted metals */
   --accent-gold: #d4a43a;
-  --accent-gold-bright: #e8c878;
+  --accent-gold-bright: #f0d078;
   --accent-gold-dim: #a67c2e;
+  --accent-gold-muted: #8a6420;
 
-  /* Text colors */
-  --text-primary: #e8dcc8;
-  --text-secondary: #8b9da8;
-  --text-muted: #5a7080;
+  /* Purple accents - Mystical energy */
+  --accent-purple: #9b6dff;
+  --accent-purple-bright: #b794ff;
+  --accent-purple-dim: #6b4db8;
+  --accent-purple-glow: rgba(155, 109, 255, 0.3);
+
+  /* Text colors - Parchment & Ink */
+  --text-primary: #e8e0d4;
+  --text-secondary: #a89b8a;
+  --text-muted: #6d5f4f;
 
   /* Semantic colors */
-  --success: #4ade80;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #38bdf8;
+  --success: #5dd97a;
+  --success-dim: #2d5a38;
+  --warning: #e8a840;
+  --error: #e05555;
+  --error-dim: #4a2020;
+  --info: #6db8e8;
 }
 
 body {
@@ -31,23 +42,24 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Custom scrollbar - Alchemy theme */
+/* Custom scrollbar - Mystical theme */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--surface);
+  background: var(--background-deep);
+  border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
+  background: linear-gradient(180deg, var(--border) 0%, var(--accent-purple-dim) 100%);
+  border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-gold-dim);
+  background: linear-gradient(180deg, var(--accent-gold-dim) 0%, var(--accent-gold) 100%);
 }
 
 /* Hide number input spinners */
@@ -62,26 +74,275 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* Golden glow effect for special elements */
-.glow-gold {
-  box-shadow: 0 0 20px rgba(212, 164, 58, 0.3);
+/* ═══════════════════════════════════════════════════════════
+   ORNATE PANEL SYSTEM - Medieval Manuscript Inspired
+   ═══════════════════════════════════════════════════════════ */
+
+/* Base ornate panel with corner flourishes */
+.panel-ornate {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: visible;
 }
 
-/* Subtle shimmer animation */
+/* Corner flourishes using pseudo-elements */
+.panel-ornate::before,
+.panel-ornate::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.panel-ornate::before {
+  top: -2px;
+  left: -2px;
+  border-top: 2px solid var(--accent-gold-dim);
+  border-left: 2px solid var(--accent-gold-dim);
+  border-top-left-radius: 6px;
+}
+
+.panel-ornate::after {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 2px solid var(--accent-gold-dim);
+  border-right: 2px solid var(--accent-gold-dim);
+  border-bottom-right-radius: 6px;
+}
+
+/* Additional corners via inner elements */
+.panel-ornate-corners::before,
+.panel-ornate-corners::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.panel-ornate-corners::before {
+  top: -2px;
+  right: -2px;
+  border-top: 2px solid var(--accent-gold-dim);
+  border-right: 2px solid var(--accent-gold-dim);
+  border-top-right-radius: 6px;
+}
+
+.panel-ornate-corners::after {
+  bottom: -2px;
+  left: -2px;
+  border-bottom: 2px solid var(--accent-gold-dim);
+  border-left: 2px solid var(--accent-gold-dim);
+  border-bottom-left-radius: 6px;
+}
+
+/* Golden accent bar at top of panels */
+.panel-gold-bar {
+  position: relative;
+}
+
+.panel-gold-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--accent-gold-muted) 15%,
+    var(--accent-gold) 50%,
+    var(--accent-gold-muted) 85%,
+    transparent 100%
+  );
+  z-index: 11;
+}
+
+/* Ornate divider line */
+.divider-ornate {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--border) 10%,
+    var(--accent-gold-dim) 50%,
+    var(--border) 90%,
+    transparent 100%
+  );
+  margin: 1rem 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLOW EFFECTS - Mystical Energy
+   ═══════════════════════════════════════════════════════════ */
+
+.glow-gold {
+  box-shadow:
+    0 0 20px rgba(212, 164, 58, 0.25),
+    0 0 40px rgba(212, 164, 58, 0.1),
+    inset 0 1px 0 rgba(240, 208, 120, 0.1);
+}
+
+.glow-purple {
+  box-shadow:
+    0 0 20px var(--accent-purple-glow),
+    0 0 40px rgba(155, 109, 255, 0.1);
+}
+
+.glow-gold-subtle {
+  box-shadow: 0 0 12px rgba(212, 164, 58, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATIONS - Magical Effects
+   ═══════════════════════════════════════════════════════════ */
+
 @keyframes shimmer {
-  0% {
-    opacity: 0.5;
-  }
-
-  50% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 .shimmer {
   animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes mystic-pulse {
+  0%, 100% {
+    box-shadow: 0 0 15px var(--accent-purple-glow);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--accent-purple-glow), 0 0 35px rgba(155, 109, 255, 0.15);
+  }
+}
+
+.pulse-mystic {
+  animation: mystic-pulse 4s ease-in-out infinite;
+}
+
+@keyframes gold-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    var(--accent-gold-dim) 0%,
+    var(--accent-gold-bright) 25%,
+    var(--accent-gold) 50%,
+    var(--accent-gold-bright) 75%,
+    var(--accent-gold-dim) 100%
+  );
+  background-size: 200% auto;
+  animation: gold-shimmer 8s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FORM ELEMENTS - Styled Inputs
+   ═══════════════════════════════════════════════════════════ */
+
+/* Custom range slider */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+  height: 4px;
+  background: linear-gradient(90deg, var(--border-subtle) 0%, var(--border) 100%);
+  border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold) 50%, var(--accent-gold-dim) 100%);
+  border-radius: 50%;
+  margin-top: -5px;
+  box-shadow: 0 0 8px rgba(212, 164, 58, 0.4);
+  border: 2px solid var(--surface);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(212, 164, 58, 0.6);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: linear-gradient(90deg, var(--border-subtle) 0%, var(--border) 100%);
+  border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold) 50%, var(--accent-gold-dim) 100%);
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 8px rgba(212, 164, 58, 0.4);
+}
+
+/* Select dropdowns */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a67c2e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Text gradients */
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold) 50%, var(--accent-gold-dim) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple-bright) 0%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Border accents */
+.border-accent-gold {
+  border-color: var(--accent-gold-dim);
+}
+
+.border-accent-purple {
+  border-color: var(--accent-purple-dim);
+}
+
+/* Background patterns */
+.bg-arcane-pattern {
+  background-image:
+    radial-gradient(circle at 25% 25%, var(--accent-purple-glow) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(212, 164, 58, 0.05) 0%, transparent 50%);
+}
+
+/* Hover transitions */
+.hover-glow-gold {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.hover-glow-gold:hover {
+  box-shadow: 0 0 15px rgba(212, 164, 58, 0.2);
+  border-color: var(--accent-gold-dim);
 }

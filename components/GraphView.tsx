@@ -31,7 +31,10 @@ export function GraphView() {
   const { nodes, edges, viewport: defaultViewport } = activeFactory;
 
   return (
-    <div className="absolute inset-0 bg-[var(--background)]/50">
+    <div className="absolute inset-0 bg-[var(--background-deep)]/80">
+      {/* Subtle arcane pattern overlay */}
+      <div className="absolute inset-0 bg-arcane-pattern opacity-20 pointer-events-none"></div>
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -40,23 +43,22 @@ export function GraphView() {
         onMoveEnd={(e, viewport) => onViewportChange?.(viewport)}
         defaultViewport={defaultViewport}
         nodeTypes={nodeTypes}
-        className="bg-dots-[var(--border)]"
         style={{ width: "100%", height: "100%" }}
         minZoom={0.1}
         maxZoom={4}
       >
-        <Background color="#1a4a5c" gap={20} size={1} />
-        <Controls className="bg-[var(--surface)] border-[var(--border)] fill-[var(--text-secondary)] text-[var(--text-secondary)]" />
+        <Background color="#352a4d" gap={24} size={1} />
+        <Controls className="bg-[var(--surface)] border-[var(--border)] fill-[var(--accent-gold-dim)] text-[var(--text-secondary)] rounded-lg overflow-hidden [&>button]:border-[var(--border-subtle)] [&>button]:bg-[var(--surface)] [&>button:hover]:bg-[var(--surface-elevated)]" />
       </ReactFlow>
 
-      {/* Reset Layout Button (Restored) */}
+      {/* Reset Layout Button */}
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <button
           onClick={() => resetFactoryLayout(activeFactoryId!)}
-          className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-md border border-[var(--border)] shadow-lg text-xs font-bold transition-colors"
+          className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-lg border border-[var(--border)] hover:border-[var(--accent-gold-dim)] shadow-lg text-xs font-bold transition-all hover:glow-gold-subtle"
           title="Reset Layout"
         >
-          <RotateCcw size={14} />
+          <RotateCcw size={14} className="text-[var(--accent-gold)]" />
           Reset Layout
         </button>
       </div>

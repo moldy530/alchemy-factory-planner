@@ -14,22 +14,30 @@ export function CustomNode({ data }: { data: ProductionNode }) {
     return (
         <div
             className={cn(
-                "p-3 rounded-lg border-2 shadow-lg min-w-[220px] bg-[var(--surface)] transition-colors",
+                "p-3 rounded-lg border shadow-lg min-w-[220px] bg-[var(--surface)] transition-all relative",
                 isTarget
-                    ? "border-emerald-500 bg-emerald-950/20"
+                    ? "border-[var(--success)] bg-[var(--success-dim)]/30 glow-gold-subtle"
                     : isMachine
-                        ? "border-[var(--accent-gold)]/50"
-                        : "border-[var(--border)]",
-                isSaturated && !isTarget && "border-red-500 shadow-red-500/20",
+                        ? "border-[var(--accent-gold-dim)] hover:border-[var(--accent-gold)]"
+                        : "border-[var(--border)] hover:border-[var(--accent-purple-dim)]",
+                isSaturated && !isTarget && "border-[var(--error)] bg-[var(--error-dim)]/20 shadow-[0_0_15px_rgba(224,85,85,0.2)]",
             )}
         >
+            {/* Corner decorations for machine nodes */}
+            {isMachine && !isTarget && (
+                <>
+                    <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-[var(--accent-gold-dim)] rounded-tl pointer-events-none"></div>
+                    <div className="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-[var(--accent-gold-dim)] rounded-br pointer-events-none"></div>
+                </>
+            )}
+
             {/* Header */}
-            <div className="flex justify-between items-start mb-2 border-b border-[var(--border)] pb-2">
+            <div className="flex justify-between items-start mb-2 pb-2 border-b border-[var(--border-subtle)]">
                 <span
                     className={cn(
                         "font-bold text-sm truncate",
                         isTarget
-                            ? "text-emerald-400"
+                            ? "text-[var(--success)]"
                             : isMachine
                                 ? "text-[var(--accent-gold-bright)]"
                                 : "text-[var(--text-secondary)]",
@@ -40,11 +48,11 @@ export function CustomNode({ data }: { data: ProductionNode }) {
                 <div className="text-right">
                     <div
                         className={cn(
-                            "text-xs font-mono font-bold",
+                            "text-xs font-mono font-bold px-1.5 py-0.5 rounded",
                             isTarget
-                                ? "text-emerald-400"
+                                ? "text-[var(--success)] bg-[var(--success-dim)]/30"
                                 : isSaturated
-                                    ? "text-red-400"
+                                    ? "text-[var(--error)] bg-[var(--error-dim)]/30"
                                     : "text-[var(--accent-gold)]",
                         )}
                     >
@@ -54,7 +62,7 @@ export function CustomNode({ data }: { data: ProductionNode }) {
                         /m
                     </div>
                     {isSaturated && !isTarget && (
-                        <div className="text-[8px] text-red-500 flex items-center justify-end gap-0.5">
+                        <div className="text-[8px] text-[var(--error)] flex items-center justify-end gap-0.5 mt-0.5">
                             <AlertTriangle size={8} /> Limit
                         </div>
                     )}
@@ -62,17 +70,17 @@ export function CustomNode({ data }: { data: ProductionNode }) {
             </div>
 
             {/* Body */}
-            <div className="space-y-1">
+            <div className="space-y-1.5">
                 {isTarget && (
-                    <div className="flex items-center gap-2 text-xs text-emerald-300">
+                    <div className="flex items-center gap-2 text-xs text-[var(--success)]">
                         <span className="font-bold">{nodeData.itemName}</span>
                     </div>
                 )}
 
                 {isMachine && (
-                    <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                        <Settings size={12} className="text-[var(--text-muted)]" />
-                        <span className="text-[var(--text-primary)] font-bold">
+                    <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] bg-[var(--background-deep)]/50 p-1.5 rounded">
+                        <Settings size={12} className="text-[var(--accent-purple)]" />
+                        <span className="text-[var(--accent-gold-bright)] font-bold">
                             {nodeData.deviceCount.toLocaleString(undefined, {
                                 maximumFractionDigits: 2,
                             })}
@@ -83,9 +91,9 @@ export function CustomNode({ data }: { data: ProductionNode }) {
                 )}
 
                 {nodeData.heatConsumption > 0 && (
-                    <div className="flex items-center gap-2 text-xs text-orange-400">
+                    <div className="flex items-center gap-2 text-xs text-[var(--warning)]">
                         <Flame size={12} />
-                        <span>{nodeData.heatConsumption.toLocaleString()} Heat</span>
+                        <span className="font-mono">{nodeData.heatConsumption.toLocaleString()} Heat</span>
                     </div>
                 )}
             </div>
@@ -94,14 +102,14 @@ export function CustomNode({ data }: { data: ProductionNode }) {
             <Handle
                 type="target"
                 position={Position.Left}
-                className="w-3 h-3 bg-[var(--text-muted)] border-2 border-[var(--surface)]"
+                className="!w-2.5 !h-2.5 !bg-[var(--accent-purple-dim)] !border-2 !border-[var(--surface)]"
             />
             {/* Targets usually don't have source, but we leave it flexible */}
             {!isTarget && (
                 <Handle
                     type="source"
                     position={Position.Right}
-                    className="w-3 h-3 bg-[var(--text-muted)] border-2 border-[var(--surface)]"
+                    className="!w-2.5 !h-2.5 !bg-[var(--accent-gold-dim)] !border-2 !border-[var(--surface)]"
                 />
             )}
         </div>

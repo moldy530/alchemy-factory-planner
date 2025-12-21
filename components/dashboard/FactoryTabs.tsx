@@ -33,23 +33,37 @@ export function FactoryTabs() {
     };
 
     return (
-        <div className="flex overflow-x-auto custom-scrollbar items-center gap-1">
+        <div className="flex overflow-x-auto custom-scrollbar items-center gap-1 relative">
+            {/* Decorative line under tabs */}
+            <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--border)] to-transparent"></div>
+
             {factories.map((factory) => (
                 <div
                     key={factory.id}
                     onClick={() => setActiveFactory(factory.id)}
                     onDoubleClick={() => startRename(factory.id, factory.name)}
                     className={cn(
-                        "group flex items-center gap-2 px-4 py-2.5 rounded-t-lg border-b-2 transition-all cursor-pointer min-w-[140px] select-none",
+                        "group relative flex items-center gap-2 px-4 py-2.5 rounded-t-lg transition-all cursor-pointer min-w-[140px] select-none",
                         activeFactoryId === factory.id
-                            ? "bg-[var(--surface)] border-[var(--accent-gold)] text-[var(--accent-gold-bright)] font-medium"
-                            : "bg-[var(--background)]/30 border-transparent text-[var(--text-muted)] hover:bg-[var(--surface)]/50 hover:text-[var(--text-secondary)]",
+                            ? "bg-[var(--surface)] text-[var(--accent-gold-bright)] font-medium glow-gold-subtle"
+                            : "bg-[var(--background-deep)]/50 text-[var(--text-muted)] hover:bg-[var(--surface)]/50 hover:text-[var(--text-secondary)]",
                     )}
                 >
+                    {/* Active tab accent */}
+                    {activeFactoryId === factory.id && (
+                        <>
+                            <div className="absolute top-0 left-2 right-2 h-[2px] bg-gradient-to-r from-transparent via-[var(--accent-gold)] to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--surface)]"></div>
+                            {/* Corner accents */}
+                            <div className="absolute top-0 left-0 w-2 h-2 border-l border-t border-[var(--accent-gold-dim)]"></div>
+                            <div className="absolute top-0 right-0 w-2 h-2 border-r border-t border-[var(--accent-gold-dim)]"></div>
+                        </>
+                    )}
+
                     {isRenaming === factory.id ? (
                         <input
                             autoFocus
-                            className="bg-[var(--background)] text-xs px-1 py-0.5 rounded border border-[var(--accent-gold)]/50 outline-none w-24 text-[var(--text-primary)]"
+                            className="bg-[var(--background-deep)] text-xs px-2 py-1 rounded border border-[var(--accent-gold)]/50 outline-none w-24 text-[var(--text-primary)] focus:border-[var(--accent-gold)]"
                             value={renameValue}
                             onChange={(e) => setRenameValue(e.target.value)}
                             onBlur={finishRename}
@@ -75,7 +89,7 @@ export function FactoryTabs() {
                                     e.stopPropagation();
                                     removeFactory(factory.id);
                                 }}
-                                className="text-[var(--text-muted)] hover:text-red-400 p-0.5 hover:bg-[var(--surface-elevated)] rounded"
+                                className="text-[var(--text-muted)] hover:text-[var(--error)] p-0.5 hover:bg-[var(--error-dim)]/50 rounded transition-colors"
                             >
                                 <X size={12} />
                             </button>
@@ -85,37 +99,37 @@ export function FactoryTabs() {
             ))}
             <button
                 onClick={addFactory}
-                className="px-3 py-2 text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:bg-[var(--surface)]/50 rounded-t-lg transition-colors border-b-2 border-transparent cursor-pointer"
+                className="px-3 py-2 text-[var(--text-muted)] hover:text-[var(--accent-gold)] hover:bg-[var(--surface)]/50 rounded-t-lg transition-all cursor-pointer hover:glow-gold-subtle"
             >
                 <PlusCircle size={18} />
             </button>
-            <div className="flex-1 border-b-2 border-[var(--surface)]/50"></div>
+            <div className="flex-1"></div>
 
             {/* View Toggle Bar */}
             {activeFactory && (
                 <div className="flex justify-end ml-2">
-                    <div className="flex bg-[var(--surface)] p-1 rounded-md border border-[var(--border)]">
+                    <div className="flex bg-[var(--surface)] p-1 rounded-lg border border-[var(--border)] gap-1">
                         <button
                             onClick={() => setViewMode(activeFactory.id, "graph")}
                             className={cn(
-                                "p-1.5 rounded flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer",
+                                "px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer",
                                 activeFactory.viewMode === "graph"
-                                    ? "bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]"
-                                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
+                                    ? "bg-gradient-to-br from-[var(--accent-gold)]/20 to-[var(--accent-purple)]/10 text-[var(--accent-gold)] border border-[var(--accent-gold-dim)]/30"
+                                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)]/50",
                             )}
                         >
-                            <GitGraph size={14} /> Graph
+                            <GitGraph size={12} /> Graph
                         </button>
                         <button
                             onClick={() => setViewMode(activeFactory.id, "list")}
                             className={cn(
-                                "p-1.5 rounded flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer",
+                                "px-2.5 py-1.5 rounded-md flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer",
                                 activeFactory.viewMode === "list"
-                                    ? "bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]"
-                                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
+                                    ? "bg-gradient-to-br from-[var(--accent-gold)]/20 to-[var(--accent-purple)]/10 text-[var(--accent-gold)] border border-[var(--accent-gold-dim)]/30"
+                                    : "text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-elevated)]/50",
                             )}
                         >
-                            <LayoutList size={14} /> List
+                            <LayoutList size={12} /> List
                         </button>
                     </div>
                 </div>
