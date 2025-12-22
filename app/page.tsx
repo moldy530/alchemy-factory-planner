@@ -2,6 +2,7 @@
 "use client";
 
 import { Sparkles } from "lucide-react";
+import { FeedbackButton } from "../components/ui/FeedbackButton";
 import { AlchemyIcon } from "../components/ui/AlchemyIcon";
 import { useEffect, useMemo, useState } from "react";
 import { GraphView } from "../components/GraphView";
@@ -122,7 +123,7 @@ export default function PlannerPage() {
       {/* Header & Tabs */}
       <header className="flex flex-col gap-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 flex-1">
             {/* Mystical logo container */}
             <div className="relative">
               {/* Outer glow ring */}
@@ -161,6 +162,9 @@ export default function PlannerPage() {
               </div>
             </div>
           </div>
+
+          {/* Feedback Button */}
+          <FeedbackButton />
         </div>
 
         {/* Global Research Panel */}
