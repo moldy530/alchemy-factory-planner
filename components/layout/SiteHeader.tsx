@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Sparkles, Calculator, Package, Cog, BookOpen } from "lucide-react";
-import { AlchemyIcon } from "@/components/ui/AlchemyIcon";
+import { AlchemyIcon } from "@/components/icons/AlchemyIcon";
 import { FeedbackButton } from "@/components/ui/FeedbackButton";
 import { cn } from "@/lib/utils";
 

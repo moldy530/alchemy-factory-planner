@@ -3,7 +3,9 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:store.steampowered.com)",
-      "Skill(frontend-design)"
+      "Skill(frontend-design)",
+      "Bash(wc:*)",
+      "Bash(bun run build)"
     ]
   }
 }

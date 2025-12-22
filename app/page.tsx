@@ -1,7 +1,7 @@
 
 "use client";
 
-import { AlchemyIcon } from "../components/ui/AlchemyIcon";
+import { AlchemyIcon } from "@/components/icons/AlchemyIcon";
 import { useEffect, useMemo, useState } from "react";
 import { GraphView } from "../components/GraphView";
 import {
