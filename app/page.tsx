@@ -65,8 +65,13 @@ export default function PlannerPage() {
   const stats = useMemo(() => {
     let totalMachines = 0;
     let totalPower = 0;
+    const visited = new Set<string>();
 
     function traverse(node: ProductionNode) {
+      const key = node.id || node.itemName;
+      if (visited.has(key)) return;
+      visited.add(key);
+
       totalMachines += node.deviceCount;
       totalPower += node.heatConsumption;
       node.inputs.forEach(traverse);
@@ -79,8 +84,13 @@ export default function PlannerPage() {
   const ioSummary = useMemo(() => {
     const inputs = new Map<string, number>();
     const outputs = new Map<string, number>();
+    const visited = new Set<string>();
 
     function traverse(node: ProductionNode, isRoot = false) {
+      const key = node.id || node.itemName;
+      if (visited.has(key)) return;
+      visited.add(key);
+
       if (isRoot) {
         outputs.set(
           node.itemName,

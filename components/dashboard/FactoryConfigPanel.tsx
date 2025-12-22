@@ -1,6 +1,7 @@
 import { Plus, Settings, Trash2 } from "lucide-react";
 import { Item } from "../../engine/types";
 import { useFactoryStore } from "../../store/useFactoryStore";
+import { InfoTooltip } from "../ui/InfoTooltip";
 import { OrnatePanel } from "../ui/OrnatePanel";
 import { SearchableSelect } from "../ui/SearchableSelect";
 
@@ -101,7 +102,7 @@ export function FactorySettingsPanel({
     fertilizers,
     fuels,
 }: FactorySettingsPanelProps) {
-    const { factories, activeFactoryId, updateFactoryConfig } = useFactoryStore();
+    const { factories, activeFactoryId, updateFactoryConfig, setPlannerMode } = useFactoryStore();
     const activeFactory = factories.find((f) => f.id === activeFactoryId);
 
     if (!activeFactory) return null;
@@ -117,6 +118,11 @@ export function FactorySettingsPanel({
     const updateConfig = (field: "selectedFertilizer" | "selectedFuel", value: string) => {
         updateFactoryConfig(activeFactory.id, { [field]: value });
     };
+
+    const plannerOptions = [
+        { value: "recursive", label: "Recursive (Tree-based)" },
+        { value: "lp", label: "Matrix (Linear Programming)" },
+    ];
 
     const fertilizerOptions = [
         { value: "", label: "No Fertilizer" },
@@ -155,14 +161,29 @@ export function FactorySettingsPanel({
                 </div>
 
                 <div>
-                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 block tracking-wide">
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 flex items-center tracking-wide">
                         Fuel Type
+                        <InfoTooltip text="Assumes Stone Furnace heating. Different heater types coming soon." />
                     </label>
                     <SearchableSelect
                         options={fuelOptions}
                         value={config.selectedFuel}
                         onChange={(val) => updateConfig("selectedFuel", val)}
                         placeholder="Select Fuel..."
+                        className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
+                    />
+                </div>
+
+                <div>
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 flex items-center tracking-wide">
+                        Planner Algorithm
+                        <InfoTooltip text="Matrix (LP) is WIP but will be preferred. Recursive will be deprecated." />
+                    </label>
+                    <SearchableSelect
+                        options={plannerOptions}
+                        value={activeFactory.plannerMode || "lp"}
+                        onChange={(val) => setPlannerMode(activeFactory.id, val as "recursive" | "lp")}
+                        placeholder="Select Planner..."
                         className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
                     />
                 </div>

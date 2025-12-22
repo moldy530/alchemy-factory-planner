@@ -21,9 +21,24 @@ export function generateGraph(
     // Map: EdgeKey -> Accumulated Rate
     const edgeRates = new Map<string, number>();
 
+    // Track nodes currently being traversed to detect cycles
+    const visiting = new Set<string>();
+
     function traverse(node: ProductionNode, parentName?: string) {
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
+
+        // Record Relationship & Rate (do this before cycle check to capture edges)
+        if (parentName) {
+            const edgeKey = `${key}___${parentName}`;
+            const currentRate = edgeRates.get(edgeKey) || 0;
+            edgeRates.set(edgeKey, currentRate + node.rate);
+        }
+
+        // Cycle detection: if we're already visiting this node in current path, stop
+        if (visiting.has(key)) {
+            return;
+        }
 
         // Update or Create
         if (mergedNodes.has(key)) {
@@ -38,15 +53,10 @@ export function generateGraph(
             mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
         }
 
-        // Record Relationship & Rate
-        if (parentName) {
-            const edgeKey = `${key}___${parentName}`;
-            const currentRate = edgeRates.get(edgeKey) || 0;
-            edgeRates.set(edgeKey, currentRate + node.rate);
-        }
-
-        // Recurse
+        // Mark as visiting, recurse, then unmark
+        visiting.add(key);
         node.inputs.forEach((input) => traverse(input, key));
+        visiting.delete(key);
     }
 
     rootNodes.forEach((root) => traverse(root));
@@ -90,13 +100,16 @@ export function generateGraph(
     // ----------------------------------------------------
     rootNodes.forEach((root, idx) => {
         const targetId = `target-${root.itemName}-${idx}`;
+        // Use netOutputRate if available (for LP planner with loops), otherwise use rate
+        const outputRate = root.netOutputRate ?? root.rate;
+
         // Create Target Node
         rfNodes.push({
             id: targetId,
             type: "custom",
             data: {
                 itemName: root.itemName,
-                rate: root.rate,
+                rate: outputRate,
                 isRaw: false,
                 deviceCount: 0,
                 heatConsumption: 0,
@@ -118,7 +131,7 @@ export function generateGraph(
             style: { stroke: "#10B981", strokeWidth: 2, strokeDasharray: "5 5" },
 
             // --- Label Logic (Target) ---
-            label: `${root.rate.toLocaleString(undefined, {
+            label: `${outputRate.toLocaleString(undefined, {
                 maximumFractionDigits: 1,
             })}/m`,
             labelStyle: { fill: "#4ade80", fontWeight: 700, fontSize: 11 },

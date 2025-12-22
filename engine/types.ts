@@ -67,7 +67,8 @@ export interface Device {
 export interface ProductionNode {
   id?: string; // Unique identifier for graph separation
   itemName: string;
-  rate: number; // Items per minute
+  rate: number; // Items per minute (gross production)
+  netOutputRate?: number; // Net output after internal consumption (for loops)
   isRaw: boolean;
   recipeId?: string;
   deviceId?: string;
@@ -114,6 +115,8 @@ export interface ResearchState {
   relicKnowledge: number;
 }
 
+export type PlannerMode = "recursive" | "lp";
+
 export interface FactoryState {
   id: string;
   name: string;
@@ -121,4 +124,5 @@ export interface FactoryState {
   availableResources: { item: string; rate: number }[];
   config: Omit<PlannerConfig, "targets" | "targetItem" | "targetRate" | "availableResources">;
   viewMode: "graph" | "list";
+  plannerMode: PlannerMode;
 }

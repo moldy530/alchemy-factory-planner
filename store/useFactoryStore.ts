@@ -11,9 +11,11 @@ import {
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { calculateProduction } from "../engine/planner";
+import { calculateProductionLP } from "../engine/lp-planner";
 import {
     FactoryState,
     PlannerConfig,
+    PlannerMode,
     ProductionNode,
     ResearchState,
 } from "../engine/types";
@@ -93,6 +95,7 @@ interface FactoryStore {
     onEdgesChange: (changes: EdgeChange[]) => void;
     onViewportChange: (viewport: Viewport) => void;
     setViewMode: (id: string, mode: "graph" | "list") => void;
+    setPlannerMode: (id: string, mode: PlannerMode) => void;
     resetFactoryLayout: (id: string) => void;
 }
 
@@ -112,6 +115,7 @@ export const useFactoryStore = create<FactoryStore>()(
                     availableResources: [],
                     config: DEFAULT_FACTORY_CONFIG,
                     viewMode: "graph",
+                    plannerMode: "lp",
                     nodes: [],
                     edges: [],
                     productionTrees: [],
@@ -208,6 +212,15 @@ export const useFactoryStore = create<FactoryStore>()(
                 }));
             },
 
+            setPlannerMode: (id, mode) => {
+                set((state) => ({
+                    factories: state.factories.map((f) =>
+                        f.id === id ? { ...f, plannerMode: mode } : f
+                    ),
+                }));
+                get().calculateAndLayout();
+            },
+
             calculateAndLayout: () => {
                 const state = get();
                 const activeId = state.activeFactoryId;
@@ -237,7 +250,9 @@ export const useFactoryStore = create<FactoryStore>()(
                     selectedFuel: factory.config.selectedFuel,
                 };
 
-                const productionNodes = calculateProduction(calculationConfig);
+                const productionNodes = factory.plannerMode === "lp"
+                    ? calculateProductionLP(calculationConfig)
+                    : calculateProduction(calculationConfig);
 
                 const currentNodes = factory.nodes;
                 const savedPositions: Record<string, { x: number; y: number }> = {};
@@ -268,7 +283,9 @@ export const useFactoryStore = create<FactoryStore>()(
                     selectedFuel: factory.config.selectedFuel,
                 };
 
-                const productionNodes = calculateProduction(calculationConfig);
+                const productionNodes = factory.plannerMode === "lp"
+                    ? calculateProductionLP(calculationConfig)
+                    : calculateProduction(calculationConfig);
 
                 const { nodes, edges } = generateGraph(productionNodes, {});
 
@@ -313,10 +330,29 @@ export const useFactoryStore = create<FactoryStore>()(
             name: "alchemy-factory-store", // unique name for localStorage
             storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
-                factories: state.factories,
+                // Exclude productionTrees from persistence - it has circular refs
+                // and can be recalculated from targets + config
+                factories: state.factories.map((f) => ({
+                    ...f,
+                    productionTrees: [], // Don't persist - will be recalculated
+                    nodes: f.nodes.map((n) => ({
+                        ...n,
+                        // Strip any circular data from node.data if present
+                        data: n.data ? { ...n.data, inputs: [], byproducts: [] } : n.data,
+                    })),
+                })),
                 activeFactoryId: state.activeFactoryId,
                 research: state.research,
             }),
+            onRehydrateStorage: () => (state) => {
+                // Recalculate production trees after loading from localStorage
+                if (state) {
+                    // Use setTimeout to ensure store is fully initialized
+                    setTimeout(() => {
+                        state.calculateAndLayout();
+                    }, 0);
+                }
+            },
         }
     )
 );

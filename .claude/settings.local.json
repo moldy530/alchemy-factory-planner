@@ -5,7 +5,8 @@
       "WebFetch(domain:store.steampowered.com)",
       "Skill(frontend-design)",
       "Bash(wc:*)",
-      "Bash(bun run build)"
+      "Bash(bun run build)",
+      "Bash(cat:*)"
     ]
   }
 }
