@@ -48,7 +48,7 @@ export function GraphView() {
         maxZoom={4}
       >
         <Background color="#352a4d" gap={24} size={1} />
-        <Controls className="bg-[var(--surface)] border-[var(--border)] fill-[var(--accent-gold-dim)] text-[var(--text-secondary)] rounded-lg overflow-hidden [&>button]:border-[var(--border-subtle)] [&>button]:bg-[var(--surface)] [&>button:hover]:bg-[var(--surface-elevated)]" />
+        <Controls />
       </ReactFlow>
 
       {/* Reset Layout Button */}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Cinzel } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -117,7 +118,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased min-h-screen flex flex-col`}
       >
-        <div className="flex-1">{children}</div>
+        <SiteHeader />
+        <main className="flex-1">{children}</main>
         <footer className="py-4 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)] bg-[var(--background)]">
           <p className="mb-3 max-w-2xl mx-auto px-4">
             A free production planner for{" "}

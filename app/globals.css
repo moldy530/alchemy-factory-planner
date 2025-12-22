@@ -346,3 +346,57 @@ select {
   box-shadow: 0 0 15px rgba(212, 164, 58, 0.2);
   border-color: var(--accent-gold-dim);
 }
+
+/* ═══════════════════════════════════════════════════════════
+   REACT FLOW CONTROLS - Themed Buttons
+   ═══════════════════════════════════════════════════════════ */
+
+.react-flow__controls {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  overflow: hidden !important;
+}
+
+.react-flow__controls-button {
+  background: var(--surface) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--surface-elevated) !important;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: var(--accent-gold) !important;
+}
+
+.react-flow__controls-button svg {
+  fill: var(--accent-gold-dim) !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  transition: fill 0.15s ease !important;
+}
+
+/* Attribution styling */
+.react-flow__attribution {
+  background: var(--surface) !important;
+  color: var(--text-muted) !important;
+  font-size: 9px !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+}
+
+.react-flow__attribution a {
+  color: var(--accent-gold-dim) !important;
+}

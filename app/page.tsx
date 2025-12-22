@@ -1,8 +1,6 @@
 
 "use client";
 
-import { Sparkles } from "lucide-react";
-import { FeedbackButton } from "../components/ui/FeedbackButton";
 import { AlchemyIcon } from "../components/ui/AlchemyIcon";
 import { useEffect, useMemo, useState } from "react";
 import { GraphView } from "../components/GraphView";
@@ -51,10 +49,6 @@ export default function PlannerPage() {
       return () => unsubscribe();
     }
   }, []);
-
-  // Also force manual rehydrate kick if needed? 
-  // onFinishHydration might not fire if already hydrated.
-  // actually hasHydrated() check covers it.
 
   const activeFactory = factories.find((f) => f.id === activeFactoryId);
 
@@ -119,60 +113,15 @@ export default function PlannerPage() {
 
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 flex flex-col gap-4 bg-arcane-pattern">
-      {/* Header & Tabs */}
-      <header className="flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-5 flex-1">
-            {/* Mystical logo container */}
-            <div className="relative">
-              {/* Outer glow ring */}
-              <div className="absolute -inset-2 bg-gradient-to-br from-[var(--accent-gold)]/20 via-[var(--accent-purple)]/10 to-transparent rounded-full blur-md"></div>
-
-              {/* Main icon container */}
-              <div className="relative p-3 bg-gradient-to-br from-[var(--surface-elevated)] to-[var(--surface)] rounded-xl border border-[var(--accent-gold-dim)]/50 glow-gold">
-                {/* Corner accents */}
-                <div className="absolute -top-[1px] -left-[1px] w-3 h-3 border-t-2 border-l-2 border-[var(--accent-gold)] rounded-tl-lg"></div>
-                <div className="absolute -top-[1px] -right-[1px] w-3 h-3 border-t-2 border-r-2 border-[var(--accent-gold)] rounded-tr-lg"></div>
-                <div className="absolute -bottom-[1px] -left-[1px] w-3 h-3 border-b-2 border-l-2 border-[var(--accent-gold)] rounded-bl-lg"></div>
-                <div className="absolute -bottom-[1px] -right-[1px] w-3 h-3 border-b-2 border-r-2 border-[var(--accent-gold)] rounded-br-lg"></div>
-
-                <AlchemyIcon className="w-9 h-9 text-[var(--accent-gold)]" />
-              </div>
-            </div>
-
-            {/* Title section */}
-            <div className="relative">
-              {/* Decorative line above title */}
-              <div className="absolute -top-2 left-0 right-0 h-[1px] bg-gradient-to-r from-[var(--accent-gold-dim)] via-[var(--accent-gold)]/50 to-transparent"></div>
-
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-cinzel)] text-gradient-gold tracking-wide">
-                  Alchemy Factory Tools
-                </h1>
-                <Sparkles className="w-4 h-4 text-[var(--accent-purple)] opacity-60 hidden md:block" />
-              </div>
-
-              <div className="flex items-center gap-3 mt-1">
-                <div className="w-8 h-[1px] bg-gradient-to-r from-[var(--accent-gold-dim)] to-transparent"></div>
-                <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--text-muted)]">
-                  Production Calculator & Optimizer
-                </p>
-                <div className="w-8 h-[1px] bg-gradient-to-l from-[var(--accent-gold-dim)] to-transparent hidden sm:block"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Feedback Button */}
-          <FeedbackButton />
-        </div>
-
+    <div className="bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 pt-0 lg:pt-0 flex flex-col gap-4 bg-arcane-pattern">
+      {/* Calculator Controls */}
+      <div className="flex flex-col gap-4">
         {/* Global Research Panel */}
         <GlobalResearchPanel />
 
         {/* Tab Bar */}
         <FactoryTabs />
-      </header>
+      </div>
 
       {/* Dashboard Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
