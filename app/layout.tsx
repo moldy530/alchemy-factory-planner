@@ -20,9 +20,59 @@ const cinzel = Cinzel({
   weight: ["400", "700"],
 });
 
+const siteUrl = "https://alchemyfactorytools.com";
+const siteName = "Alchemy Factory Tools";
+const siteDescription =
+  "Free production planner and calculator for Alchemy Factory. Plan crafting chains, optimize factory layouts, and calculate resource requirements for the Steam factory-building game.";
+
 export const metadata: Metadata = {
-  title: "Alchemy Factory Tools",
-  description: "Production planner and calculator for Alchemy Factory game",
+  title: {
+    default: "Alchemy Factory Tools - Production Planner & Calculator",
+    template: "%s | Alchemy Factory Tools",
+  },
+  description: siteDescription,
+  keywords: [
+    "alchemy factory",
+    "alchemy factory calculator",
+    "alchemy factory planner",
+    "alchemy factory production planner",
+    "alchemy factory crafting",
+    "alchemy factory recipes",
+    "alchemy factory guide",
+    "factory builder game",
+    "production calculator",
+    "crafting calculator",
+  ],
+  authors: [{ name: "moldy530", url: "https://github.com/moldy530" }],
+  creator: "moldy530",
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: siteName,
+    title: "Alchemy Factory Tools - Production Planner & Calculator",
+    description: siteDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Alchemy Factory Tools - Production Planner & Calculator",
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -30,13 +80,57 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Alchemy Factory Tools",
+    description: siteDescription,
+    url: siteUrl,
+    applicationCategory: "GameApplication",
+    operatingSystem: "Web Browser",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    author: {
+      "@type": "Person",
+      name: "moldy530",
+      url: "https://github.com/moldy530",
+    },
+    about: {
+      "@type": "VideoGame",
+      name: "Alchemy Factory",
+      gamePlatform: "Steam",
+      genre: "Factory Builder",
+    },
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased min-h-screen flex flex-col`}
       >
         <div className="flex-1">{children}</div>
         <footer className="py-4 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)] bg-[var(--background)]">
+          <p className="mb-3 max-w-2xl mx-auto px-4">
+            A free production planner for{" "}
+            <a
+              href="https://store.steampowered.com/app/2708770/Alchemy_Factory/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--accent-gold)] hover:underline"
+            >
+              Alchemy Factory
+            </a>
+            . Plan crafting chains, calculate resource requirements, and optimize your factory layouts.
+          </p>
           <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <a
               href="https://discord.gg/cA5pNcUW88"
