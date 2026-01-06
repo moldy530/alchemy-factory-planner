@@ -77,6 +77,7 @@ interface FactoryStore {
 
     // Configuration Updates
     setResearch: (field: keyof ResearchState, value: number) => void;
+    setResearchBulk: (updates: Partial<ResearchState>) => void;
     resetResearch: () => void;
 
     updateFactoryConfig: (id: string, updates: Partial<PlannerConfig>) => void;
@@ -162,6 +163,13 @@ export const useFactoryStore = create<FactoryStore>()(
                     research: { ...state.research, [field]: value },
                 }));
                 // Trigger recalc immediately?
+                get().calculateAndLayout();
+            },
+
+            setResearchBulk: (updates) => {
+                set((state) => ({
+                    research: { ...state.research, ...updates },
+                }));
                 get().calculateAndLayout();
             },
 
