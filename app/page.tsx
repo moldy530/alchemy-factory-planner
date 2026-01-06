@@ -2,7 +2,7 @@
 "use client";
 
 import { AlchemyIcon } from "@/components/icons/AlchemyIcon";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { GraphView } from "../components/GraphView";
 import {
   FactorySettingsPanel,
@@ -13,10 +13,10 @@ import { FactoryTabs } from "../components/dashboard/FactoryTabs";
 import { GlobalResearchPanel } from "../components/dashboard/GlobalResearchPanel";
 import { IOSummaryPanel } from "../components/dashboard/IOSummaryPanel";
 import { NodeView } from "../components/dashboard/NodeView";
-import { ProductionNode } from "../engine/types";
+import { ProductionNode, Item } from "../engine/types";
 import { useFactoryStore } from "../store/useFactoryStore";
 import itemsData from "../data/items.json";
-import { Item } from "../engine/types";
+import { SetupgradesHandler } from "../components/SetupgradesHandler";
 
 // Types
 const items = itemsData as unknown as Item[];
@@ -124,6 +124,11 @@ export default function PlannerPage() {
 
   return (
     <div className="bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 pt-0 lg:pt-0 flex flex-col gap-4 bg-arcane-pattern">
+      {/* Query parameter handler */}
+      <Suspense fallback={null}>
+        <SetupgradesHandler />
+      </Suspense>
+
       {/* Calculator Controls */}
       <div className="flex flex-col gap-4">
         {/* Global Research Panel */}
