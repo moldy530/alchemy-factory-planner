@@ -2,6 +2,28 @@ import { Coins, Flame, Leaf, Settings, Truck, Zap } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useFactoryStore } from "../../store/useFactoryStore";
 import { OrnatePanel } from "../ui/OrnatePanel";
+import {
+    calculateAlchemyBonus,
+    calculateThrowingBonus,
+    calculateSalesBonus,
+    calculateCustomerMgmtBonus,
+} from "../../engine/lp-planner/efficiency";
+
+// Helper functions to calculate bonuses based on skill level
+function calculateBeltSpeed(level: number): number {
+    const cappedLevel = Math.min(92, level);
+    return cappedLevel <= 12
+        ? 60 + cappedLevel * 15
+        : 60 + (12 * 15) + ((cappedLevel - 12) * 3);
+}
+
+function calculateProductionSpeed(level: number): number {
+    const cappedLevel = Math.min(92, level);
+    const multiplier = cappedLevel <= 12
+        ? 1 + cappedLevel * 0.25
+        : 1 + (12 * 0.25) + ((cappedLevel - 12) * 0.05);
+    return Math.round(multiplier * 100);
+}
 
 export function GlobalResearchPanel() {
     const { research, setResearch, resetResearch } = useFactoryStore();
@@ -36,7 +58,8 @@ export function GlobalResearchPanel() {
                     value={research.logisticsEfficiency}
                     onChange={(v: number) => setResearch("logisticsEfficiency", v)}
                     color="text-cyan-400"
-                    description={`Belt Speed ${60 + research.logisticsEfficiency * 15}/min`}
+                    description={`Belt Speed ${calculateBeltSpeed(research.logisticsEfficiency)}/min`}
+                    maxLevel={92}
                 />
                 <ResearchControl
                     label="Throwing"
@@ -44,7 +67,7 @@ export function GlobalResearchPanel() {
                     value={research.throwingEfficiency}
                     onChange={(v: number) => setResearch("throwingEfficiency", v)}
                     color="text-sky-400"
-                    description={`Catapult Rate ${100 + research.throwingEfficiency * 25}%`}
+                    description={`Catapult Rate ${Math.round((1 + calculateThrowingBonus(research.throwingEfficiency)) * 100)}%`}
                 />
                 <ResearchControl
                     label="Factory Eff"
@@ -52,7 +75,8 @@ export function GlobalResearchPanel() {
                     value={research.factoryEfficiency}
                     onChange={(v: number) => setResearch("factoryEfficiency", v)}
                     color="text-[var(--accent-gold)]"
-                    description={`Prod Speed ${100 + research.factoryEfficiency * 25}%`}
+                    description={`Prod Speed ${calculateProductionSpeed(research.factoryEfficiency)}%`}
+                    maxLevel={92}
                 />
                 <ResearchControl
                     label="Alchemy"
@@ -60,7 +84,7 @@ export function GlobalResearchPanel() {
                     value={research.alchemySkill}
                     onChange={(v: number) => setResearch("alchemySkill", v)}
                     color="text-violet-400"
-                    description={`Extractor Output +${100 + research.alchemySkill * 6}%`}
+                    description={`Extractor Output ${Math.round((1 + calculateAlchemyBonus(research.alchemySkill)) * 100)}%`}
                 />
                 <ResearchControl
                     label="Fuel Eff"
@@ -84,7 +108,7 @@ export function GlobalResearchPanel() {
                     value={research.salesAbility}
                     onChange={(v: number) => setResearch("salesAbility", v)}
                     color="text-[var(--accent-gold-bright)]"
-                    description={`Shop Profit ${100 + research.salesAbility * 3}%`}
+                    description={`Shop Profit ${Math.round((1 + calculateSalesBonus(research.salesAbility)) * 100)}%`}
                 />
                 <ResearchControl
                     label="Negotiation"
@@ -100,7 +124,7 @@ export function GlobalResearchPanel() {
                     value={research.customerMgmt}
                     onChange={(v: number) => setResearch("customerMgmt", v)}
                     color="text-rose-400"
-                    description={`Quest Rewards ${100 + research.customerMgmt * 6}%`}
+                    description={`Quest Rewards ${Math.round((1 + calculateCustomerMgmtBonus(research.customerMgmt)) * 100)}%`}
                 />
                 <ResearchControl
                     label="Relic"
@@ -122,6 +146,7 @@ function ResearchControl({
     icon,
     color,
     description,
+    maxLevel,
 }: {
     label: string;
     value: number;
@@ -129,9 +154,34 @@ function ResearchControl({
     icon: React.ReactNode;
     color: string;
     description: string;
+    maxLevel?: number;
 }) {
     const decrement = () => onChange(Math.max(0, value - 1));
-    const increment = () => onChange(Math.min(20, value + 1));
+    const increment = () => {
+        if (maxLevel !== undefined) {
+            onChange(Math.min(maxLevel, value + 1));
+        } else {
+            onChange(value + 1);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseInt(e.target.value);
+        if (!isNaN(newValue) && newValue >= 0) {
+            if (maxLevel !== undefined) {
+                onChange(Math.min(maxLevel, newValue));
+            } else {
+                onChange(newValue);
+            }
+        }
+    };
+
+    const handleInputBlur = () => {
+        // Ensure value is at least 0
+        if (value < 0 || isNaN(value)) {
+            onChange(0);
+        }
+    };
 
     return (
         <div className="flex-1 bg-[var(--background-deep)]/60 p-2.5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--border)] transition-colors group/slider relative">
@@ -156,13 +206,28 @@ function ResearchControl({
                         <path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
-                <div className="flex items-center justify-center min-w-[2.5rem]">
-                    <span className={cn("font-mono font-bold text-lg tabular-nums", color)}>{value}</span>
-                    <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/20</span>
+                <div className="flex items-center justify-center min-w-[3.5rem]">
+                    <input
+                        type="number"
+                        value={value}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        min="0"
+                        max={maxLevel}
+                        className={cn(
+                            "w-12 bg-transparent border-none text-center font-mono font-bold text-lg tabular-nums outline-none appearance-none",
+                            color,
+                            "[&::-webkit-inner-spin-button]:appearance-none",
+                            "[&::-webkit-outer-spin-button]:appearance-none"
+                        )}
+                    />
+                    {maxLevel !== undefined && (
+                        <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/{maxLevel}</span>
+                    )}
                 </div>
                 <button
                     onClick={increment}
-                    disabled={value >= 20}
+                    disabled={maxLevel !== undefined && value >= maxLevel}
                     className="group/btn relative w-7 h-7 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                 >
                     <div className="absolute inset-0 rotate-45 border border-[var(--accent-gold-dim)]/60 bg-[var(--surface)]/60 group-hover/btn:border-[var(--accent-gold)] group-hover/btn:bg-[var(--accent-gold)]/10 transition-all scale-[0.7]" />
