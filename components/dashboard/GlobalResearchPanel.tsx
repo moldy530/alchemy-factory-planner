@@ -146,7 +146,7 @@ function ResearchControl({
     icon,
     color,
     description,
-    maxLevel = 20,
+    maxLevel,
 }: {
     label: string;
     value: number;
@@ -157,7 +157,31 @@ function ResearchControl({
     maxLevel?: number;
 }) {
     const decrement = () => onChange(Math.max(0, value - 1));
-    const increment = () => onChange(Math.min(maxLevel, value + 1));
+    const increment = () => {
+        if (maxLevel !== undefined) {
+            onChange(Math.min(maxLevel, value + 1));
+        } else {
+            onChange(value + 1);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseInt(e.target.value);
+        if (!isNaN(newValue) && newValue >= 0) {
+            if (maxLevel !== undefined) {
+                onChange(Math.min(maxLevel, newValue));
+            } else {
+                onChange(newValue);
+            }
+        }
+    };
+
+    const handleInputBlur = () => {
+        // Ensure value is at least 0
+        if (value < 0 || isNaN(value)) {
+            onChange(0);
+        }
+    };
 
     return (
         <div className="flex-1 bg-[var(--background-deep)]/60 p-2.5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--border)] transition-colors group/slider relative">
@@ -182,13 +206,28 @@ function ResearchControl({
                         <path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </button>
-                <div className="flex items-center justify-center min-w-[2.5rem]">
-                    <span className={cn("font-mono font-bold text-lg tabular-nums", color)}>{value}</span>
-                    <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/{maxLevel}</span>
+                <div className="flex items-center justify-center min-w-[3.5rem]">
+                    <input
+                        type="number"
+                        value={value}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        min="0"
+                        max={maxLevel}
+                        className={cn(
+                            "w-12 bg-transparent border-none text-center font-mono font-bold text-lg tabular-nums outline-none appearance-none",
+                            color,
+                            "[&::-webkit-inner-spin-button]:appearance-none",
+                            "[&::-webkit-outer-spin-button]:appearance-none"
+                        )}
+                    />
+                    {maxLevel !== undefined && (
+                        <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/{maxLevel}</span>
+                    )}
                 </div>
                 <button
                     onClick={increment}
-                    disabled={value >= maxLevel}
+                    disabled={maxLevel !== undefined && value >= maxLevel}
                     className="group/btn relative w-7 h-7 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                 >
                     <div className="absolute inset-0 rotate-45 border border-[var(--accent-gold-dim)]/60 bg-[var(--surface)]/60 group-hover/btn:border-[var(--accent-gold)] group-hover/btn:bg-[var(--accent-gold)]/10 transition-all scale-[0.7]" />
