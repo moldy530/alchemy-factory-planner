@@ -166,7 +166,14 @@ function ResearchControl({
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = parseInt(e.target.value);
+        const inputValue = e.target.value;
+
+        // Allow empty string (user is clearing the field)
+        if (inputValue === '') {
+            return;
+        }
+
+        const newValue = parseInt(inputValue);
         if (!isNaN(newValue) && newValue >= 0) {
             if (maxLevel !== undefined) {
                 onChange(Math.min(maxLevel, newValue));
@@ -176,10 +183,21 @@ function ResearchControl({
         }
     };
 
-    const handleInputBlur = () => {
-        // Ensure value is at least 0
-        if (value < 0 || isNaN(value)) {
+    const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+
+        // If empty or invalid, reset to 0
+        if (inputValue === '' || isNaN(parseInt(inputValue))) {
             onChange(0);
+            return;
+        }
+
+        // Ensure value is at least 0
+        const numValue = parseInt(inputValue);
+        if (numValue < 0) {
+            onChange(0);
+        } else if (maxLevel !== undefined && numValue > maxLevel) {
+            onChange(maxLevel);
         }
     };
 
