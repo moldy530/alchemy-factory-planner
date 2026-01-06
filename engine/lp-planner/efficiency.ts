@@ -6,8 +6,11 @@ import { EfficiencyContext, ALCHEMY_MACHINES } from "./types";
  * Extracts all multipliers that affect production rates.
  */
 export function buildEfficiencyContext(config: PlannerConfig): EfficiencyContext {
-  // Factory Efficiency: +25% per level (Linear)
-  const speedMultiplier = 1 + config.factoryEfficiency * 0.25;
+  // Factory Efficiency: +25% per level up to 12, then +5% per level (capped at 92)
+  const factoryLevel = Math.min(92, config.factoryEfficiency);
+  const speedMultiplier = factoryLevel <= 12
+    ? 1 + factoryLevel * 0.25
+    : 1 + (12 * 0.25) + ((factoryLevel - 12) * 0.05);
 
   // Alchemy Skill: +6% per level (Base 100% + 6% per level)
   const alchemyMultiplier = 1 + config.alchemySkill * 0.06;
@@ -18,8 +21,11 @@ export function buildEfficiencyContext(config: PlannerConfig): EfficiencyContext
   // Fertilizer Efficiency: +10% per level
   const fertilizerMultiplier = 1 + config.fertilizerEfficiency * 0.1;
 
-  // Logistics: determines belt limit
-  const beltLimit = 60 + config.logisticsEfficiency * 15;
+  // Logistics: +15/min per level up to 12, then +3/min per level (capped at 92)
+  const logisticsLevel = Math.min(92, config.logisticsEfficiency);
+  const beltLimit = logisticsLevel <= 12
+    ? 60 + logisticsLevel * 15
+    : 60 + (12 * 15) + ((logisticsLevel - 12) * 3);
 
   return {
     speedMultiplier,

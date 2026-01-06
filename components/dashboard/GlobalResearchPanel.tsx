@@ -3,6 +3,22 @@ import { cn } from "../../lib/utils";
 import { useFactoryStore } from "../../store/useFactoryStore";
 import { OrnatePanel } from "../ui/OrnatePanel";
 
+// Helper functions to calculate bonuses based on skill level
+function calculateBeltSpeed(level: number): number {
+    const cappedLevel = Math.min(92, level);
+    return cappedLevel <= 12
+        ? 60 + cappedLevel * 15
+        : 60 + (12 * 15) + ((cappedLevel - 12) * 3);
+}
+
+function calculateProductionSpeed(level: number): number {
+    const cappedLevel = Math.min(92, level);
+    const multiplier = cappedLevel <= 12
+        ? 1 + cappedLevel * 0.25
+        : 1 + (12 * 0.25) + ((cappedLevel - 12) * 0.05);
+    return Math.round(multiplier * 100);
+}
+
 export function GlobalResearchPanel() {
     const { research, setResearch, resetResearch } = useFactoryStore();
 
@@ -36,7 +52,8 @@ export function GlobalResearchPanel() {
                     value={research.logisticsEfficiency}
                     onChange={(v: number) => setResearch("logisticsEfficiency", v)}
                     color="text-cyan-400"
-                    description={`Belt Speed ${60 + research.logisticsEfficiency * 15}/min`}
+                    description={`Belt Speed ${calculateBeltSpeed(research.logisticsEfficiency)}/min`}
+                    maxLevel={92}
                 />
                 <ResearchControl
                     label="Throwing"
@@ -52,7 +69,8 @@ export function GlobalResearchPanel() {
                     value={research.factoryEfficiency}
                     onChange={(v: number) => setResearch("factoryEfficiency", v)}
                     color="text-[var(--accent-gold)]"
-                    description={`Prod Speed ${100 + research.factoryEfficiency * 25}%`}
+                    description={`Prod Speed ${calculateProductionSpeed(research.factoryEfficiency)}%`}
+                    maxLevel={92}
                 />
                 <ResearchControl
                     label="Alchemy"
@@ -122,6 +140,7 @@ function ResearchControl({
     icon,
     color,
     description,
+    maxLevel = 20,
 }: {
     label: string;
     value: number;
@@ -129,9 +148,10 @@ function ResearchControl({
     icon: React.ReactNode;
     color: string;
     description: string;
+    maxLevel?: number;
 }) {
     const decrement = () => onChange(Math.max(0, value - 1));
-    const increment = () => onChange(Math.min(20, value + 1));
+    const increment = () => onChange(Math.min(maxLevel, value + 1));
 
     return (
         <div className="flex-1 bg-[var(--background-deep)]/60 p-2.5 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--border)] transition-colors group/slider relative">
@@ -158,11 +178,11 @@ function ResearchControl({
                 </button>
                 <div className="flex items-center justify-center min-w-[2.5rem]">
                     <span className={cn("font-mono font-bold text-lg tabular-nums", color)}>{value}</span>
-                    <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/20</span>
+                    <span className="text-[var(--text-muted)] text-[9px] ml-0.5">/{maxLevel}</span>
                 </div>
                 <button
                     onClick={increment}
-                    disabled={value >= 20}
+                    disabled={value >= maxLevel}
                     className="group/btn relative w-7 h-7 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
                 >
                     <div className="absolute inset-0 rotate-45 border border-[var(--accent-gold-dim)]/60 bg-[var(--surface)]/60 group-hover/btn:border-[var(--accent-gold)] group-hover/btn:bg-[var(--accent-gold)]/10 transition-all scale-[0.7]" />
