@@ -2,8 +2,7 @@
 "use client";
 
 import { AlchemyIcon } from "@/components/icons/AlchemyIcon";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { GraphView } from "../components/GraphView";
 import {
   FactorySettingsPanel,
@@ -14,9 +13,10 @@ import { FactoryTabs } from "../components/dashboard/FactoryTabs";
 import { GlobalResearchPanel } from "../components/dashboard/GlobalResearchPanel";
 import { IOSummaryPanel } from "../components/dashboard/IOSummaryPanel";
 import { NodeView } from "../components/dashboard/NodeView";
-import { ProductionNode, ResearchState, Item } from "../engine/types";
+import { ProductionNode, Item } from "../engine/types";
 import { useFactoryStore } from "../store/useFactoryStore";
 import itemsData from "../data/items.json";
+import { SetupgradesHandler } from "../components/SetupgradesHandler";
 
 // Types
 const items = itemsData as unknown as Item[];
@@ -35,11 +35,9 @@ export default function PlannerPage() {
     factories,
     activeFactoryId,
     addFactory,
-    setResearchBulk,
   } = useFactoryStore();
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const searchParams = useSearchParams();
 
   // Hydration handling
   useEffect(() => {
@@ -60,46 +58,6 @@ export default function PlannerPage() {
       addFactory();
     }
   }, [isLoaded, factories.length, addFactory]);
-
-  // Parse setupgrades query parameter
-  useEffect(() => {
-    if (!isLoaded) return;
-
-    const setupgradesParam = searchParams.get("setupgrades");
-    if (!setupgradesParam) return;
-
-    // Parse comma-separated list of skill levels
-    const values = setupgradesParam.split(",").map((v) => parseInt(v.trim(), 10));
-
-    // Only apply if all 10 values are provided and valid
-    if (values.length !== 10 || values.some(isNaN)) {
-      console.warn("setupgrades parameter must contain exactly 10 comma-separated numbers");
-      return;
-    }
-
-    // Map array indices to skill names
-    const skillNames: Array<keyof ResearchState> = [
-      "logisticsEfficiency",     // [0]
-      "throwingEfficiency",      // [1]
-      "factoryEfficiency",       // [2]
-      "alchemySkill",            // [3]
-      "fuelEfficiency",          // [4]
-      "fertilizerEfficiency",    // [5]
-      "salesAbility",            // [6]
-      "negotiationSkill",        // [7]
-      "customerMgmt",            // [8]
-      "relicKnowledge",          // [9]
-    ];
-
-    // Build updates object
-    const updates: Partial<ResearchState> = {};
-    skillNames.forEach((skillName, index) => {
-      updates[skillName] = values[index];
-    });
-
-    // Apply all skill updates at once
-    setResearchBulk(updates);
-  }, [isLoaded, searchParams, setResearchBulk]);
 
   // Derived Stats
   const productionTrees = useMemo(() => activeFactory?.productionTrees || [], [activeFactory?.productionTrees]);
@@ -166,6 +124,11 @@ export default function PlannerPage() {
 
   return (
     <div className="bg-[var(--background)] text-[var(--text-primary)] font-sans p-2 lg:p-8 pt-0 lg:pt-0 flex flex-col gap-4 bg-arcane-pattern">
+      {/* Query parameter handler */}
+      <Suspense fallback={null}>
+        <SetupgradesHandler />
+      </Suspense>
+
       {/* Calculator Controls */}
       <div className="flex flex-col gap-4">
         {/* Global Research Panel */}
