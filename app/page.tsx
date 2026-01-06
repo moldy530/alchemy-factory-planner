@@ -14,10 +14,9 @@ import { FactoryTabs } from "../components/dashboard/FactoryTabs";
 import { GlobalResearchPanel } from "../components/dashboard/GlobalResearchPanel";
 import { IOSummaryPanel } from "../components/dashboard/IOSummaryPanel";
 import { NodeView } from "../components/dashboard/NodeView";
-import { ProductionNode } from "../engine/types";
+import { ProductionNode, ResearchState, Item } from "../engine/types";
 import { useFactoryStore } from "../store/useFactoryStore";
 import itemsData from "../data/items.json";
-import { Item } from "../engine/types";
 
 // Types
 const items = itemsData as unknown as Item[];
@@ -79,7 +78,7 @@ export default function PlannerPage() {
     }
 
     // Map array indices to skill names
-    const skillNames: Array<keyof import("../engine/types").ResearchState> = [
+    const skillNames: Array<keyof ResearchState> = [
       "logisticsEfficiency",     // [0]
       "throwingEfficiency",      // [1]
       "factoryEfficiency",       // [2]
@@ -93,7 +92,7 @@ export default function PlannerPage() {
     ];
 
     // Build updates object
-    const updates: Partial<import("../engine/types").ResearchState> = {};
+    const updates: Partial<ResearchState> = {};
     skillNames.forEach((skillName, index) => {
       updates[skillName] = values[index];
     });
