@@ -4,7 +4,8 @@ import {
   ReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Maximize, Minimize } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 import { CustomNode } from "./graph/CustomNode";
 
 const nodeTypes = {
@@ -24,6 +25,34 @@ export function GraphView() {
   } = useFactoryStore();
 
   const activeFactory = factories.find((f) => f.id === activeFactoryId);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Listen for fullscreen changes (user can exit via ESC key)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  const toggleFullscreen = async () => {
+    if (!containerRef.current) return;
+
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error("Error toggling fullscreen:", err);
+    }
+  };
 
   // If no factory is active, we probably shouldn't render, but let's handle it gracefully or rely on parent
   if (!activeFactory) return null;
@@ -31,7 +60,7 @@ export function GraphView() {
   const { nodes, edges, viewport: defaultViewport } = activeFactory;
 
   return (
-    <div className="absolute inset-0 bg-[var(--background-deep)]/80">
+    <div ref={containerRef} className="absolute inset-0 bg-[var(--background-deep)]/80">
       {/* Subtle arcane pattern overlay */}
       <div className="absolute inset-0 bg-arcane-pattern opacity-20 pointer-events-none"></div>
 
@@ -51,8 +80,25 @@ export function GraphView() {
         <Controls />
       </ReactFlow>
 
-      {/* Reset Layout Button */}
+      {/* Top-right Controls */}
       <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <button
+          onClick={toggleFullscreen}
+          className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-lg border border-[var(--border)] hover:border-[var(--accent-purple-dim)] shadow-lg text-xs font-bold transition-all hover:glow-purple-subtle"
+          title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+        >
+          {isFullscreen ? (
+            <>
+              <Minimize size={14} className="text-[var(--accent-purple)]" />
+              Exit Fullscreen
+            </>
+          ) : (
+            <>
+              <Maximize size={14} className="text-[var(--accent-purple)]" />
+              Fullscreen
+            </>
+          )}
+        </button>
         <button
           onClick={() => resetFactoryLayout(activeFactoryId!)}
           className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-lg border border-[var(--border)] hover:border-[var(--accent-gold-dim)] shadow-lg text-xs font-bold transition-all hover:glow-gold-subtle"
