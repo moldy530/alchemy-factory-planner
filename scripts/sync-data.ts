@@ -226,6 +226,17 @@ function transformItems(
         }
       }
 
+      // Default category for items without any specific category
+      if (categories.length === 0) {
+        // If it has a recipe output, it's a crafted item
+        if (recipe) {
+          categories.push('crafted');
+        } else {
+          // Otherwise it's miscellaneous
+          categories.push('misc');
+        }
+      }
+
       // Set category (single if only one, array if multiple)
       if (categories.length === 1) {
         transformed.category = categories[0];

@@ -2,6 +2,7 @@
   {
     "id": "adamant",
     "name": "Adamant",
+    "category": "misc",
     "cost": 32000,
     "base_cost": 32768,
     "cauldron_cost": 30768,
@@ -25,6 +26,7 @@
   {
     "id": "aqua-vitae",
     "name": "Aqua Vitae",
+    "category": "misc",
     "cost": 459,
     "base_cost": 459.3,
     "cauldron_cost": 459.3,
@@ -35,6 +37,7 @@
   {
     "id": "automatic-cashier",
     "name": "Automatic Cashier",
+    "category": "misc",
     "cost": 3000,
     "base_cost": 3000,
     "cauldron_cost": 1400,
@@ -45,6 +48,7 @@
   {
     "id": "bandage",
     "name": "Bandage",
+    "category": "crafted",
     "cost": 350,
     "base_cost": 120,
     "cauldron_cost": 120,
@@ -92,6 +96,7 @@
   {
     "id": "brandy",
     "name": "Brandy",
+    "category": "crafted",
     "cost": 7,
     "base_cost": 7.425,
     "cauldron_cost": 7.425,
@@ -113,6 +118,7 @@
   {
     "id": "brine",
     "name": "Brine",
+    "category": "misc",
     "cost": 5,
     "base_cost": 3.25,
     "cauldron_cost": 3.25,
@@ -123,6 +129,7 @@
   {
     "id": "broken-shard",
     "name": "Broken Shard",
+    "category": "misc",
     "cost": 1024,
     "base_cost": 1024,
     "cauldron_cost": 824,
@@ -133,6 +140,7 @@
   {
     "id": "bronze-ingot",
     "name": "Bronze Ingot",
+    "category": "misc",
     "cost": 313,
     "base_cost": 153,
     "cauldron_cost": 155,
@@ -143,6 +151,7 @@
   {
     "id": "bronze-rivet",
     "name": "Bronze Rivet",
+    "category": "misc",
     "cost": 120,
     "base_cost": 51,
     "cauldron_cost": 51,
@@ -165,6 +174,7 @@
   {
     "id": "chamomile-powder",
     "name": "Chamomile Powder",
+    "category": "misc",
     "cost": 60,
     "base_cost": 60,
     "cauldron_cost": 57,
@@ -213,6 +223,7 @@
   {
     "id": "clay",
     "name": "Clay",
+    "category": "crafted",
     "cost": 20,
     "base_cost": 20,
     "cauldron_cost": 21,
@@ -223,6 +234,7 @@
   {
     "id": "clay-powder",
     "name": "Clay Powder",
+    "category": "misc",
     "cost": 20,
     "base_cost": 20,
     "cauldron_cost": 22,
@@ -290,6 +302,7 @@
   {
     "id": "copper-bearing",
     "name": "Copper Bearing",
+    "category": "misc",
     "cost": 300,
     "base_cost": 146.5,
     "cauldron_cost": 136.5,
@@ -300,6 +313,7 @@
   {
     "id": "copper-coin",
     "name": "Copper Coin",
+    "category": "misc",
     "cost": 2,
     "base_cost": 0.97666666666667,
     "cauldron_cost": 0.67666666666667,
@@ -310,6 +324,7 @@
   {
     "id": "copper-ingot",
     "name": "Copper Ingot",
+    "category": "misc",
     "cost": 613,
     "base_cost": 293,
     "cauldron_cost": 300,
@@ -320,6 +335,7 @@
   {
     "id": "copper-powder",
     "name": "Copper Powder",
+    "category": "misc",
     "cost": 610,
     "base_cost": 290,
     "cauldron_cost": 290,
@@ -330,6 +346,7 @@
   {
     "id": "crown",
     "name": "Crown",
+    "category": "crafted",
     "cost": 1600000,
     "base_cost": 854167.8,
     "cauldron_cost": 854167.8,
@@ -340,6 +357,7 @@
   {
     "id": "crude-crystal",
     "name": "Crude Crystal",
+    "category": "misc",
     "cost": 8000,
     "base_cost": 8192,
     "cauldron_cost": 6692,
@@ -350,6 +368,7 @@
   {
     "id": "crude-gold-dust",
     "name": "Crude Gold Dust",
+    "category": "misc",
     "cost": 13000,
     "base_cost": 10805.325,
     "cauldron_cost": 10805.325,
@@ -360,6 +379,7 @@
   {
     "id": "crude-shard",
     "name": "Crude Shard",
+    "category": "misc",
     "cost": 512,
     "base_cost": 512,
     "cauldron_cost": 272,
@@ -370,6 +390,7 @@
   {
     "id": "crude-silver-powder",
     "name": "Crude Silver Powder",
+    "category": "misc",
     "cost": 1998,
     "base_cost": 1273.5,
     "cauldron_cost": 1273.5,
@@ -380,6 +401,7 @@
   {
     "id": "diamond",
     "name": "Diamond",
+    "category": "misc",
     "cost": 100000,
     "base_cost": 65536,
     "cauldron_cost": 65536,
@@ -390,6 +412,7 @@
   {
     "id": "dull-shard",
     "name": "Dull Shard",
+    "category": "misc",
     "cost": 2048,
     "base_cost": 2048,
     "cauldron_cost": 1548,
@@ -400,6 +423,7 @@
   {
     "id": "emerald",
     "name": "Emerald",
+    "category": "crafted",
     "cost": 700000,
     "base_cost": 600000,
     "cauldron_cost": 600000,
@@ -410,6 +434,7 @@
   {
     "id": "eternal-catalyst",
     "name": "Eternal Catalyst",
+    "category": "misc",
     "cost": 1100000,
     "base_cost": 1193041.6,
     "cauldron_cost": 1193041.6,
@@ -420,6 +445,7 @@
   {
     "id": "fairy-dust",
     "name": "Fairy Dust",
+    "category": "misc",
     "cost": 3060,
     "base_cost": 3060,
     "cauldron_cost": 3060,
@@ -430,6 +456,7 @@
   {
     "id": "fairy-tear",
     "name": "Fairy Tear",
+    "category": "misc",
     "cost": 3060,
     "base_cost": 3060,
     "cauldron_cost": 3060,
@@ -465,6 +492,7 @@
   {
     "id": "flax-fiber",
     "name": "Flax Fiber",
+    "category": "misc",
     "cost": 2,
     "base_cost": 2,
     "cauldron_cost": 2.5,
@@ -486,6 +514,7 @@
   {
     "id": "fruit-wine",
     "name": "Fruit Wine",
+    "category": "misc",
     "cost": 1,
     "base_cost": 1.2,
     "cauldron_cost": 1.2,
@@ -519,6 +548,7 @@
   {
     "id": "gentian-nectar",
     "name": "Gentian Nectar",
+    "category": "misc",
     "cost": 500,
     "base_cost": 500,
     "cauldron_cost": 420,
@@ -529,6 +559,7 @@
   {
     "id": "gentian-powder",
     "name": "Gentian Powder",
+    "category": "misc",
     "cost": 500,
     "base_cost": 500,
     "cauldron_cost": 430,
@@ -561,6 +592,7 @@
   {
     "id": "gloom-fungus",
     "name": "Gloom Fungus",
+    "category": "misc",
     "cost": 46,
     "base_cost": 46,
     "cauldron_cost": 26,
@@ -571,6 +603,7 @@
   {
     "id": "gloom-spores",
     "name": "Gloom Spores",
+    "category": "misc",
     "cost": 260,
     "base_cost": 180,
     "cauldron_cost": 220,
@@ -581,6 +614,7 @@
   {
     "id": "gold-coin",
     "name": "Gold Coin",
+    "category": "misc",
     "cost": 106000,
     "base_cost": 84722.6,
     "cauldron_cost": 89722.6,
@@ -591,6 +625,7 @@
   {
     "id": "gold-dust",
     "name": "Gold Dust",
+    "category": "misc",
     "cost": 53000,
     "base_cost": 42357.3,
     "cauldron_cost": 42357.3,
@@ -601,6 +636,7 @@
   {
     "id": "gold-ingot",
     "name": "Gold Ingot",
+    "category": "misc",
     "cost": 106000,
     "base_cost": 84722.6,
     "cauldron_cost": 87222.6,
@@ -624,6 +660,7 @@
   {
     "id": "healing-potion",
     "name": "Healing Potion",
+    "category": "misc",
     "cost": 85,
     "base_cost": 30,
     "cauldron_cost": 30,
@@ -634,6 +671,7 @@
   {
     "id": "impure-copper-powder",
     "name": "Impure Copper Powder",
+    "category": "misc",
     "cost": 310,
     "base_cost": 150,
     "cauldron_cost": 150,
@@ -644,6 +682,7 @@
   {
     "id": "impure-gold-dust",
     "name": "Impure Gold Dust",
+    "category": "misc",
     "cost": 27000,
     "base_cost": 21610.65,
     "cauldron_cost": 21610.65,
@@ -654,6 +693,7 @@
   {
     "id": "impure-silver-powder",
     "name": "Impure Silver Powder",
+    "category": "misc",
     "cost": 3997,
     "base_cost": 2547,
     "cauldron_cost": 2547,
@@ -664,6 +704,7 @@
   {
     "id": "iron-ingot",
     "name": "Iron Ingot",
+    "category": "misc",
     "cost": 15,
     "base_cost": 15,
     "cauldron_cost": 15,
@@ -674,6 +715,7 @@
   {
     "id": "iron-nails",
     "name": "Iron Nails",
+    "category": "misc",
     "cost": 16,
     "base_cost": 5,
     "cauldron_cost": 5,
@@ -695,6 +737,7 @@
   {
     "id": "iron-sand",
     "name": "Iron Sand",
+    "category": "misc",
     "cost": 15,
     "base_cost": 15,
     "cauldron_cost": 15.5,
@@ -705,6 +748,7 @@
   {
     "id": "jupiter",
     "name": "Jupiter",
+    "category": "crafted",
     "cost": 30000,
     "base_cost": 34,
     "cauldron_cost": 34,
@@ -715,6 +759,7 @@
   {
     "id": "lapis-lazuli",
     "name": "Lapis Lazuli",
+    "category": "misc",
     "cost": 32000,
     "base_cost": 15825,
     "cauldron_cost": 15825,
@@ -725,6 +770,7 @@
   {
     "id": "large-wooden-gear",
     "name": "Large Wooden Gear",
+    "category": "misc",
     "cost": 5,
     "base_cost": 1,
     "cauldron_cost": 1.5,
@@ -747,6 +793,7 @@
   {
     "id": "lavender-essential-oil",
     "name": "Lavender Essential Oil",
+    "category": "misc",
     "cost": 37,
     "base_cost": 37.88,
     "cauldron_cost": 37.88,
@@ -790,6 +837,7 @@
   {
     "id": "linen",
     "name": "Linen",
+    "category": "crafted",
     "cost": 165,
     "base_cost": 60,
     "cauldron_cost": 60,
@@ -800,6 +848,7 @@
   {
     "id": "linen-rope",
     "name": "Linen Rope",
+    "category": "misc",
     "cost": 36,
     "base_cost": 12,
     "cauldron_cost": 13,
@@ -810,6 +859,7 @@
   {
     "id": "linen-thread",
     "name": "Linen Thread",
+    "category": "misc",
     "cost": 6,
     "base_cost": 6,
     "cauldron_cost": 9,
@@ -820,6 +870,7 @@
   {
     "id": "linseed-oil",
     "name": "Linseed Oil",
+    "category": "misc",
     "cost": 0,
     "base_cost": 0.04,
     "cauldron_cost": 0.04,
@@ -845,6 +896,7 @@
   {
     "id": "luna",
     "name": "Luna",
+    "category": "crafted",
     "cost": 18500000,
     "base_cost": 187167.6,
     "cauldron_cost": 187167.6,
@@ -855,6 +907,7 @@
   {
     "id": "malachite",
     "name": "Malachite",
+    "category": "crafted",
     "cost": 1020,
     "base_cost": 367,
     "cauldron_cost": 367,
@@ -865,6 +918,7 @@
   {
     "id": "mars",
     "name": "Mars",
+    "category": "crafted",
     "cost": 280000,
     "base_cost": 1678,
     "cauldron_cost": 1678,
@@ -875,6 +929,7 @@
   {
     "id": "mercury",
     "name": "Mercury",
+    "category": "crafted",
     "cost": 5200000,
     "base_cost": 26927.8,
     "cauldron_cost": 26927.8,
@@ -896,6 +951,7 @@
   {
     "id": "moon-tear",
     "name": "Moon Tear",
+    "category": "misc",
     "cost": 178000,
     "base_cost": 97092,
     "cauldron_cost": 97092,
@@ -906,6 +962,7 @@
   {
     "id": "moonlit-soap",
     "name": "Moonlit Soap",
+    "category": "misc",
     "cost": 900000,
     "base_cost": 487892.8,
     "cauldron_cost": 487892.8,
@@ -916,6 +973,7 @@
   {
     "id": "mortar",
     "name": "Mortar",
+    "category": "crafted",
     "cost": 48,
     "base_cost": 20,
     "cauldron_cost": 18,
@@ -926,6 +984,7 @@
   {
     "id": "oblivion-essence",
     "name": "Oblivion Essence",
+    "category": "misc",
     "cost": 600,
     "base_cost": 600,
     "cauldron_cost": 600,
@@ -936,6 +995,7 @@
   {
     "id": "obsidian",
     "name": "Obsidian",
+    "category": "crafted",
     "cost": 11000,
     "base_cost": 5290,
     "cauldron_cost": 5290,
@@ -963,6 +1023,7 @@
   {
     "id": "perfect-diamond",
     "name": "Perfect Diamond",
+    "category": "misc",
     "cost": 201000,
     "base_cost": 131072,
     "cauldron_cost": 131072,
@@ -973,6 +1034,7 @@
   {
     "id": "perfumed-soap",
     "name": "Perfumed Soap",
+    "category": "misc",
     "cost": 2590,
     "base_cost": 1216.4,
     "cauldron_cost": 1216.4,
@@ -983,6 +1045,7 @@
   {
     "id": "perfumed-soap-powder",
     "name": "Perfumed Soap Powder",
+    "category": "misc",
     "cost": 2590,
     "base_cost": 1216.4,
     "cauldron_cost": 1216.4,
@@ -993,6 +1056,7 @@
   {
     "id": "philosopher's-stone",
     "name": "Philosopher's Stone",
+    "category": "misc",
     "cost": 1000000,
     "base_cost": 1000000,
     "cauldron_cost": 1000000,
@@ -1015,6 +1079,7 @@
   {
     "id": "plant-ash",
     "name": "Plant Ash",
+    "category": "misc",
     "cost": 4,
     "base_cost": 4,
     "cauldron_cost": 4,
@@ -1025,6 +1090,7 @@
   {
     "id": "pocket-watch",
     "name": "Pocket Watch",
+    "category": "misc",
     "cost": 1950,
     "base_cost": 789,
     "cauldron_cost": 789,
@@ -1035,6 +1101,7 @@
   {
     "id": "polished-crystal",
     "name": "Polished Crystal",
+    "category": "misc",
     "cost": 16000,
     "base_cost": 16384,
     "cauldron_cost": 14384,
@@ -1056,6 +1123,7 @@
   {
     "id": "pure-gold-dust",
     "name": "Pure Gold Dust",
+    "category": "misc",
     "cost": 106000,
     "base_cost": 84714.6,
     "cauldron_cost": 84714.6,
@@ -1099,6 +1167,7 @@
   {
     "id": "quicklime-powder",
     "name": "Quicklime Powder",
+    "category": "misc",
     "cost": 6,
     "base_cost": 6,
     "cauldron_cost": 7,
@@ -1109,6 +1178,7 @@
   {
     "id": "quicksilver",
     "name": "Quicksilver",
+    "category": "misc",
     "cost": 527,
     "base_cost": 413.19,
     "cauldron_cost": 413.19,
@@ -1142,6 +1212,7 @@
   {
     "id": "resonant-catalyst",
     "name": "Resonant Catalyst",
+    "category": "misc",
     "cost": 12000,
     "base_cost": 12869.44,
     "cauldron_cost": 23869.44,
@@ -1174,6 +1245,7 @@
   {
     "id": "ruby",
     "name": "Ruby",
+    "category": "crafted",
     "cost": 250000,
     "base_cost": 200000,
     "cauldron_cost": 200000,
@@ -1196,6 +1268,7 @@
   {
     "id": "sage-powder",
     "name": "Sage Powder",
+    "category": "misc",
     "cost": 3,
     "base_cost": 3,
     "cauldron_cost": 3.5,
@@ -1239,6 +1312,7 @@
   {
     "id": "sapphire",
     "name": "Sapphire",
+    "category": "crafted",
     "cost": 480000,
     "base_cost": 400000,
     "cauldron_cost": 400000,
@@ -1249,6 +1323,7 @@
   {
     "id": "saturn",
     "name": "Saturn",
+    "category": "crafted",
     "cost": 150000,
     "base_cost": 714,
     "cauldron_cost": 714,
@@ -1259,6 +1334,7 @@
   {
     "id": "shattered-crystal",
     "name": "Shattered Crystal",
+    "category": "misc",
     "cost": 4096,
     "base_cost": 4096,
     "cauldron_cost": 3496,
@@ -1269,6 +1345,7 @@
   {
     "id": "silver-amulet",
     "name": "Silver Amulet",
+    "category": "misc",
     "cost": 48000,
     "base_cost": 25317,
     "cauldron_cost": 25317,
@@ -1279,6 +1356,7 @@
   {
     "id": "silver-coin",
     "name": "Silver Coin",
+    "category": "misc",
     "cost": 1529,
     "base_cost": 949.2,
     "cauldron_cost": 949.2,
@@ -1289,6 +1367,7 @@
   {
     "id": "silver-ingot",
     "name": "Silver Ingot",
+    "category": "misc",
     "cost": 7000,
     "base_cost": 4746,
     "cauldron_cost": 4746,
@@ -1299,6 +1378,7 @@
   {
     "id": "silver-powder",
     "name": "Silver Powder",
+    "category": "misc",
     "cost": 7000,
     "base_cost": 4742,
     "cauldron_cost": 4742,
@@ -1309,6 +1389,7 @@
   {
     "id": "small-wooden-gear",
     "name": "Small Wooden Gear",
+    "category": "misc",
     "cost": 8,
     "base_cost": 0.33333333333333,
     "cauldron_cost": 0.33333333333333,
@@ -1319,6 +1400,7 @@
   {
     "id": "soap",
     "name": "Soap",
+    "category": "crafted",
     "cost": 60,
     "base_cost": 20,
     "cauldron_cost": 23,
@@ -1329,6 +1411,7 @@
   {
     "id": "soap-powder",
     "name": "Soap Powder",
+    "category": "misc",
     "cost": 60,
     "base_cost": 20,
     "cauldron_cost": 24,
@@ -1339,6 +1422,7 @@
   {
     "id": "sol",
     "name": "Sol",
+    "category": "crafted",
     "cost": 42000000,
     "base_cost": 5587945.6,
     "cauldron_cost": 5587945.6,
@@ -1349,6 +1433,7 @@
   {
     "id": "star-dust",
     "name": "Star Dust",
+    "category": "misc",
     "cost": 9000,
     "base_cost": 4149,
     "cauldron_cost": 4149,
@@ -1359,6 +1444,7 @@
   {
     "id": "steel-gear",
     "name": "Steel Gear",
+    "category": "misc",
     "cost": 450,
     "base_cost": 161,
     "cauldron_cost": 170,
@@ -1369,6 +1455,7 @@
   {
     "id": "steel-ingot",
     "name": "Steel Ingot",
+    "category": "misc",
     "cost": 161,
     "base_cost": 161,
     "cauldron_cost": 161,
@@ -1401,6 +1488,7 @@
   {
     "id": "sulfur-powder",
     "name": "Sulfur Powder",
+    "category": "misc",
     "cost": 246,
     "base_cost": 246,
     "cauldron_cost": 200,
@@ -1411,6 +1499,7 @@
   {
     "id": "sulfuric-acid",
     "name": "Sulfuric Acid",
+    "category": "misc",
     "cost": 28,
     "base_cost": 23.13,
     "cauldron_cost": 23.13,
@@ -1421,6 +1510,7 @@
   {
     "id": "topaz",
     "name": "Topaz",
+    "category": "crafted",
     "cost": 2800,
     "base_cost": 1205.9,
     "cauldron_cost": 1205.9,
@@ -1431,6 +1521,7 @@
   {
     "id": "transformation-potion",
     "name": "Transformation Potion",
+    "category": "misc",
     "cost": 620,
     "base_cost": 240,
     "cauldron_cost": 240,
@@ -1441,6 +1532,7 @@
   {
     "id": "turquoise",
     "name": "Turquoise",
+    "category": "crafted",
     "cost": 290,
     "base_cost": 108,
     "cauldron_cost": 108,
@@ -1451,6 +1543,7 @@
   {
     "id": "unstable-catalyst",
     "name": "Unstable Catalyst",
+    "category": "misc",
     "cost": 566,
     "base_cost": 486,
     "cauldron_cost": 746,
@@ -1461,6 +1554,7 @@
   {
     "id": "venus",
     "name": "Venus",
+    "category": "crafted",
     "cost": 1000000,
     "base_cost": 2549.6,
     "cauldron_cost": 2549.6,
@@ -1471,6 +1565,7 @@
   {
     "id": "vitality-essence",
     "name": "Vitality Essence",
+    "category": "misc",
     "cost": 900,
     "base_cost": 900,
     "cauldron_cost": 900,
@@ -1481,6 +1576,7 @@
   {
     "id": "vitality-potion",
     "name": "Vitality Potion",
+    "category": "misc",
     "cost": 330,
     "base_cost": 120,
     "cauldron_cost": 125,
@@ -1491,6 +1587,7 @@
   {
     "id": "volcanic-ash",
     "name": "Volcanic Ash",
+    "category": "misc",
     "cost": 5000,
     "base_cost": 5290,
     "cauldron_cost": 5290,
@@ -1501,6 +1598,7 @@
   {
     "id": "wooden-pulley",
     "name": "Wooden Pulley",
+    "category": "misc",
     "cost": 44,
     "base_cost": 14,
     "cauldron_cost": 14,
@@ -1511,6 +1609,7 @@
   {
     "id": "world-tree-core",
     "name": "World Tree Core",
+    "category": "misc",
     "cost": 250000,
     "base_cost": 250000,
     "cauldron_cost": 250000,
@@ -1521,6 +1620,7 @@
   {
     "id": "world-tree-leaf",
     "name": "World Tree Leaf",
+    "category": "misc",
     "cost": 2500,
     "base_cost": 2500,
     "cauldron_cost": 2500,
@@ -1542,6 +1642,7 @@
   {
     "id": "yeast-powder",
     "name": "Yeast Powder",
+    "category": "misc",
     "cost": 168,
     "base_cost": 88,
     "cauldron_cost": 88,
