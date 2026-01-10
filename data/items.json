@@ -96,7 +96,7 @@
   {
     "id": "brandy",
     "name": "Brandy",
-    "category": "crafted",
+    "category": "essence",
     "cost": 7,
     "base_cost": 7.425,
     "cauldron_cost": 7.425,
@@ -107,7 +107,7 @@
   {
     "id": "brick",
     "name": "Brick",
-    "category": "oil",
+    "category": "solid",
     "cost": 70,
     "base_cost": 25,
     "cauldron_cost": 25,
@@ -199,7 +199,7 @@
     "heat_value": 4000,
     "category": [
       "fuel",
-      "liquid"
+      "solid"
     ],
     "cost": 2,
     "base_cost": 2,
@@ -278,7 +278,7 @@
     "heat_value": 60000,
     "category": [
       "fuel",
-      "liquid"
+      "solid"
     ],
     "cost": 30,
     "base_cost": 30,
@@ -581,7 +581,7 @@
   {
     "id": "glass",
     "name": "Glass",
-    "category": "oil",
+    "category": "solid",
     "cost": 75,
     "base_cost": 29,
     "cauldron_cost": 27,
@@ -826,7 +826,7 @@
   {
     "id": "limewater",
     "name": "Limewater",
-    "category": "essence",
+    "category": "oil",
     "cost": 0,
     "base_cost": 0.2,
     "cauldron_cost": 0.2,
@@ -929,7 +929,7 @@
   {
     "id": "mercury",
     "name": "Mercury",
-    "category": "crafted",
+    "category": "liquid",
     "cost": 5200000,
     "base_cost": 26927.8,
     "cauldron_cost": 26927.8,
@@ -973,7 +973,7 @@
   {
     "id": "mortar",
     "name": "Mortar",
-    "category": "crafted",
+    "category": "solid",
     "cost": 48,
     "base_cost": 20,
     "cauldron_cost": 18,
@@ -1156,7 +1156,7 @@
   {
     "id": "quicklime",
     "name": "Quicklime",
-    "category": "liquid",
+    "category": "solid",
     "cost": 6,
     "base_cost": 6,
     "cauldron_cost": 6,
@@ -1400,7 +1400,7 @@
   {
     "id": "soap",
     "name": "Soap",
-    "category": "crafted",
+    "category": "potions",
     "cost": 60,
     "base_cost": 20,
     "cauldron_cost": 23,
@@ -1510,7 +1510,7 @@
   {
     "id": "topaz",
     "name": "Topaz",
-    "category": "crafted",
+    "category": "potions",
     "cost": 2800,
     "base_cost": 1205.9,
     "cauldron_cost": 1205.9,

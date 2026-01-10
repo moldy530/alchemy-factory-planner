@@ -127,28 +127,34 @@ const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
   2: 'iron smelter',
   3: 'seed plot',
   4: 'grinder',
-  5: 'mortar',
-  6: 'flask',
+  5: 'extractor',
+  6: 'crucible',
   7: 'cauldron',
-  8: 'retort',
-  9: 'philosophers stone',
-  10: 'purchasing portal',
-  11: 'nursery',
-  12: 'bank portal',
-  13: 'dispatch portal',
-  14: 'world tree nursery',
+  8: 'kiln',
+  9: 'shaper',
+  10: 'assembler',
+  11: 'blender',
+  12: 'athanor',
+  13: 'alembic',
+  14: 'refiner',
 };
 
 const CRAFT_TYPE_CATEGORIES: Record<number, string> = {
-  0: 'fuel',
-  1: 'solid',
-  2: 'solid',
-  3: 'herbs',
-  4: 'powder',
-  5: 'essence',
-  6: 'liquid',
-  7: 'potions',
-  8: 'oil',
+  0: 'fuel',           // table saw - wood boards
+  1: 'solid',          // stone crusher - stone, coal
+  2: 'solid',          // iron smelter - ingots
+  3: 'herbs',          // seed plot - plants
+  4: 'powder',         // grinder - powders
+  5: 'oil',            // extractor - oils
+  6: 'solid',          // crucible - quicklime, etc
+  7: 'misc',           // cauldron - upgrades
+  8: 'solid',          // kiln - bricks
+  9: 'solid',          // shaper - nails, coins
+  10: 'crafted',       // assembler - general items
+  11: 'potions',       // blender - soaps, potions
+  12: 'potions',       // athanor - advanced potions
+  13: 'essence',       // alembic - essential oils, acids
+  14: 'liquid',        // refiner - refined liquids
 };
 
 function transformItems(
@@ -296,6 +302,14 @@ function determineDeviceCategory(
     return 'automated processing';
   }
 
+  // Production devices
+  const productionKeywords = ['assembler', 'blender', 'athanor', 'alembic', 'refiner',
+                              'extractor', 'crucible', 'cauldron', 'kiln', 'shaper',
+                              'processor', 'altar'];
+  if (productionKeywords.some(kw => buildingId.includes(kw))) {
+    return 'production';
+  }
+
   // Default to production
   return 'production';
 }
@@ -309,21 +323,25 @@ function transformBuildings(
     .filter(building => {
       // Only include buildings that are used in recipes or have specific purposes
       const buildingId = pascalToKebab(building.idName);
+
+      // Check if this building is referenced in any recipe
       const isUsedInRecipe = recipes.some(r => {
         const deviceName = CRAFT_TYPE_TO_DEVICE[r.craftType];
-        return deviceName && (
-          deviceName === buildingId ||
-          buildingId.includes(deviceName.replace(/\s+/g, '-'))
-        );
+        if (!deviceName) return false;
+
+        // Try exact match or partial match
+        return deviceName === buildingId ||
+               buildingId.includes(deviceName.replace(/\s+/g, '-')) ||
+               deviceName.replace(/\s+/g, '-').includes(buildingId);
       });
 
-      // Also include heaters and other production-related buildings
-      const isProductionBuilding =
+      // Also include support buildings
+      const isSupportBuilding =
         buildingId.includes('heater') ||
         buildingId.includes('portal') ||
         buildingId.includes('nursery');
 
-      return isUsedInRecipe || isProductionBuilding;
+      return isUsedInRecipe || isSupportBuilding;
     })
     .map(building => {
       let deviceId = pascalToKebab(building.idName);
@@ -346,16 +364,24 @@ function transformBuildings(
     .sort((a, b) => a.id.localeCompare(b.id));
 }
 
+function nameToKebab(name: string): string {
+  return name
+    .replace(/([a-z])([A-Z])/g, '$1-$2')  // Add hyphen between camelCase words
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')  // Handle consecutive caps
+    .toLowerCase()
+    .replace(/\s+/g, '-');  // Replace spaces with hyphens
+}
+
 function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
   return remoteCrafting.map(craft => {
     const recipe: LocalRecipe = {
-      id: craft.craftIdName.toLowerCase().replace(/\s+/g, '-'),
+      id: nameToKebab(craft.craftIdName),
       inputs: craft.ingredientList.map(ing => ({
-        name: ing.name.toLowerCase(),
+        name: nameToKebab(ing.name),
         count: ing.qty,
       })),
       outputs: [{
-        name: craft.productInfo.name.toLowerCase(),
+        name: nameToKebab(craft.productInfo.name),
         count: craft.productInfo.qty,
       }],
       time: craft.craftTime,
@@ -364,7 +390,7 @@ function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
     // Add side product to outputs if it exists
     if (craft.sideProduct && craft.sideProduct.name.toLowerCase() !== 'none') {
       recipe.outputs.push({
-        name: craft.sideProduct.name.toLowerCase(),
+        name: nameToKebab(craft.sideProduct.name),
         count: craft.sideProduct.qty,
       });
     }

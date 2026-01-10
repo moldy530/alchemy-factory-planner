@@ -1,8 +1,57 @@
 [
   {
+    "id": "advanced-alembic",
+    "name": "Advanced Alembic",
+    "category": "production",
+    "heat_consuming_speed": 270
+  },
+  {
+    "id": "advanced-athanor",
+    "name": "Advanced Athanor",
+    "category": "production",
+    "heat_consuming_speed": 360
+  },
+  {
+    "id": "advanced-blender",
+    "name": "Advanced Blender",
+    "category": "production"
+  },
+  {
+    "id": "advanced-shaper",
+    "name": "Advanced Shaper",
+    "category": "production"
+  },
+  {
+    "id": "aether-shaper",
+    "name": "Arcane Shaper",
+    "category": "production"
+  },
+  {
+    "id": "alembic",
+    "name": "Alembic",
+    "category": "production",
+    "heat_consuming_speed": 108
+  },
+  {
+    "id": "assembler",
+    "name": "Assembler",
+    "category": "production"
+  },
+  {
+    "id": "athanor",
+    "name": "Athanor",
+    "category": "production",
+    "heat_consuming_speed": 32
+  },
+  {
     "id": "bank-portal",
     "name": "Bank Portal",
     "category": "raw material production"
+  },
+  {
+    "id": "blender",
+    "name": "Blender",
+    "category": "production"
   },
   {
     "id": "cauldron",
@@ -10,9 +59,10 @@
     "category": "production"
   },
   {
-    "id": "conical-flask",
-    "name": "Conical Flask",
-    "category": "production"
+    "id": "crucible",
+    "name": "Crucible",
+    "category": "production",
+    "heat_consuming_speed": 4
   },
   {
     "id": "dispatch-portal",
@@ -23,6 +73,11 @@
     "id": "enhanced-grinder",
     "name": "Enhanced Grinder",
     "category": "automated processing"
+  },
+  {
+    "id": "extractor",
+    "name": "Extractor",
+    "category": "production"
   },
   {
     "id": "grinder",
@@ -36,9 +91,21 @@
     "heat_consuming_speed": 9
   },
   {
+    "id": "kiln",
+    "name": "Kiln",
+    "category": "production",
+    "heat_consuming_speed": 15
+  },
+  {
     "id": "nursery",
     "name": "Nursery",
     "category": "raw material production"
+  },
+  {
+    "id": "paradox-crucible",
+    "name": "Paradox Crucible",
+    "category": "production",
+    "heat_consuming_speed": 1200
   },
   {
     "id": "purchasing-portal",
@@ -46,14 +113,25 @@
     "category": "raw material production"
   },
   {
+    "id": "refiner",
+    "name": "Refiner",
+    "category": "production"
+  },
+  {
     "id": "seed-plot",
     "name": "Seed Plot",
     "category": "raw material production"
   },
   {
-    "id": "sphere-flask",
-    "name": "Sphere Liquid Flask",
+    "id": "shaper",
+    "name": "Shaper",
     "category": "production"
+  },
+  {
+    "id": "stackable-crucible",
+    "name": "Stackable Crucible",
+    "category": "production",
+    "heat_consuming_speed": 6
   },
   {
     "id": "stone-crusher",
@@ -64,6 +142,12 @@
     "id": "table-saw",
     "name": "Table Saw",
     "category": "raw material production"
+  },
+  {
+    "id": "thermal-extractor",
+    "name": "Thermal Extractor",
+    "category": "production",
+    "heat_consuming_speed": 80
   },
   {
     "id": "world-tree-nursery",
