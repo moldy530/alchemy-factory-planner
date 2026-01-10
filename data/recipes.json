@@ -14,7 +14,7 @@
       }
     ],
     "time": 400,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {
@@ -32,7 +32,7 @@
       }
     ],
     "time": 540,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {
@@ -50,7 +50,7 @@
       }
     ],
     "time": 720,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {
@@ -68,7 +68,7 @@
       }
     ],
     "time": 1440,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {
@@ -86,7 +86,7 @@
       }
     ],
     "time": 1120,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {
@@ -108,7 +108,7 @@
       }
     ],
     "time": 2160,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {
@@ -1916,7 +1916,7 @@
       }
     ],
     "time": 2160,
-    "crafted_in": "seed plot",
+    "crafted_in": "nursery",
     "category": "herbs"
   },
   {

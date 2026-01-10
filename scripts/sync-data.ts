@@ -125,7 +125,7 @@ const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
   0: 'table saw',
   1: 'stone crusher',
   2: 'iron smelter',
-  3: 'seed plot',
+  3: 'nursery',        // Growing plants with fertilizer
   4: 'grinder',
   5: 'extractor',
   6: 'crucible',

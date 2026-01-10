@@ -118,11 +118,6 @@
     "category": "production"
   },
   {
-    "id": "seed-plot",
-    "name": "Seed Plot",
-    "category": "raw material production"
-  },
-  {
     "id": "shaper",
     "name": "Shaper",
     "category": "production"
