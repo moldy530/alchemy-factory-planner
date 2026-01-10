@@ -2,33 +2,28 @@
 
 /**
  * Syncs game data from the AlchemyFactoryData repository
- * Transforms abbreviated fields to full property names
+ * Transforms data to be backwards compatible with existing calculation engines
  */
 
 const REMOTE_BASE_URL = 'https://raw.githubusercontent.com/faultyd3v/AlchemyFactoryData/main';
 const DATA_DIR = './data';
 
 interface RemoteItem {
-  id?: string;
+  id?: number | string;
   name?: string;
   displayName?: string;
   value?: number;
   cost?: number;
-  gameValue?: string;
-  gameCost?: string;
-  hv?: number; // heat value
+  baseCost?: number;
+  hv?: number; // heat value (per unit)
   nv?: number; // nutrient value
   ns?: number; // nutrient speed
   cauldronCost?: number;
   cauldronTarget?: number;
   cauldronMulti?: number;
-  questCost?: number;
-  questTier?: number;
   maxStack?: number;
-  sellType?: number;
   portal?: boolean;
   liquid?: boolean;
-  sellStack?: boolean;
   [key: string]: any;
 }
 
@@ -39,8 +34,8 @@ interface LocalItem {
   category?: string | string[];
   heat_value?: number;
   nutrient_value?: number;
-  nutrient_speed?: number;
-  paradox_time?: number;
+  nutrients_per_seconds?: number;
+  required_nutrients?: number;
   base_cost?: number;
   cauldron_cost?: number;
   cauldron_target?: number;
@@ -55,9 +50,7 @@ interface RemoteBuilding {
   name: string;
   desc?: string;
   hc?: number; // heating capacity
-  furnitureType?: number;
-  secondaryType?: number;
-  costList?: Array<{ name: string; qty: number }>;
+  hide?: boolean;
   buildingTags?: {
     ParentTags?: string[];
     GameplayTags?: string[];
@@ -70,7 +63,6 @@ interface LocalDevice {
   name: string;
   category?: string;
   heat_consuming_speed?: number;
-  [key: string]: any;
 }
 
 interface RemoteCrafting {
@@ -80,11 +72,7 @@ interface RemoteCrafting {
   productInfo: { name: string; qty: number };
   craftType: number;
   craftTime: number;
-  fractionNum?: number;
-  failRate1?: number;
-  failRate2?: number;
   sideProduct?: { name: string; qty: number };
-  alternate?: boolean;
   [key: string]: any;
 }
 
@@ -95,7 +83,6 @@ interface LocalRecipe {
   time: number;
   crafted_in?: string;
   category?: string;
-  [key: string]: any;
 }
 
 interface PlantSeed {
@@ -116,107 +103,22 @@ async function fetchJSON<T>(filename: string): Promise<T> {
   return response.json();
 }
 
-function transformItems(remoteItems: RemoteItem[]): LocalItem[] {
-  return remoteItems.map(item => {
-    // Ensure id is a string before calling toLowerCase
-    const rawId = item.id || item.displayName || item.name || '';
-    const idStr = typeof rawId === 'string' ? rawId : String(rawId);
-    const transformed: LocalItem = {
-      id: idStr.toLowerCase().replace(/\s+/g, '-'),
-      name: item.displayName || item.name || '',
-    };
-
-    // Map cost
-    if (item.cost !== undefined) {
-      transformed.cost = item.cost;
-    } else if (item.value !== undefined) {
-      transformed.cost = item.value;
-    }
-
-    // Transform abbreviated fields to full names
-    if (item.hv !== undefined) {
-      transformed.heat_value = item.hv;
-    }
-    if (item.nv !== undefined) {
-      transformed.nutrient_value = item.nv;
-    }
-    if (item.ns !== undefined) {
-      transformed.nutrient_speed = item.ns;
-    }
-
-    // Map cauldron properties
-    if (item.cauldronCost !== undefined) {
-      transformed.cauldron_cost = item.cauldronCost;
-    }
-    if (item.cauldronTarget !== undefined) {
-      transformed.cauldron_target = item.cauldronTarget;
-    }
-    if (item.cauldronMulti !== undefined) {
-      transformed.cauldron_coef = item.cauldronMulti;
-    }
-
-    // Copy over any other properties that might be useful
-    const keysToSkip = ['id', 'name', 'displayName', 'cost', 'value', 'hv', 'nv', 'ns',
-                        'cauldronCost', 'cauldronTarget', 'cauldronMulti', 'gameValue', 'gameCost'];
-    Object.keys(item).forEach(key => {
-      if (!keysToSkip.includes(key) && !(key in transformed)) {
-        transformed[key] = item[key];
-      }
-    });
-
-    return transformed;
-  });
+function pascalToKebab(str: string): string {
+  return str
+    .replace(/_/g, '-')  // Replace underscores with hyphens first
+    .replace(/([A-Z])/g, '-$1')
+    .toLowerCase()
+    .replace(/^-/, '')
+    .replace(/--+/g, '-');  // Replace multiple hyphens with single hyphen
 }
 
-// Device category mapping based on crafting types
-const DEVICE_CATEGORIES: Record<number, string> = {
-  0: 'raw material production',      // Table Saw type
-  1: 'raw material production',      // Stone Crusher type
-  2: 'raw material production',      // Smelter type
-  3: 'raw material production',      // Seed Plot type
-  4: 'production',                   // Grinder type
-  5: 'production',                   // Mortar type
-  6: 'production',                   // Flask type
-  7: 'production',                   // Cauldron type
-  8: 'production',                   // Retort type
-  9: 'production',                   // Philosopher's Stone
+// Special building ID mappings (remote ID → local ID)
+const BUILDING_ID_OVERRIDES: Record<string, string> = {
+  'auto-nursery': 'nursery',
+  'portal-alch-guild': 'purchasing-portal',
+  'portal-bank': 'bank-portal',
+  'portal-wholesaling': 'dispatch-portal',
 };
-
-function getDeviceCategoryFromTags(tags?: { ParentTags?: string[]; GameplayTags?: string[] }): string {
-  if (!tags) return 'production';
-
-  const allTags = [...(tags.ParentTags || []), ...(tags.GameplayTags || [])];
-
-  if (allTags.some(tag => tag.toLowerCase().includes('raw') || tag.toLowerCase().includes('basic'))) {
-    return 'raw material production';
-  }
-
-  return 'production';
-}
-
-function transformBuildings(remoteBuildings: RemoteBuilding[]): LocalDevice[] {
-  const devices: LocalDevice[] = [];
-
-  // Filter out hidden buildings and duplicates
-  const visibleBuildings = remoteBuildings.filter(b => !b.hide);
-
-  for (const building of visibleBuildings) {
-    const device: LocalDevice = {
-      id: building.idName.toLowerCase().replace(/\s+/g, '-'),
-      name: building.name,
-      category: getDeviceCategoryFromTags(building.buildingTags),
-    };
-
-    // Map heating capacity to heat_consuming_speed
-    if (building.hc !== undefined && building.hc > 0) {
-      device.heat_consuming_speed = building.hc;
-    }
-
-    devices.push(device);
-  }
-
-  return devices;
-}
 
 // Craft type to device name mapping
 const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
@@ -236,6 +138,202 @@ const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
   13: 'dispatch portal',
   14: 'world tree nursery',
 };
+
+const CRAFT_TYPE_CATEGORIES: Record<number, string> = {
+  0: 'fuel',
+  1: 'solid',
+  2: 'solid',
+  3: 'herbs',
+  4: 'powder',
+  5: 'essence',
+  6: 'liquid',
+  7: 'potions',
+  8: 'oil',
+};
+
+function transformItems(
+  remoteItems: RemoteItem[],
+  plantSeeds: PlantSeed[],
+  recipes: RemoteCrafting[]
+): LocalItem[] {
+  // Build lookup maps for plant nutrients
+  const plantNutrients = new Map<string, number>();
+  plantSeeds.forEach(seed => {
+    const productName = seed.product.name.toLowerCase();
+    plantNutrients.set(productName, seed.growthNutrientValue);
+  });
+
+  // Build lookup for recipe outputs to determine categories
+  const recipeOutputs = new Map<string, RemoteCrafting>();
+  recipes.forEach(recipe => {
+    const outputName = recipe.productInfo.name.toLowerCase();
+    recipeOutputs.set(outputName, recipe);
+  });
+
+  return remoteItems
+    .filter(item => {
+      // Filter out special items that aren't used in production
+      const name = (item.displayName || item.name || '').toLowerCase();
+      return name && name !== 'none';
+    })
+    .map(item => {
+      const itemName = item.displayName || item.name || '';
+      const itemId = itemName.toLowerCase().replace(/\s+/g, '-');
+
+      const transformed: LocalItem = {
+        id: itemId,
+        name: itemName,
+      };
+
+      // Determine categories
+      const categories: string[] = [];
+
+      // Check if it's a fuel (has heat value)
+      if (item.hv !== undefined && item.hv > 0) {
+        categories.push('fuel');
+        // Scale heat value by stack size (old format was per-stack)
+        const stackSize = Math.abs(item.maxStack || 1);
+        transformed.heat_value = Math.round(item.hv * stackSize);
+      }
+
+      // Check if it's a fertilizer (has both nutrient value and speed)
+      if (item.nv !== undefined && item.nv > 0 && item.ns !== undefined && item.ns > 0) {
+        categories.push('fertilizer');
+        transformed.nutrient_value = item.nv;
+        transformed.nutrients_per_seconds = item.ns;
+      }
+
+      // Check if it's a plant/herb (appears in plantseeds)
+      if (plantNutrients.has(itemId)) {
+        categories.push('herbs');
+        transformed.required_nutrients = plantNutrients.get(itemId);
+      }
+
+      // Check if it's a raw material (can be bought through portal)
+      if (item.portal === true && categories.length === 0) {
+        categories.push('raw materials');
+      } else if (item.portal === true && categories.includes('fuel')) {
+        // Raw materials that are also fuel
+        categories.push('raw materials');
+      }
+
+      // Infer category from recipe if exists
+      const recipe = recipeOutputs.get(itemId);
+      if (recipe && CRAFT_TYPE_CATEGORIES[recipe.craftType]) {
+        const recipeCategory = CRAFT_TYPE_CATEGORIES[recipe.craftType];
+        if (!categories.includes(recipeCategory)) {
+          categories.push(recipeCategory);
+        }
+      }
+
+      // Set category (single if only one, array if multiple)
+      if (categories.length === 1) {
+        transformed.category = categories[0];
+      } else if (categories.length > 1) {
+        transformed.category = categories;
+      }
+
+      // Map cost (prefer value over baseCost)
+      if (item.value !== undefined) {
+        transformed.cost = item.value;
+      } else if (item.cost !== undefined) {
+        transformed.cost = item.cost;
+      }
+
+      // Map base_cost
+      if (item.baseCost !== undefined) {
+        transformed.base_cost = item.baseCost;
+      } else if (item.value !== undefined) {
+        transformed.base_cost = item.value;
+      }
+
+      // Map cauldron properties
+      if (item.cauldronCost !== undefined) {
+        transformed.cauldron_cost = item.cauldronCost;
+      }
+      if (item.cauldronTarget !== undefined) {
+        transformed.cauldron_target = item.cauldronTarget;
+      }
+      if (item.cauldronMulti !== undefined) {
+        transformed.cauldron_coef = item.cauldronMulti;
+      }
+
+      // Calculate cauldron efficiency
+      if (transformed.cauldron_cost && transformed.cauldron_target) {
+        transformed.cauldron_efficiency = transformed.cauldron_cost / transformed.cauldron_target;
+      }
+
+      return transformed;
+    })
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function determineDeviceCategory(
+  building: RemoteBuilding,
+  recipes: RemoteCrafting[]
+): string {
+  const buildingId = pascalToKebab(building.idName);
+
+  // Raw material production devices
+  const rawProductionKeywords = ['saw', 'crusher', 'smelter', 'plot', 'portal', 'nursery'];
+  if (rawProductionKeywords.some(kw => buildingId.includes(kw))) {
+    return 'raw material production';
+  }
+
+  // Automated processing
+  if (buildingId.includes('grinder') || buildingId.includes('enhanced')) {
+    return 'automated processing';
+  }
+
+  // Default to production
+  return 'production';
+}
+
+function transformBuildings(
+  remoteBuildings: RemoteBuilding[],
+  recipes: RemoteCrafting[]
+): LocalDevice[] {
+  return remoteBuildings
+    .filter(building => !building.hide)
+    .filter(building => {
+      // Only include buildings that are used in recipes or have specific purposes
+      const buildingId = pascalToKebab(building.idName);
+      const isUsedInRecipe = recipes.some(r => {
+        const deviceName = CRAFT_TYPE_TO_DEVICE[r.craftType];
+        return deviceName && (
+          deviceName === buildingId ||
+          buildingId.includes(deviceName.replace(/\s+/g, '-'))
+        );
+      });
+
+      // Also include heaters and other production-related buildings
+      const isProductionBuilding =
+        buildingId.includes('heater') ||
+        buildingId.includes('portal') ||
+        buildingId.includes('nursery');
+
+      return isUsedInRecipe || isProductionBuilding;
+    })
+    .map(building => {
+      let deviceId = pascalToKebab(building.idName);
+      // Apply ID overrides for special cases
+      deviceId = BUILDING_ID_OVERRIDES[deviceId] || deviceId;
+
+      const device: LocalDevice = {
+        id: deviceId,
+        name: building.name,
+        category: determineDeviceCategory(building, recipes),
+      };
+
+      // Map heating capacity to heat_consuming_speed
+      if (building.hc !== undefined && building.hc > 0) {
+        device.heat_consuming_speed = building.hc;
+      }
+
+      return device;
+    })
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
 
 function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
   return remoteCrafting.map(craft => {
@@ -266,6 +364,11 @@ function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
       recipe.crafted_in = deviceName;
     }
 
+    // Add category from craft type
+    if (CRAFT_TYPE_CATEGORIES[craft.craftType]) {
+      recipe.category = CRAFT_TYPE_CATEGORIES[craft.craftType];
+    }
+
     return recipe;
   });
 }
@@ -288,11 +391,11 @@ async function main() {
     console.log(`✅ Fetched ${remoteCrafting.length} crafting recipes`);
     console.log(`✅ Fetched ${plantSeeds.length} plant seeds\n`);
 
-    // Transform data
+    // Transform data (pass dependencies for proper transformation)
     console.log('🔄 Transforming data...');
-    const localItems = transformItems(remoteItems);
-    const localDevices = transformBuildings(remoteBuildings);
     const localRecipes = transformCrafting(remoteCrafting);
+    const localItems = transformItems(remoteItems, plantSeeds, remoteCrafting);
+    const localDevices = transformBuildings(remoteBuildings, remoteCrafting);
 
     // Write transformed data
     console.log('💾 Writing data files...');
@@ -308,17 +411,17 @@ async function main() {
       `${DATA_DIR}/recipes.json`,
       JSON.stringify(localRecipes, null, 2)
     );
-    await Bun.write(
-      `${DATA_DIR}/plantseeds.json`,
-      JSON.stringify(plantSeeds, null, 2)
-    );
 
     console.log(`\n✅ Successfully synced all data files!`);
     console.log(`\nFiles updated:`);
     console.log(`  - data/items.json (${localItems.length} items)`);
     console.log(`  - data/devices.json (${localDevices.length} devices)`);
     console.log(`  - data/recipes.json (${localRecipes.length} recipes)`);
-    console.log(`  - data/plantseeds.json (${plantSeeds.length} plant seeds)`);
+    console.log(`\nBackwards compatibility maintained:`);
+    console.log(`  ✓ Item IDs are kebab-case names`);
+    console.log(`  ✓ Heat values scaled by stack size`);
+    console.log(`  ✓ Categories inferred from properties`);
+    console.log(`  ✓ Plant nutrients merged from plantseeds`);
 
   } catch (error) {
     console.error('❌ Error syncing data:', error);

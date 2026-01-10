@@ -1,222 +1,8 @@
 [
   {
-    "id": "belt",
-    "name": "Conveyor Belt",
-    "category": "production"
-  },
-  {
-    "id": "beltslopeup",
-    "name": "Inclined Conveyor Belt",
-    "category": "production"
-  },
-  {
-    "id": "beltinclinedup",
-    "name": "Inclined Conveyor Belt",
-    "category": "production"
-  },
-  {
-    "id": "catapult",
-    "name": "Catapult",
-    "category": "production"
-  },
-  {
-    "id": "conveyerlift_upwards",
-    "name": "Conveyor Lifter",
-    "category": "production"
-  },
-  {
-    "id": "pipe",
-    "name": "Pipeline",
-    "category": "production"
-  },
-  {
-    "id": "railroad",
-    "name": "Track",
-    "category": "production"
-  },
-  {
-    "id": "railroadturn",
-    "name": "Curved Track",
-    "category": "production"
-  },
-  {
-    "id": "railroadramp",
-    "name": "Banked Track",
-    "category": "production"
-  },
-  {
-    "id": "railroadinclientup",
-    "name": "Ascent Track",
-    "category": "production"
-  },
-  {
-    "id": "railroadinclientdown",
-    "name": "Descent Track",
-    "category": "production"
-  },
-  {
-    "id": "cannon",
-    "name": "Cannon",
-    "category": "production"
-  },
-  {
-    "id": "drawbridge",
-    "name": "Drawbridge Conveyor",
-    "category": "production"
-  },
-  {
-    "id": "conveyortunnel",
-    "name": "Tunnel Conveyor",
-    "category": "production"
-  },
-  {
-    "id": "crosstunnel",
-    "name": "Crossway Tunnel",
-    "category": "production"
-  },
-  {
-    "id": "filter_vert",
-    "name": "Filter Splitter",
-    "category": "production"
-  },
-  {
-    "id": "hopper",
-    "name": "Hopper Conveyor",
-    "category": "production"
-  },
-  {
-    "id": "splitter_vert",
-    "name": "Priority Splitter",
-    "category": "production"
-  },
-  {
-    "id": "merger_vert",
-    "name": "Priority Merger",
-    "category": "production"
-  },
-  {
-    "id": "bounceshroom",
-    "name": "Bounce Shroom",
-    "category": "production"
-  },
-  {
-    "id": "grinder",
-    "name": "Grinder",
-    "category": "production"
-  },
-  {
-    "id": "enhancedgrinder",
-    "name": "Enhanced Grinder",
-    "category": "production"
-  },
-  {
-    "id": "crucible",
-    "name": "Crucible",
-    "category": "production",
-    "heat_consuming_speed": 4
-  },
-  {
-    "id": "stackablecrucible",
-    "name": "Stackable Crucible",
-    "category": "production",
-    "heat_consuming_speed": 6
-  },
-  {
-    "id": "extractor",
-    "name": "Extractor",
-    "category": "production"
-  },
-  {
-    "id": "thermalextractor",
-    "name": "Thermal Extractor",
-    "category": "production",
-    "heat_consuming_speed": 80
-  },
-  {
-    "id": "refiner",
-    "name": "Refiner",
-    "category": "production"
-  },
-  {
-    "id": "paradoxcrucible",
-    "name": "Paradox Crucible",
-    "category": "production",
-    "heat_consuming_speed": 1200
-  },
-  {
-    "id": "knowledgealtar",
-    "name": "Knowledge Altar",
-    "category": "production"
-  },
-  {
-    "id": "processor",
-    "name": "Processor",
-    "category": "production"
-  },
-  {
-    "id": "kiln",
-    "name": "Kiln",
-    "category": "production",
-    "heat_consuming_speed": 15
-  },
-  {
-    "id": "blender",
-    "name": "Blender",
-    "category": "production"
-  },
-  {
-    "id": "assembler",
-    "name": "Assembler",
-    "category": "production"
-  },
-  {
-    "id": "alembic",
-    "name": "Alembic",
-    "category": "production",
-    "heat_consuming_speed": 108
-  },
-  {
-    "id": "athanor",
-    "name": "Athanor",
-    "category": "production",
-    "heat_consuming_speed": 32
-  },
-  {
-    "id": "advancedblender",
-    "name": "Advanced Blender",
-    "category": "production"
-  },
-  {
-    "id": "advancedalembic",
-    "name": "Advanced Alembic",
-    "category": "production",
-    "heat_consuming_speed": 270
-  },
-  {
-    "id": "omni-machine",
-    "name": "Advanced Assembler",
-    "category": "production"
-  },
-  {
-    "id": "advancedathanor",
-    "name": "Advanced Athanor",
-    "category": "production",
-    "heat_consuming_speed": 360
-  },
-  {
-    "id": "shaper",
-    "name": "Shaper",
-    "category": "production"
-  },
-  {
-    "id": "advancedshaper",
-    "name": "Advanced Shaper",
-    "category": "production"
-  },
-  {
-    "id": "aethershaper",
-    "name": "Arcane Shaper",
-    "category": "production"
+    "id": "bank-portal",
+    "name": "Bank Portal",
+    "category": "raw material production"
   },
   {
     "id": "cauldron",
@@ -224,316 +10,64 @@
     "category": "production"
   },
   {
-    "id": "arcaneprocessor",
-    "name": "Arcane Processor",
+    "id": "conical-flask",
+    "name": "Conical Flask",
     "category": "production"
   },
   {
-    "id": "stonestove",
-    "name": "Stone Furnace",
-    "category": "production",
-    "heat_consuming_speed": 1
-  },
-  {
-    "id": "stonefurnace",
-    "name": "Blast Furnace",
-    "category": "production",
-    "heat_consuming_speed": 4
-  },
-  {
-    "id": "woodtable",
-    "name": "Wooden Table",
-    "category": "production"
-  },
-  {
-    "id": "woodcrate",
-    "name": "Wooden Box",
-    "category": "production"
-  },
-  {
-    "id": "mediumstand",
-    "name": "Medium Shelf",
-    "category": "production"
-  },
-  {
-    "id": "checkouttable",
-    "name": "Checkout Table",
-    "category": "production"
-  },
-  {
-    "id": "largestand",
-    "name": "Large Shelf",
-    "category": "production"
-  },
-  {
-    "id": "potionstand",
-    "name": "Potion Shelf",
-    "category": "production"
-  },
-  {
-    "id": "jewelrystand",
-    "name": "Jewelry Shelf",
-    "category": "production"
-  },
-  {
-    "id": "woodbed",
-    "name": "Wooden Bed",
-    "category": "production"
-  },
-  {
-    "id": "coasterentrance",
-    "name": "Track Station",
-    "category": "production"
-  },
-  {
-    "id": "relicstandsmall",
-    "name": "Relic Shelf",
-    "category": "production"
-  },
-  {
-    "id": "platform_wood",
-    "name": "Wooden Platform",
-    "category": "production"
-  },
-  {
-    "id": "stairs_wood",
-    "name": "Wooden Stairs",
-    "category": "production"
-  },
-  {
-    "id": "construct_floor_wood",
-    "name": "Wooden Floor",
-    "category": "production"
-  },
-  {
-    "id": "construct_wall_wood",
-    "name": "Wooden Wall",
-    "category": "production"
-  },
-  {
-    "id": "roof_wood",
-    "name": "Sloped Roof",
-    "category": "production"
-  },
-  {
-    "id": "construct_wall_stone",
-    "name": "Stone Wall",
-    "category": "production"
-  },
-  {
-    "id": "woodrailing",
-    "name": "Wooden Railing",
-    "category": "production"
-  },
-  {
-    "id": "shopentrance",
-    "name": "Shop Entrance",
-    "category": "production"
-  },
-  {
-    "id": "stairs_wood_0",
-    "name": "Wooden Stairs",
-    "category": "production"
-  },
-  {
-    "id": "pillar",
-    "name": "Pillar",
-    "category": "production"
-  },
-  {
-    "id": "tablesaw",
-    "name": "Table Saw",
+    "id": "dispatch-portal",
+    "name": "Dispatch Portal",
     "category": "raw material production"
   },
   {
-    "id": "stonecrusher",
-    "name": "Stone Crusher",
-    "category": "raw material production"
+    "id": "enhanced-grinder",
+    "name": "Enhanced Grinder",
+    "category": "automated processing"
   },
   {
-    "id": "seedplot",
-    "name": "Seed Plot",
-    "category": "raw material production"
+    "id": "grinder",
+    "name": "Grinder",
+    "category": "automated processing"
   },
   {
-    "id": "ironsmelter",
+    "id": "iron-smelter",
     "name": "Iron Smelter",
     "category": "raw material production",
     "heat_consuming_speed": 9
   },
   {
-    "id": "autonursery",
+    "id": "nursery",
     "name": "Nursery",
     "category": "raw material production"
   },
   {
-    "id": "worldtreenursery",
-    "name": "World Tree Nursery",
-    "category": "raw material production"
-  },
-  {
-    "id": "portal_alchguild",
+    "id": "purchasing-portal",
     "name": "Purchasing Portal",
     "category": "raw material production"
   },
   {
-    "id": "portal_bank",
-    "name": "Bank Portal",
+    "id": "seed-plot",
+    "name": "Seed Plot",
     "category": "raw material production"
   },
   {
-    "id": "portal_wholesaling",
-    "name": "Dispatch Portal",
-    "category": "raw material production"
-  },
-  {
-    "id": "liquidsupplier",
-    "name": "Purchasing Portal",
-    "category": "production"
-  },
-  {
-    "id": "smallcontainer",
-    "name": "Small Storage Box",
-    "category": "production"
-  },
-  {
-    "id": "woodcontainer",
-    "name": "Large Storage Box",
-    "category": "production"
-  },
-  {
-    "id": "metalcontainer",
-    "name": "Metal Storage Box",
-    "category": "production"
-  },
-  {
-    "id": "conicalflask",
-    "name": "Conical Flask",
-    "category": "production"
-  },
-  {
-    "id": "sphereflask",
+    "id": "sphere-flask",
     "name": "Sphere Liquid Flask",
     "category": "production"
   },
   {
-    "id": "junkbarrel",
-    "name": "Trash Barrel",
-    "category": "production"
+    "id": "stone-crusher",
+    "name": "Stone Crusher",
+    "category": "raw material production"
   },
   {
-    "id": "framesingle",
-    "name": "Lab Stands",
-    "category": "production"
+    "id": "table-saw",
+    "name": "Table Saw",
+    "category": "raw material production"
   },
   {
-    "id": "ironstand",
-    "name": "Lab Stands",
-    "category": "production"
-  },
-  {
-    "id": "beam3",
-    "name": "Beam",
-    "category": "production"
-  },
-  {
-    "id": "metalstand",
-    "name": "Metal Stand",
-    "category": "production"
-  },
-  {
-    "id": "smallplatform",
-    "name": "Reinforced Platform",
-    "category": "production"
-  },
-  {
-    "id": "wallshelf",
-    "name": "Wooden Shelf",
-    "category": "production"
-  },
-  {
-    "id": "candle",
-    "name": "Candle",
-    "category": "production"
-  },
-  {
-    "id": "noticeboard",
-    "name": "Notice Board",
-    "category": "production"
-  },
-  {
-    "id": "woodblock",
-    "name": "Wood Block",
-    "category": "production"
-  },
-  {
-    "id": "stoneblock",
-    "name": "Stone Block",
-    "category": "production"
-  },
-  {
-    "id": "brickblock",
-    "name": "Brick Block",
-    "category": "production"
-  },
-  {
-    "id": "ironblock",
-    "name": "Iron Block",
-    "category": "production"
-  },
-  {
-    "id": "marbleblock",
-    "name": "Marble Block",
-    "category": "production"
-  },
-  {
-    "id": "copperblock",
-    "name": "Copper Block",
-    "category": "production"
-  },
-  {
-    "id": "bronzeblock",
-    "name": "Bronze Block",
-    "category": "production"
-  },
-  {
-    "id": "silverblock",
-    "name": "Silver Block",
-    "category": "production"
-  },
-  {
-    "id": "goldblock",
-    "name": "Gold Block",
-    "category": "production"
-  },
-  {
-    "id": "autocheckout",
-    "name": "Automatic Cashier",
-    "category": "production"
-  },
-  {
-    "id": "workbench",
-    "name": "Workbench",
-    "category": "production"
-  },
-  {
-    "id": "woodexpansion",
-    "name": "Wooden Shelf",
-    "category": "production"
-  },
-  {
-    "id": "spawntrain",
-    "name": "Track Station",
-    "category": "production"
-  },
-  {
-    "id": "woodfence",
-    "name": "Track Station",
-    "category": "production"
-  },
-  {
-    "id": "phantomtempbag",
-    "name": "Inventory Expansion",
-    "category": "production"
+    "id": "world-tree-nursery",
+    "name": "World Tree Nursery",
+    "category": "raw material production"
   }
 ]

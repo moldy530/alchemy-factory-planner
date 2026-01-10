@@ -14,7 +14,8 @@
       }
     ],
     "time": 400,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "sage",
@@ -31,7 +32,8 @@
       }
     ],
     "time": 540,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "redcurrant",
@@ -48,7 +50,8 @@
       }
     ],
     "time": 720,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "lavender",
@@ -65,7 +68,8 @@
       }
     ],
     "time": 1440,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "chamomile",
@@ -82,7 +86,8 @@
       }
     ],
     "time": 1120,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "gentian",
@@ -103,7 +108,8 @@
       }
     ],
     "time": 2160,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "woodboard",
@@ -120,7 +126,8 @@
       }
     ],
     "time": 2,
-    "crafted_in": "table saw"
+    "crafted_in": "table saw",
+    "category": "fuel"
   },
   {
     "id": "largewoodgear",
@@ -137,7 +144,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "stone",
@@ -154,7 +162,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "stone crusher"
+    "crafted_in": "stone crusher",
+    "category": "solid"
   },
   {
     "id": "sand",
@@ -171,7 +180,8 @@
       }
     ],
     "time": 12,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "mortar",
@@ -205,7 +215,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "linenthread",
@@ -273,7 +284,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "iron smelter"
+    "crafted_in": "iron smelter",
+    "category": "solid"
   },
   {
     "id": "nails",
@@ -307,7 +319,8 @@
       }
     ],
     "time": 30,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "plantash",
@@ -324,7 +337,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "sagepowder",
@@ -341,7 +355,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "healingpotion",
@@ -417,7 +432,8 @@
       }
     ],
     "time": 9,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "quicklimepowder",
@@ -434,7 +450,8 @@
       }
     ],
     "time": 9,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "charcoal",
@@ -451,7 +468,8 @@
       }
     ],
     "time": 4,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "charcoalpowder",
@@ -468,7 +486,8 @@
       }
     ],
     "time": 4,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "woodpulley",
@@ -527,7 +546,8 @@
       }
     ],
     "time": 4,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "brick",
@@ -544,7 +564,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "retort"
+    "crafted_in": "retort",
+    "category": "oil"
   },
   {
     "id": "linseedoil",
@@ -561,7 +582,8 @@
       }
     ],
     "time": 2,
-    "crafted_in": "mortar"
+    "crafted_in": "mortar",
+    "category": "essence"
   },
   {
     "id": "fruitwine",
@@ -578,7 +600,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "mortar"
+    "crafted_in": "mortar",
+    "category": "essence"
   },
   {
     "id": "limewater",
@@ -595,7 +618,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "mortar"
+    "crafted_in": "mortar",
+    "category": "essence"
   },
   {
     "id": "glass",
@@ -612,7 +636,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "retort"
+    "crafted_in": "retort",
+    "category": "oil"
   },
   {
     "id": "soap",
@@ -650,7 +675,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "vitalitypotion",
@@ -770,7 +796,8 @@
       }
     ],
     "time": 12,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "steelingot",
@@ -870,7 +897,8 @@
       }
     ],
     "time": 10,
-    "crafted_in": "table saw"
+    "crafted_in": "table saw",
+    "category": "fuel"
   },
   {
     "id": "gloomspores",
@@ -929,7 +957,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "sulfur",
@@ -950,7 +979,8 @@
       }
     ],
     "time": 24,
-    "crafted_in": "iron smelter"
+    "crafted_in": "iron smelter",
+    "category": "solid"
   },
   {
     "id": "sulfurpowder",
@@ -967,7 +997,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "coal",
@@ -984,7 +1015,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "stone crusher"
+    "crafted_in": "stone crusher",
+    "category": "solid"
   },
   {
     "id": "salt",
@@ -1021,7 +1053,8 @@
       }
     ],
     "time": 4,
-    "crafted_in": "mortar"
+    "crafted_in": "mortar",
+    "category": "essence"
   },
   {
     "id": "copperpowder",
@@ -1078,7 +1111,8 @@
       }
     ],
     "time": 12,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "copperingot",
@@ -1095,7 +1129,8 @@
       }
     ],
     "time": 12,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "coppercoin",
@@ -1333,7 +1368,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "sand3",
@@ -1350,7 +1386,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "sand4",
@@ -1367,7 +1404,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "sand5",
@@ -1384,7 +1422,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "sand6",
@@ -1401,7 +1440,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "sand8",
@@ -1418,7 +1458,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "shard1",
@@ -1435,7 +1476,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "shard2",
@@ -1452,7 +1494,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "shard3",
@@ -1469,7 +1512,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "crystal1",
@@ -1486,7 +1530,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "crystal2",
@@ -1503,7 +1548,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "crystal3",
@@ -1520,7 +1566,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "diamond1",
@@ -1537,7 +1584,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "diamond2",
@@ -1554,7 +1602,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "diamond3",
@@ -1571,7 +1620,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "lavenderessentialoil",
@@ -1743,7 +1793,8 @@
       }
     ],
     "time": 8,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "vitae",
@@ -1812,7 +1863,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "gentiannectar",
@@ -1833,7 +1885,8 @@
       }
     ],
     "time": 2160,
-    "crafted_in": "seed plot"
+    "crafted_in": "seed plot",
+    "category": "herbs"
   },
   {
     "id": "silverpowder",
@@ -1874,7 +1927,8 @@
       }
     ],
     "time": 8,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "silverpowder3",
@@ -1915,7 +1969,8 @@
       }
     ],
     "time": 24,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "obsidian",
@@ -1956,7 +2011,8 @@
       }
     ],
     "time": 16,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "silvercoin",
@@ -2199,7 +2255,8 @@
       }
     ],
     "time": 10,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "golddust3",
@@ -2244,7 +2301,8 @@
       }
     ],
     "time": 10,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "goldingot",
@@ -2261,7 +2319,8 @@
       }
     ],
     "time": 40,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "goldcoin",
@@ -2387,7 +2446,8 @@
       }
     ],
     "time": 4,
-    "crafted_in": "mortar"
+    "crafted_in": "mortar",
+    "category": "essence"
   },
   {
     "id": "moontear",
@@ -2534,7 +2594,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "stone crusher"
+    "crafted_in": "stone crusher",
+    "category": "solid"
   },
   {
     "id": "meteorite_alt",
@@ -2551,7 +2612,8 @@
       }
     ],
     "time": 3,
-    "crafted_in": "stone crusher"
+    "crafted_in": "stone crusher",
+    "category": "solid"
   },
   {
     "id": "coke_alt",
@@ -2568,7 +2630,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "copperpowder2_alt",
@@ -2585,7 +2648,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "silverpowder3_alt",
@@ -2602,7 +2666,8 @@
       }
     ],
     "time": 8,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "golddust3_alt",
@@ -2619,7 +2684,8 @@
       }
     ],
     "time": 10,
-    "crafted_in": "cauldron"
+    "crafted_in": "cauldron",
+    "category": "potions"
   },
   {
     "id": "copperingot_alt",
@@ -2636,7 +2702,8 @@
       }
     ],
     "time": 12,
-    "crafted_in": "retort"
+    "crafted_in": "retort",
+    "category": "oil"
   },
   {
     "id": "silveringot_alt",
@@ -2653,7 +2720,8 @@
       }
     ],
     "time": 16,
-    "crafted_in": "retort"
+    "crafted_in": "retort",
+    "category": "oil"
   },
   {
     "id": "goldingot_alt",
@@ -2670,7 +2738,8 @@
       }
     ],
     "time": 40,
-    "crafted_in": "retort"
+    "crafted_in": "retort",
+    "category": "oil"
   },
   {
     "id": "ironingot_alt",
@@ -2687,7 +2756,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "flask"
+    "crafted_in": "flask",
+    "category": "liquid"
   },
   {
     "id": "copperpowder2_alt2",
@@ -2704,7 +2774,8 @@
       }
     ],
     "time": 12,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "silverpowder3_alt3",
@@ -2721,7 +2792,8 @@
       }
     ],
     "time": 16,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "golddust5_alt",
@@ -2738,7 +2810,8 @@
       }
     ],
     "time": 40,
-    "crafted_in": "grinder"
+    "crafted_in": "grinder",
+    "category": "powder"
   },
   {
     "id": "shard1_alt",
@@ -2755,7 +2828,8 @@
       }
     ],
     "time": 6,
-    "crafted_in": "stone crusher"
+    "crafted_in": "stone crusher",
+    "category": "solid"
   },
   {
     "id": "mors_alt",
