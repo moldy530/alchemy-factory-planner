@@ -376,16 +376,23 @@ function nameToKebab(name: string): string {
     .replace(/\s+/g, '-');  // Replace spaces with hyphens
 }
 
+function camelCaseToSpaced(name: string): string {
+  return name
+    .replace(/([a-z])([A-Z])/g, '$1 $2')  // Add space between camelCase words
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')  // Handle consecutive caps
+    .toLowerCase();
+}
+
 function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
   return remoteCrafting.map(craft => {
     const recipe: LocalRecipe = {
       id: nameToKebab(craft.craftIdName),
       inputs: craft.ingredientList.map(ing => ({
-        name: nameToKebab(ing.name),
+        name: camelCaseToSpaced(ing.name),
         count: ing.qty,
       })),
       outputs: [{
-        name: nameToKebab(craft.productInfo.name),
+        name: camelCaseToSpaced(craft.productInfo.name),
         count: craft.productInfo.qty,
       }],
       time: craft.craftTime,
@@ -394,7 +401,7 @@ function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
     // Add side product to outputs if it exists
     if (craft.sideProduct && craft.sideProduct.name.toLowerCase() !== 'none') {
       recipe.outputs.push({
-        name: nameToKebab(craft.sideProduct.name),
+        name: camelCaseToSpaced(craft.sideProduct.name),
         count: craft.sideProduct.qty,
       });
     }
