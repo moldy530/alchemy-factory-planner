@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync-data": "bun run scripts/sync-data.ts"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.8",

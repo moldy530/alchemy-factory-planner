@@ -1,0 +1,119 @@
+[
+  {
+    "id": "FlaxSeed",
+    "growthSeconds": 400,
+    "growthNutrientValue": 24,
+    "product": {
+      "name": "Flax",
+      "qty": 200
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "SageSeed",
+    "growthSeconds": 540,
+    "growthNutrientValue": 36,
+    "product": {
+      "name": "Sage",
+      "qty": 180
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "RedcurrantSeed",
+    "growthSeconds": 720,
+    "growthNutrientValue": 144,
+    "product": {
+      "name": "Redcurrant",
+      "qty": 150
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "ChamomileSeed",
+    "growthSeconds": 1120,
+    "growthNutrientValue": 720,
+    "product": {
+      "name": "Chamomile",
+      "qty": 140
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "LavenderSeed",
+    "growthSeconds": 1440,
+    "growthNutrientValue": 2160,
+    "product": {
+      "name": "Lavender",
+      "qty": 120
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "GentianSeed",
+    "growthSeconds": 2160,
+    "growthNutrientValue": 6000,
+    "product": {
+      "name": "Gentian",
+      "qty": 80
+    },
+    "sideProduct": {
+      "name": "GentianNectar",
+      "qty": 80
+    }
+  },
+  {
+    "id": "TreeStage1",
+    "growthSeconds": 4320,
+    "growthNutrientValue": 0,
+    "product": {
+      "name": "None",
+      "qty": 1
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "TreeStage2",
+    "growthSeconds": 4320,
+    "growthNutrientValue": 30000,
+    "product": {
+      "name": "WorldTreeLeaf",
+      "qty": 99
+    },
+    "sideProduct": {
+      "name": "None",
+      "qty": 0
+    }
+  },
+  {
+    "id": "TreeStage3",
+    "growthSeconds": 4320,
+    "growthNutrientValue": 60000,
+    "product": {
+      "name": "WorldTreeLeaf",
+      "qty": 99
+    },
+    "sideProduct": {
+      "name": "WorldTreeCore",
+      "qty": 1
+    }
+  }
+]
