@@ -72,7 +72,7 @@
   {
     "id": "black-powder",
     "name": "Black Powder",
-    "heat_value": 300000,
+    "heat_value": 3000,
     "category": "fuel",
     "cost": 330,
     "base_cost": 150,
@@ -84,7 +84,7 @@
   {
     "id": "blast-potion",
     "name": "Blast Potion",
-    "heat_value": 2400000,
+    "heat_value": 24000,
     "category": "fuel",
     "cost": 2557,
     "base_cost": 1197,
@@ -196,7 +196,7 @@
   {
     "id": "charcoal",
     "name": "Charcoal",
-    "heat_value": 4000,
+    "heat_value": 40,
     "category": [
       "fuel",
       "solid"
@@ -211,7 +211,7 @@
   {
     "id": "charcoal-powder",
     "name": "Charcoal Powder",
-    "heat_value": 4800,
+    "heat_value": 48,
     "category": "fuel",
     "cost": 2,
     "base_cost": 2,
@@ -245,7 +245,7 @@
   {
     "id": "coal",
     "name": "Coal",
-    "heat_value": 54000,
+    "heat_value": 540,
     "category": [
       "fuel",
       "solid"
@@ -275,7 +275,7 @@
   {
     "id": "coke",
     "name": "Coke",
-    "heat_value": 60000,
+    "heat_value": 600,
     "category": [
       "fuel",
       "solid"
@@ -290,7 +290,7 @@
   {
     "id": "coke-powder",
     "name": "Coke Powder",
-    "heat_value": 66000,
+    "heat_value": 660,
     "category": "fuel",
     "cost": 30,
     "base_cost": 30,
@@ -1006,7 +1006,7 @@
   {
     "id": "panacea-potion",
     "name": "Panacea Potion",
-    "heat_value": 32000000,
+    "heat_value": 320000,
     "nutrient_value": 200000,
     "nutrients_per_seconds": 20000,
     "category": [
@@ -1067,7 +1067,7 @@
   {
     "id": "plank",
     "name": "Plank",
-    "heat_value": 4000,
+    "heat_value": 20,
     "category": "fuel",
     "cost": 1,
     "base_cost": 1,

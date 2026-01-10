@@ -197,9 +197,13 @@ function transformItems(
       // Check if it's a fuel (has heat value)
       if (item.hv !== undefined && item.hv > 0) {
         categories.push('fuel');
-        // Scale heat value by stack size (old format was per-stack)
-        const stackSize = Math.abs(item.maxStack || 1);
-        transformed.heat_value = Math.round(item.hv * stackSize);
+        // Scale heat value by stack size ONLY for raw materials (negative maxStack)
+        // Negative maxStack indicates the heat value is per-stack, not per-unit
+        if (item.maxStack && item.maxStack < 0) {
+          transformed.heat_value = Math.round(item.hv * Math.abs(item.maxStack));
+        } else {
+          transformed.heat_value = item.hv;
+        }
       }
 
       // Check if it's a fertilizer (has both nutrient value and speed)
