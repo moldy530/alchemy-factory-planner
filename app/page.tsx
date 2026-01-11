@@ -88,6 +88,11 @@ export default function PlannerPage() {
 
     function traverse(node: ProductionNode, isRoot = false) {
       const key = node.id || node.itemName;
+
+      // Skip consumption references - they don't contribute to IO summary
+      // The actual production nodes will be traversed separately
+      if (node.isConsumptionReference) return;
+
       if (visited.has(key)) return;
       visited.add(key);
 

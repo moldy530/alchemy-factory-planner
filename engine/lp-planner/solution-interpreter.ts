@@ -166,6 +166,40 @@ export function interpretSolution(
     productionNodes.set(nodeId, node);
   });
 
+  // Create raw material nodes for seeds (not in LP model but needed for IO summary)
+  recipeActivations.forEach((activationRate, recipeId) => {
+    const recipe = getRecipeById(recipeId);
+    if (!recipe) return;
+
+    const machineName = (recipe.crafted_in || "").toLowerCase();
+    if (machineName !== "nursery") return;
+
+    recipe.inputs.forEach((input) => {
+      const itemId = input.id || normalizeItemId(input.name);
+      const item = getItem(itemId);
+      if (!item || !item.name.toLowerCase().endsWith(" seeds")) return;
+
+      const nodeId = `${itemId}-raw`;
+      // Only create if not already exists
+      if (!productionNodes.has(nodeId)) {
+        const seedRate = activationRate * input.count;
+        const node: ProductionNode = {
+          id: nodeId,
+          itemName: item.name,
+          rate: seedRate,
+          isRaw: true,
+          deviceCount: 0,
+          heatConsumption: 0,
+          inputs: [],
+          byproducts: [],
+          beltLimit: ctx.beltLimit,
+          isBeltSaturated: seedRate > ctx.beltLimit,
+        };
+        productionNodes.set(nodeId, node);
+      }
+    });
+  });
+
   // Link nodes based on item flow (create input references)
   linkProductionNodes(productionNodes, recipeActivations, itemFlows, ctx);
 
@@ -397,18 +431,10 @@ function linkProductionNodes(
     const nodeInputs = addedInputs.get(nodeId)!;
 
     // Link each input to its source
-    // Note: Skip seed inputs for nursery recipes (seeds aren't consumed)
-    const isNurseryRecipe = machineName === "nursery";
-
+    // Note: Seeds for nursery recipes aren't consumed per activation in LP model,
+    // but we still link them for IO summary visibility
     recipe.inputs.forEach((input) => {
       const inputId = input.id || normalizeItemId(input.name);
-      const inputItem = getItem(inputId);
-
-      // Skip seed inputs for nursery recipes
-      if (isNurseryRecipe && inputItem?.name.toLowerCase().endsWith(" seeds")) {
-        return;
-      }
-
       const inputRate = activationRate * input.count;
 
       // Find the source node for this input
