@@ -40,13 +40,15 @@ export function generateGraph(
             return;
         }
 
-        // Skip adding consumption references to merged nodes
-        // They're only used to create edges, not to contribute to production totals
+        // For consumption references: create edge but don't add to production totals
+        // However, still add the node to mergedNodes so it appears in the graph
         if (node.isConsumptionReference) {
-            // Still mark as visiting and traverse inputs (though inputs should be empty)
-            visiting.add(key);
-            node.inputs.forEach((input) => traverse(input, key));
-            visiting.delete(key);
+            // Add to merged nodes if not already present (to show in graph)
+            if (!mergedNodes.has(key)) {
+                mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
+            }
+            // Note: We don't traverse inputs here because consumption refs have inputs: []
+            // The actual production chain was already traversed when the production node was created
             return;
         }
 

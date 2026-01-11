@@ -213,6 +213,10 @@ export function interpretSolution(
   // Link nodes based on item flow (create input references)
   linkProductionNodes(productionNodes, recipeActivations, itemFlows, ctx);
 
+  // Track which production nodes are referenced by consumption references
+  // These need to be included as additional roots so their production chains are visible
+  const consumptionRefProductionNodes = new Set<string>();
+
   // Find and return target roots
   const targets = config.targets?.length
     ? config.targets
@@ -250,6 +254,36 @@ export function interpretSolution(
     console.warn("[LP Planner] No root nodes found for targets");
     return [];
   }
+
+  // Traverse the tree to find all consumption references
+  // and add their production nodes as additional roots
+  function findConsumptionRefs(node: ProductionNode, visited = new Set<any>()) {
+    if (visited.has(node)) return;
+    visited.add(node);
+
+    if (node.isConsumptionReference && node.recipeId) {
+      consumptionRefProductionNodes.add(node.recipeId);
+    }
+
+    node.inputs.forEach(input => findConsumptionRefs(input, visited));
+  }
+
+  roots.forEach(root => findConsumptionRefs(root));
+
+  // Add production nodes for consumed items as additional roots
+  consumptionRefProductionNodes.forEach(recipeId => {
+    const nodeId = productionNodes.keys();
+    for (const key of nodeId) {
+      const node = productionNodes.get(key);
+      if (node && node.recipeId === recipeId && !node.isRaw) {
+        // Don't add if already in roots
+        if (!roots.some(r => r.id === node.id)) {
+          roots.push(node);
+        }
+        break;
+      }
+    }
+  });
 
   return roots;
 }
