@@ -430,7 +430,7 @@ function solveNode(
     }
 
     return {
-        id: `${itemName}-prod`,
+        id: `${itemId}-prod`,
         itemName: item.name,
         rate: neededRate, // Only produce what is still needed!
         isRaw: false, // It has a recipe/device!
