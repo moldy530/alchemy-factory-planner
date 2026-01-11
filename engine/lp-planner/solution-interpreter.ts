@@ -501,7 +501,8 @@ function linkProductionNodes(
 
         // Link fertilizer (raw or produced)
         if (fertFlow && fertFlow.sources.length > 0) {
-          // Fertilizer is produced - link to production nodes with cycle detection
+          // Fertilizer is produced - link to production nodes
+          // Note: We create consumption references even for cycles so they appear in the graph
           fertFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
             const sourceNodeId = `${fertId}-prod-${recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
@@ -509,16 +510,18 @@ function linkProductionNodes(
 
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
-            // Check for cycles before linking
-            if (wouldCreateCycleNew(nodeId, sourceNodeId)) {
-              // Skip linking to avoid cycle - consumption tracked in itemFlows for netOutputRate
-              return;
-            }
+            // Check for cycles - if detected, still create the link but don't add to dependencies
+            // This allows the graph to show circular fertilizer flows without breaking traversal
+            const wouldCycle = wouldCreateCycleNew(nodeId, sourceNodeId);
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
             node.inputs.push(createConsumptionReference(sourceNode, inputRate, fertId));
-            addDependency(nodeId, sourceNodeId);
+
+            // Only track dependencies if not cyclic to avoid infinite loops in traversal
+            if (!wouldCycle) {
+              addDependency(nodeId, sourceNodeId);
+            }
           });
         } else {
           // Fertilizer is raw material - link to raw node
@@ -557,7 +560,8 @@ function linkProductionNodes(
 
         // Link fuel (raw or produced)
         if (fuelFlow && fuelFlow.sources.length > 0) {
-          // Fuel is produced - link to production nodes with cycle detection
+          // Fuel is produced - link to production nodes
+          // Note: We create consumption references even for cycles so they appear in the graph
           fuelFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
             const sourceNodeId = `${fuelId}-prod-${recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
@@ -565,16 +569,18 @@ function linkProductionNodes(
 
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
-            // Check for cycles before linking
-            if (wouldCreateCycleNew(nodeId, sourceNodeId)) {
-              // Skip linking to avoid cycle - consumption tracked in itemFlows for netOutputRate
-              return;
-            }
+            // Check for cycles - if detected, still create the link but don't add to dependencies
+            // This allows the graph to show circular fuel flows without breaking traversal
+            const wouldCycle = wouldCreateCycleNew(nodeId, sourceNodeId);
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
             node.inputs.push(createConsumptionReference(sourceNode, inputRate, fuelId));
-            addDependency(nodeId, sourceNodeId);
+
+            // Only track dependencies if not cyclic to avoid infinite loops in traversal
+            if (!wouldCycle) {
+              addDependency(nodeId, sourceNodeId);
+            }
           });
         } else {
           // Fuel is raw material - link to raw node
