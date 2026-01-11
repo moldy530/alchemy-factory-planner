@@ -278,6 +278,50 @@ export function interpretSolution(
     return [];
   }
 
+  // Add production nodes for consumed items (fertilizer/fuel) as additional roots
+  // This allows the graph to show their production chains separately from consumption edges
+  const consumedItems = new Set<string>();
+
+  // Find all consumed items that are produced (not just raw materials)
+  productionNodes.forEach(node => {
+    if (!node.isRaw) {
+      node.inputs.forEach(input => {
+        if (input.isConsumptionReference && input.recipeId) {
+          consumedItems.add(input.recipeId);
+        }
+      });
+    }
+  });
+
+  // Add their production nodes as roots (but skip if already a target)
+  consumedItems.forEach(recipeId => {
+    productionNodes.forEach(node => {
+      if (node.recipeId === recipeId && !node.isRaw) {
+        // Skip if already in roots
+        if (!roots.some(r => r.id === node.id)) {
+          // Calculate net output rate for consumed items
+          // Net = (produced + available) - consumed
+          const itemId = normalizeItemId(node.itemName);
+          const flow = itemFlows.get(itemId);
+
+          // Find available resources for this item
+          const availableRate = config.availableResources
+            ?.filter(res => normalizeItemId(res.item) === itemId)
+            .reduce((sum, res) => sum + res.rate, 0) || 0;
+
+          const netRate = flow
+            ? (flow.produced + availableRate) - flow.consumed
+            : 0;
+
+          roots.push({
+            ...node,
+            netOutputRate: netRate,
+          });
+        }
+      }
+    });
+  });
+
   return roots;
 }
 
@@ -667,8 +711,8 @@ function createInputReference(
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * Shows the consumption edge along with the full production chain, including circular dependencies.
- * The graph visualization will properly handle cycles via object reference deduplication.
+ * Marks this as a consumption edge without including inputs (to prevent circular duplication).
+ * The production chain should be accessible via the production node itself as a separate root.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
@@ -679,7 +723,8 @@ function createConsumptionReference(
     ...sourceNode,
     rate: consumptionRate,
     isConsumptionReference: true, // Mark as consumption so graphMapper doesn't add to total
-    // Keep inputs to show full production chain including circular dependencies
-    inputs: sourceNode.inputs,
+    // Empty inputs to prevent circular duplication through consumption refs
+    // The production node is accessible as a separate root showing the full production chain
+    inputs: [],
   };
 }
