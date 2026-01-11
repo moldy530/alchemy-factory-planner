@@ -339,6 +339,38 @@ function calculateItemFlows(
 }
 
 /**
+ * Check if adding a dependency would create a cycle in the production tree.
+ * Returns true if linking sourceNode to targetNode would create a cycle.
+ */
+function wouldCreateCycle(
+  sourceNode: ProductionNode,
+  targetNode: ProductionNode,
+  nodes: Map<string, ProductionNode>
+): boolean {
+  const visited = new Set<string>();
+
+  function hasPath(from: ProductionNode, toId: string): boolean {
+    if (from.id === toId) return true;
+    if (visited.has(from.id)) return false;
+
+    visited.add(from.id);
+
+    for (const input of from.inputs) {
+      const inputNode = nodes.get(input.id);
+      if (inputNode && hasPath(inputNode, toId)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Check if there's already a path from sourceNode to targetNode
+  // If yes, adding targetNode→sourceNode would create a cycle
+  return hasPath(sourceNode, targetNode.id);
+}
+
+/**
  * Link production nodes by adding input references.
  * Uses a flat linking approach to avoid circular references.
  */
@@ -350,6 +382,33 @@ function linkProductionNodes(
 ): void {
   // Track which node IDs we've already added as inputs to prevent duplicates
   const addedInputs = new Map<string, Set<string>>(); // nodeId -> Set of input nodeIds
+
+  // Track dependencies as we build them for cycle detection
+  const dependencies = new Map<string, Set<string>>(); // nodeId -> all its dependencies (direct and transitive)
+
+  // Helper to check if adding dep would create cycle
+  function wouldCreateCycleNew(nodeId: string, depId: string): boolean {
+    // Adding nodeId->depId creates cycle if depId already depends on nodeId
+    const depDeps = dependencies.get(depId) || new Set();
+    return depDeps.has(nodeId);
+  }
+
+  // Helper to add dependency and update transitive closure
+  function addDependency(nodeId: string, depId: string) {
+    if (!dependencies.has(nodeId)) {
+      dependencies.set(nodeId, new Set());
+    }
+    const nodeDeps = dependencies.get(nodeId)!;
+
+    // Add direct dependency
+    nodeDeps.add(depId);
+
+    // Add all transitive dependencies of depId
+    const depDeps = dependencies.get(depId);
+    if (depDeps) {
+      depDeps.forEach(transitiveDep => nodeDeps.add(transitiveDep));
+    }
+  }
 
   // For each production node, find what inputs it needs
   recipeActivations.forEach((activationRate, recipeId) => {
@@ -401,6 +460,7 @@ function linkProductionNodes(
 
           nodeInputs.add(sourceNodeId);
           node.inputs.push(createInputReference(sourceNode, inputRate, inputId));
+          addDependency(nodeId, sourceNodeId);
         });
       } else {
         // Link to raw material
@@ -409,13 +469,12 @@ function linkProductionNodes(
         if (rawNode && !nodeInputs.has(rawNodeId)) {
           nodeInputs.add(rawNodeId);
           node.inputs.push(createInputReference(rawNode, inputRate, inputId));
+          addDependency(nodeId, rawNodeId);
         }
       }
     });
 
     // Link fertilizer input if nursery
-    // NOTE: Skip linking if fertilizer would create a cycle (e.g., Basic Fertilizer used as fertilizer)
-    // Fertilizer consumption is already tracked in itemFlows for netOutputRate calculation
     const device = getDevice(machineName);
     const isNursery = machineName === "nursery";
 
@@ -429,49 +488,64 @@ function linkProductionNodes(
         const fertId = normalizeItemId(ctx.selectedFertilizer);
         const fertFlow = itemFlows.get(fertId);
 
-        // Only link fertilizer if it's a raw material (prevents cycles)
-        if (!fertFlow || fertFlow.sources.length === 0) {
-          const fertilizerPerOutputItem = outputItem.required_nutrients / (fertilizerItem.nutrient_value * ctx.fertilizerMultiplier);
-          const outputCount = typeof recipe.outputs[0].count === "string"
-            ? parseFloat(recipe.outputs[0].count)
-            : recipe.outputs[0].count;
-          const fertilizerRate = activationRate * outputCount * fertilizerPerOutputItem;
+        const fertilizerPerOutputItem = outputItem.required_nutrients / (fertilizerItem.nutrient_value * ctx.fertilizerMultiplier);
+        const outputCount = typeof recipe.outputs[0].count === "string"
+          ? parseFloat(recipe.outputs[0].count)
+          : recipe.outputs[0].count;
+        const fertilizerRate = activationRate * outputCount * fertilizerPerOutputItem;
 
+        // Link fertilizer only if it's a raw material
+        // If produced, consumption is tracked in itemFlows for netOutputRate calculation
+        // Linking produced fuel/fertilizer would create duplicate nodes and inflate rates in graph
+        if (!fertFlow || fertFlow.sources.length === 0) {
+          // Fertilizer is raw material - link to raw node
           const rawNodeId = `${fertId}-raw`;
           const rawNode = nodes.get(rawNodeId);
           if (rawNode && !nodeInputs.has(rawNodeId)) {
             nodeInputs.add(rawNodeId);
             node.inputs.push(createInputReference(rawNode, fertilizerRate, fertId));
+            addDependency(nodeId, rawNodeId);
           }
         }
-        // If fertilizer is produced (not raw), it's tracked in itemFlows but not in tree to avoid cycles
+        // If fertilizer is produced: consumption tracked in itemFlows, don't add to tree
       }
     }
 
     // Link fuel input if applicable
-    // NOTE: Skip linking if fuel would create a cycle (e.g., Plank used as fuel for crucible making planks)
-    // Fuel consumption is already tracked in itemFlows for netOutputRate calculation
     if (device?.heat_consuming_speed && device.category !== "heating") {
       const fuelItem = getItem(ctx.selectedFuel);
       if (fuelItem?.heat_value) {
         const fuelId = normalizeItemId(ctx.selectedFuel);
         const fuelFlow = itemFlows.get(fuelId);
 
-        // Only link fuel if it's a raw material (prevents cycles)
-        if (!fuelFlow || fuelFlow.sources.length === 0) {
-          const heaterSpeed = 1;
-          const heatPerSecond = (heaterSpeed + device.heat_consuming_speed) * ctx.speedMultiplier;
-          const heatPerActivation = heatPerSecond * recipe.time / ctx.speedMultiplier;
-          const fuelRate = activationRate * heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
+        // Get parent furnace information for heat calculation
+        const parentFurnace = device.parent ? getDevice(device.parent) : null;
+        const furnaceHeat = parentFurnace?.heat_self || 1;
+        const furnaceSlots = parentFurnace?.slots || 9;
+        const deviceSlotsRequired = device.slots_required || 1;
 
+        // Calculate fuel consumption using parent/child heat formula
+        const deviceHeatPerSecond = device.heat_consuming_speed * ctx.speedMultiplier;
+        const furnaceContribution = furnaceHeat * (deviceSlotsRequired / furnaceSlots) * ctx.speedMultiplier;
+        const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
+        const timePerActivation = recipe.time / ctx.speedMultiplier;
+        const heatPerActivation = totalHeatPerSecond * timePerActivation;
+        const fuelRate = activationRate * heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
+
+        // Link fuel only if it's a raw material
+        // If produced, consumption is tracked in itemFlows for netOutputRate calculation
+        // Linking produced fuel/fertilizer would create duplicate nodes and inflate rates in graph
+        if (!fuelFlow || fuelFlow.sources.length === 0) {
+          // Fuel is raw material - link to raw node
           const rawNodeId = `${fuelId}-raw`;
           const rawNode = nodes.get(rawNodeId);
           if (rawNode && !nodeInputs.has(rawNodeId)) {
             nodeInputs.add(rawNodeId);
             node.inputs.push(createInputReference(rawNode, fuelRate, fuelId));
+            addDependency(nodeId, rawNodeId);
           }
         }
-        // If fuel is produced (not raw), it's tracked in itemFlows but not in tree to avoid cycles
+        // If fuel is produced: consumption tracked in itemFlows, don't add to tree
       }
     }
   });
