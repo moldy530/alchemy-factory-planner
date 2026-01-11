@@ -92,9 +92,11 @@ export default function PlannerPage() {
       visited.add(key);
 
       if (isRoot) {
+        // Use netOutputRate for LP planner (accounts for internal consumption)
+        const outputRate = node.netOutputRate ?? node.rate;
         outputs.set(
           node.itemName,
-          (outputs.get(node.itemName) || 0) + node.rate,
+          (outputs.get(node.itemName) || 0) + outputRate,
         );
       }
       node.byproducts.forEach((bp) => {
