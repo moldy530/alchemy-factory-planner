@@ -177,22 +177,30 @@ export function buildLPModel(
       }
     }
 
-    // Handle fuel consumption for heated devices
-    // TODO: Currently assumes a fixed heater speed of 1 (stone furnace).
-    // Future improvement: Allow selecting heater type and model heaters as explicit machines
-    // with their own fuel consumption rates based on the selected heater device.
+    // Handle fuel consumption for heated devices (parent/child relationship)
     if (device?.heat_consuming_speed && device.category !== "heating") {
       const fuelId = normalizeItemId(ctx.selectedFuel);
       const fuelItem = itemsMap.get(fuelId);
       if (fuelItem?.heat_value) {
         allItems.add(fuelId);
 
-        // Heat consumption per activation
-        // When recipe runs once (takes recipeTime seconds), how much fuel is consumed?
-        const heaterSpeed = 1; // Stone furnace base speed
-        const deviceHeatSpeed = device.heat_consuming_speed;
-        const heatPerSecond = (heaterSpeed + deviceHeatSpeed) * ctx.speedMultiplier;
-        const heatPerActivation = heatPerSecond * recipeTime / ctx.speedMultiplier; // Cancel out speed effect on time
+        // Get parent furnace information
+        const parentFurnace = device.parent ? devicesMap.get(device.parent) : null;
+        const furnaceHeat = parentFurnace?.heat_self || 1; // Default to Stone Stove (1 P/s)
+        const furnaceSlots = parentFurnace?.slots || 9; // Default to Stone Stove (9 slots)
+        const deviceSlotsRequired = device.slots_required || 1;
+
+        // Heat per second calculation:
+        // - Device consumes heat at device.heat_consuming_speed P/s
+        // - Device uses fraction of furnace: deviceSlotsRequired / furnaceSlots
+        // - Furnace contributes: furnaceHeat × (deviceSlotsRequired / furnaceSlots) P/s
+        const deviceHeatPerSecond = device.heat_consuming_speed * ctx.speedMultiplier;
+        const furnaceContribution = furnaceHeat * (deviceSlotsRequired / furnaceSlots) * ctx.speedMultiplier;
+        const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
+
+        // Heat per activation = heat per second × time per activation
+        const timePerActivation = recipeTime / ctx.speedMultiplier;
+        const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelPerActivation = heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
 
         const current = recipeCoeffs.get(fuelId) || 0;

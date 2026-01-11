@@ -92,12 +92,35 @@ export function interpretSolution(
       };
     });
 
-    // Calculate heat consumption
+    // Calculate heat consumption and parent furnace requirements
     let heatConsumption = 0;
+    let parentFurnaceId: string | undefined;
+    let parentFurnaceCount: number | undefined;
+
     if (device?.heat_consuming_speed && device.category !== "heating") {
-      const heaterSpeed = 1;
-      heatConsumption = (heaterSpeed + device.heat_consuming_speed) *
-        60 * ctx.speedMultiplier * machineCount;
+      // Get parent furnace information
+      const parentFurnace = device.parent ? getDevice(device.parent) : null;
+      const furnaceHeat = parentFurnace?.heat_self || 1; // Default to Stone Stove (1 P/s)
+      const furnaceSlots = parentFurnace?.slots || 9; // Default to Stone Stove (9 slots)
+      const deviceSlotsRequired = device.slots_required || 1;
+
+      // Calculate furnaces needed for this many machines
+      // Each furnace has furnaceSlots, each device uses deviceSlotsRequired slots
+      const slotsPerDevice = deviceSlotsRequired;
+      const devicesPerFurnace = furnaceSlots / slotsPerDevice;
+      const furnacesNeeded = Math.ceil(machineCount / devicesPerFurnace - 0.0001); // Small epsilon to handle floating point
+
+      // Total heat per second = (furnaces × furnaceHeat + machines × deviceHeat) × speedMult
+      const totalHeatPerSecond = (furnacesNeeded * furnaceHeat + machineCount * device.heat_consuming_speed) * ctx.speedMultiplier;
+
+      // Convert to heat per minute for display
+      heatConsumption = totalHeatPerSecond * 60;
+
+      // Store parent furnace information
+      if (parentFurnace) {
+        parentFurnaceId = parentFurnace.id;
+        parentFurnaceCount = furnacesNeeded;
+      }
     }
 
     const nodeId = `${primaryOutputId}-prod-${recipeId}`;
@@ -110,6 +133,8 @@ export function interpretSolution(
       deviceId: device?.id,
       deviceCount: machineCount,
       heatConsumption,
+      parentFurnaceId,
+      parentFurnaceCount,
       inputs: [], // Will be linked later
       byproducts,
       beltLimit: ctx.beltLimit,
