@@ -121,7 +121,7 @@
     ],
     "outputs": [
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 1
       }
     ],
@@ -133,7 +133,7 @@
     "id": "large-wood-gear",
     "inputs": [
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 1
       }
     ],
@@ -465,7 +465,7 @@
     "id": "charcoal",
     "inputs": [
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 1
       }
     ],
@@ -501,7 +501,7 @@
     "id": "wood-pulley",
     "inputs": [
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 2
       },
       {
@@ -759,7 +759,7 @@
     "id": "jupiter",
     "inputs": [
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 4
       },
       {
@@ -909,7 +909,7 @@
         "count": 1
       },
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 4
       }
     ],
@@ -3053,7 +3053,7 @@
     "id": "cart",
     "inputs": [
       {
-        "name": "wood board",
+        "name": "Plank",
         "count": 10
       },
       {
