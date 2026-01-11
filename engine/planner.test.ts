@@ -222,6 +222,100 @@ planners.forEach(({ name, fn: calculateFn }) => {
     console.log(`✓ Seed consumption: ${seedInput?.rate.toFixed(2)}/min`);
   });
 
+  test("Complex production chain with multiple nursery recipes (Bandage)", () => {
+    const config: PlannerConfig = {
+      targets: [{ item: "Bandage", rate: 6 }],
+      availableResources: [],
+      fuelEfficiency: 0,
+      alchemySkill: 0,
+      factoryEfficiency: 0,
+      logisticsEfficiency: 0,
+      throwingEfficiency: 0,
+      fertilizerEfficiency: 0,
+      salesAbility: 0,
+      negotiationSkill: 0,
+      customerMgmt: 0,
+      relicKnowledge: 0,
+      selectedFertilizer: "Basic Fertilizer",
+      selectedFuel: "Plank",
+    };
+
+    const result = calculateFn(config);
+
+    console.log("\n=== Complex Bandage Production Test ===");
+    console.log(JSON.stringify(result, null, 2));
+
+    // Should have 1 root node (Bandage)
+    expect(result).toHaveLength(1);
+    const bandageNode = result[0];
+    expect(bandageNode.itemName).toBe("Bandage");
+    expect(bandageNode.rate).toBe(6);
+
+    // Helper to recursively find all nodes by item name
+    function findAllNodesByName(node: any, name: string): any[] {
+      const matches: any[] = [];
+      if (node.itemName === name) {
+        matches.push(node);
+      }
+      if (node.inputs) {
+        for (const input of node.inputs) {
+          matches.push(...findAllNodesByName(input, name));
+        }
+      }
+      return matches;
+    }
+
+    // Find all Flax production nodes
+    const flaxNodes = findAllNodesByName(bandageNode, "Flax");
+    console.log(`\nFound ${flaxNodes.length} Flax production nodes`);
+
+    // Calculate total Flax production
+    const totalFlaxRate = flaxNodes.reduce((sum, node) => sum + (node.rate || 0), 0);
+    const totalFlaxNurseries = flaxNodes.reduce((sum, node) => sum + (node.deviceCount || 0), 0);
+    console.log(`Total Flax: ${totalFlaxRate}/min from ${totalFlaxNurseries} nurseries`);
+
+    // Expected from Joe's calculator: 180 + 72 = 252 Flax/min total
+    // 180/min = 3 nurseries (at 60/min each)
+    // 72/min = 1.2 nurseries (at 60/min each)
+    // Total = 4.2 nurseries
+    expect(totalFlaxRate).toBeCloseTo(252, 0);
+    expect(totalFlaxNurseries).toBeCloseTo(4.2, 1);
+
+    // Find all Sage production nodes
+    const sageNodes = findAllNodesByName(bandageNode, "Sage");
+    console.log(`\nFound ${sageNodes.length} Sage production nodes`);
+
+    const totalSageRate = sageNodes.reduce((sum, node) => sum + (node.rate || 0), 0);
+    const totalSageNurseries = sageNodes.reduce((sum, node) => sum + (node.deviceCount || 0), 0);
+    console.log(`Total Sage: ${totalSageRate}/min from ${totalSageNurseries} nurseries`);
+
+    // Expected from Joe's calculator: 72 Sage/min
+    // Sage growth: required_nutrients=36, nutrients_per_sec=12
+    // Growth time = 36/12 = 3 seconds
+    // Output per cycle = 180 Sage
+    // Items per minute = 180/3 * 60 = 3600/min per nursery
+    // For 72/min: 72/3600 = 0.02 nurseries
+    expect(totalSageRate).toBeCloseTo(72, 0);
+    expect(totalSageNurseries).toBeCloseTo(0.02, 2);
+
+    // Find all Basic Fertilizer consumption
+    const fertilizerNodes = findAllNodesByName(bandageNode, "Basic Fertilizer");
+    console.log(`\nFound ${fertilizerNodes.length} Basic Fertilizer consumption nodes`);
+
+    const totalFertilizerRate = fertilizerNodes.reduce((sum, node) => sum + (node.rate || 0), 0);
+    console.log(`Total Basic Fertilizer: ${totalFertilizerRate}/min`);
+
+    // Expected from Joe's calculator: 60/min Basic Fertilizer total
+    // Flax 180/min needs 30/min, Sage 72/min needs 18/min, Flax 72/min needs 12/min
+    expect(totalFertilizerRate).toBeCloseTo(60, 1);
+
+    console.log("\n=== Test Summary ===");
+    console.log(`✓ Bandage: ${bandageNode.rate}/min`);
+    console.log(`✓ Total Flax: ${totalFlaxRate.toFixed(2)}/min from ${totalFlaxNurseries.toFixed(2)} nurseries`);
+    console.log(`✓ Total Sage: ${totalSageRate.toFixed(2)}/min from ${totalSageNurseries.toFixed(2)} nurseries`);
+    console.log(`✓ Total Basic Fertilizer: ${totalFertilizerRate.toFixed(2)}/min`);
+  });
+
   test("Item ID normalization works correctly", () => {
     // Test that we can reference items by display name OR ID
     const configByName: PlannerConfig = {
