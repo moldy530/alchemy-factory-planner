@@ -540,8 +540,36 @@ describe("LP Planner - Circular Dependencies", () => {
     const bandageNode = result.find(n => n.itemName === "Bandage")!;
     expect(bandageNode).toBeDefined();
 
+    // Helper to find ALL nodes including consumption refs
+    function findAllNodes(node: any, name: string, seenNodes = new Set<any>(), visiting = new Set<any>()): any[] {
+      if (visiting.has(node)) return [];
+      visiting.add(node);
+
+      const matches: any[] = [];
+      if (node.itemName === name) {
+        if (!seenNodes.has(node)) {
+          seenNodes.add(node);
+          matches.push(node);
+        }
+      }
+      if (node.inputs) {
+        for (const input of node.inputs) {
+          matches.push(...findAllNodes(input, name, seenNodes, visiting));
+        }
+      }
+
+      visiting.delete(node);
+      return matches;
+    }
+
+    const allFertNodesIncludingConsumption = findAllNodes(bandageNode, "Basic Fertilizer");
+    console.log(`\nFound ${allFertNodesIncludingConsumption.length} Basic Fertilizer nodes (including consumption refs):`);
+    allFertNodesIncludingConsumption.forEach((node, i) => {
+      console.log(`  Node ${i + 1}: ${node.rate}/min, isRaw=${node.isRaw}, deviceCount=${node.deviceCount}, isConsumptionRef=${node.isConsumptionReference}, id=${node.id}`);
+    });
+
     const allFertNodes = findAllNodesByName(bandageNode, "Basic Fertilizer");
-    console.log(`\nFound ${allFertNodes.length} Basic Fertilizer nodes:`);
+    console.log(`\nFound ${allFertNodes.length} Basic Fertilizer production nodes (excluding consumption refs):`);
     allFertNodes.forEach((node, i) => {
       console.log(`  Node ${i + 1}: ${node.rate}/min, isRaw=${node.isRaw}, deviceCount=${node.deviceCount}`);
     });
@@ -552,13 +580,9 @@ describe("LP Planner - Circular Dependencies", () => {
     expect(allFertNodes.length).toBeGreaterThanOrEqual(1);
 
     console.log("\n=== Test Summary ===");
-    console.log(`✓ Found ${allFertNodes.length} Basic Fertilizer node(s) accessible from tree`);
+    console.log(`✓ Found ${allFertNodes.length} production node(s) accessible from tree`);
 
     const totalRate = allFertNodes.reduce((sum, n) => sum + n.rate, 0);
     console.log(`✓ Total rate accessible: ${totalRate.toFixed(1)}/min`);
-
-    // TODO: The production node and raw node should both be visible in the graph
-    // Currently only raw nodes from consumption ref inputs are found
-    // Need to ensure production nodes for consumed items are also accessible
   });
 });
