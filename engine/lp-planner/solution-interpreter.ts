@@ -6,26 +6,11 @@ import { isAlchemyMachine } from "./efficiency";
 import { normalizeItemId } from "../item-utils";
 
 /**
- * Calculate effective recipe time, accounting for nursery fertilizer.
+ * Calculate effective recipe time.
+ * For nursery recipes, fertilizer provides nutrients but doesn't speed up growth.
+ * Growth time remains the same: recipe.time (growthSeconds from plantseeds.json)
  */
 function getEffectiveRecipeTime(recipe: Recipe, ctx: EfficiencyContext): number {
-  const machineName = recipe.crafted_in?.toLowerCase() || "";
-
-  if (machineName === "nursery" && ctx.selectedFertilizer) {
-    const fertilizerId = normalizeItemId(ctx.selectedFertilizer);
-    const fertilizerItem = getItem(fertilizerId);
-    const outputDef = recipe.outputs[0];
-    const outputId = outputDef?.id || (outputDef ? normalizeItemId(outputDef.name) : "");
-    const outputItem = outputId ? getItem(outputId) : null;
-
-    if (fertilizerItem?.nutrients_per_seconds && outputItem?.required_nutrients) {
-      // Calculate effective growth time based on fertilizer
-      // growth_time = required_nutrients / (nutrients_per_seconds * fertilizer_efficiency)
-      const nutrientsPerSec = fertilizerItem.nutrients_per_seconds * ctx.fertilizerMultiplier;
-      return outputItem.required_nutrients / nutrientsPerSec;
-    }
-  }
-
   return recipe.time;
 }
 
@@ -346,10 +331,13 @@ function calculateItemFlows(
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
         const flow = getOrCreateFlow(fertilizerId);
 
-        // Note: Fertilizer efficiency affects delivery speed (nutrients_per_seconds), not total value
-        // required_nutrients is for the whole growth cycle, not per output item
+        // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
+        // Each Flax needs 24 nutrients, so per cycle (200 Flax) = 200 * 24 nutrients
+        const outputCount = typeof recipe.outputs[0].count === "string"
+          ? parseFloat(recipe.outputs[0].count)
+          : recipe.outputs[0].count;
         const effectiveNutrientValue = fertilizerItem.nutrient_value;
-        const fertilizerPerActivation = outputItem.required_nutrients / effectiveNutrientValue;
+        const fertilizerPerActivation = (outputCount * outputItem.required_nutrients) / effectiveNutrientValue;
         const rate = activationRate * fertilizerPerActivation;
 
         flow.consumed += rate;
@@ -504,9 +492,11 @@ function linkProductionNodes(
         const fertId = normalizeItemId(ctx.selectedFertilizer);
         const fertFlow = itemFlows.get(fertId);
 
-        // Note: Fertilizer efficiency affects delivery speed (nutrients_per_seconds), not total value
-        // required_nutrients is for the whole growth cycle, not per output item
-        const fertilizerPerActivation = outputItem.required_nutrients / fertilizerItem.nutrient_value;
+        // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
+        const outputCount = typeof recipe.outputs[0].count === "string"
+          ? parseFloat(recipe.outputs[0].count)
+          : recipe.outputs[0].count;
+        const fertilizerPerActivation = (outputCount * outputItem.required_nutrients) / fertilizerItem.nutrient_value;
         const fertilizerRate = activationRate * fertilizerPerActivation;
 
         // Link fertilizer (raw or produced)

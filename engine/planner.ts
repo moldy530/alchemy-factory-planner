@@ -245,15 +245,18 @@ function solveNode(
             // - Items per second = outputCount / growth_time
             // - Items per minute = items_per_second * 60
             // Simplified: (outputCount * nutrients_per_sec * 60) / required_nutrients
-            // Calculate items per minute per nursery
-            itemsPerMinPerMachine =
-                ((60 * nutrientsPerSec * outputCount) / item.required_nutrients) *
-                ctx.speedMultiplier;
+            // Nursery growth math:
+            // - Fertilizer provides nutrients but doesn't speed up growth
+            // - Growth time = base recipe time (growthSeconds from plantseeds.json)
+            // - For Flax: 400 seconds
+            // - Output per cycle = 200 Flax
+            // - Rate = (200 / 400) * 60 = 30 Flax/min per nursery
+            itemsPerMinPerMachine = (outputCount / baseTime) * 60 * ctx.speedMultiplier;
 
-            // Fertilizer consumption per output item
-            // required_nutrients is for the whole growth cycle which produces outputCount items
-            // So fertilizer per item = (required_nutrients / nutrient_value) / outputCount
-            const fertNeededPerItem = item.required_nutrients / (nutrientValue * outputCount);
+            // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
+            // - Each Flax needs 24 nutrients
+            // - Fertilizer per Flax = 24 / 144 = 0.1667 units
+            const fertNeededPerItem = item.required_nutrients / nutrientValue;
             const totalFertilizerRate = neededRate * fertNeededPerItem;
 
             fertilizerInput = {
