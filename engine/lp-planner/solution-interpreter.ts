@@ -339,38 +339,6 @@ function calculateItemFlows(
 }
 
 /**
- * Check if adding a dependency would create a cycle in the production tree.
- * Returns true if linking sourceNode to targetNode would create a cycle.
- */
-function wouldCreateCycle(
-  sourceNode: ProductionNode,
-  targetNode: ProductionNode,
-  nodes: Map<string, ProductionNode>
-): boolean {
-  const visited = new Set<string>();
-
-  function hasPath(from: ProductionNode, toId: string): boolean {
-    if (from.id === toId) return true;
-    if (visited.has(from.id)) return false;
-
-    visited.add(from.id);
-
-    for (const input of from.inputs) {
-      const inputNode = nodes.get(input.id);
-      if (inputNode && hasPath(inputNode, toId)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  // Check if there's already a path from sourceNode to targetNode
-  // If yes, adding targetNode→sourceNode would create a cycle
-  return hasPath(sourceNode, targetNode.id);
-}
-
-/**
  * Link production nodes by adding input references.
  * Uses a flat linking approach to avoid circular references.
  */
