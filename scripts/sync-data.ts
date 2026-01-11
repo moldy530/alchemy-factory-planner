@@ -5,6 +5,8 @@
  * Transforms data to be backwards compatible with existing calculation engines
  */
 
+import { readFile } from 'node:fs/promises';
+
 const REMOTE_BASE_URL = 'https://raw.githubusercontent.com/faultyd3v/AlchemyFactoryData/main';
 const DATA_DIR = './data';
 
@@ -63,6 +65,10 @@ interface LocalDevice {
   name: string;
   category?: string;
   heat_consuming_speed?: number;
+  heat_self?: number;
+  slots?: number;
+  parent?: string;
+  slots_required?: number;
 }
 
 interface RemoteCrafting {
@@ -323,7 +329,8 @@ function determineDeviceCategory(
 
 function transformBuildings(
   remoteBuildings: RemoteBuilding[],
-  recipes: RemoteCrafting[]
+  recipes: RemoteCrafting[],
+  deviceMetadata: any = { furnaces: {}, heated_devices: {} }
 ): LocalDevice[] {
   return remoteBuildings
     .filter(building => !building.hide)
@@ -342,9 +349,11 @@ function transformBuildings(
                deviceName.replace(/\s+/g, '-').includes(buildingId);
       });
 
-      // Also include support buildings
+      // Also include support buildings (furnaces, portals, nursery)
       const isSupportBuilding =
         buildingId.includes('heater') ||
+        buildingId.includes('furnace') ||
+        buildingId.includes('stove') ||
         buildingId.includes('portal') ||
         buildingId.includes('nursery');
 
@@ -364,6 +373,28 @@ function transformBuildings(
       // Map heating capacity to heat_consuming_speed
       if (building.hc !== undefined && building.hc > 0) {
         device.heat_consuming_speed = building.hc;
+      }
+
+      // Merge metadata for furnaces (heating devices)
+      const furnaceMetadata = deviceMetadata.furnaces?.[deviceId];
+      if (furnaceMetadata) {
+        if (furnaceMetadata.heat_self !== undefined) {
+          device.heat_self = furnaceMetadata.heat_self;
+        }
+        if (furnaceMetadata.slots !== undefined) {
+          device.slots = furnaceMetadata.slots;
+        }
+      }
+
+      // Merge metadata for heated devices (parent/child relationships)
+      const heatedMetadata = deviceMetadata.heated_devices?.[deviceId];
+      if (heatedMetadata) {
+        if (heatedMetadata.parent !== undefined) {
+          device.parent = heatedMetadata.parent;
+        }
+        if (heatedMetadata.slots_required !== undefined) {
+          device.slots_required = heatedMetadata.slots_required;
+        }
       }
 
       return device;
@@ -461,11 +492,23 @@ async function main() {
     console.log(`✅ Fetched ${remoteCrafting.length} crafting recipes`);
     console.log(`✅ Fetched ${plantSeeds.length} plant seeds\n`);
 
+    // Load device metadata (parent/child relationships)
+    console.log('📖 Loading device metadata...');
+    const metadataPath = `${DATA_DIR}/device-metadata.json`;
+    let deviceMetadata: any = { furnaces: {}, heated_devices: {} };
+    try {
+      const metadataContent = await readFile(metadataPath, 'utf-8');
+      deviceMetadata = JSON.parse(metadataContent);
+      console.log('✅ Loaded device metadata\n');
+    } catch (err) {
+      console.warn('⚠️  No device metadata found, skipping merge\n');
+    }
+
     // Transform data (pass dependencies for proper transformation)
     console.log('🔄 Transforming data...');
     const localRecipes = transformCrafting(remoteCrafting, remoteItems);
     const localItems = transformItems(remoteItems, plantSeeds, remoteCrafting);
-    const localDevices = transformBuildings(remoteBuildings, remoteCrafting);
+    const localDevices = transformBuildings(remoteBuildings, remoteCrafting, deviceMetadata);
 
     // Write transformed data
     console.log('💾 Writing data files...');

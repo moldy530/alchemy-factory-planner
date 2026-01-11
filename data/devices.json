@@ -3,13 +3,17 @@
     "id": "advanced-alembic",
     "name": "Advanced Alembic",
     "category": "production",
-    "heat_consuming_speed": 270
+    "heat_consuming_speed": 270,
+    "parent": "stone-stove",
+    "slots_required": 6
   },
   {
     "id": "advanced-athanor",
     "name": "Advanced Athanor",
     "category": "production",
-    "heat_consuming_speed": 360
+    "heat_consuming_speed": 360,
+    "parent": "stone-stove",
+    "slots_required": 6
   },
   {
     "id": "advanced-blender",
@@ -30,7 +34,9 @@
     "id": "alembic",
     "name": "Alembic",
     "category": "production",
-    "heat_consuming_speed": 108
+    "heat_consuming_speed": 108,
+    "parent": "stone-stove",
+    "slots_required": 1
   },
   {
     "id": "assembler",
@@ -41,7 +47,9 @@
     "id": "athanor",
     "name": "Athanor",
     "category": "production",
-    "heat_consuming_speed": 32
+    "heat_consuming_speed": 32,
+    "parent": "stone-stove",
+    "slots_required": 6
   },
   {
     "id": "bank-portal",
@@ -62,7 +70,9 @@
     "id": "crucible",
     "name": "Crucible",
     "category": "production",
-    "heat_consuming_speed": 4
+    "heat_consuming_speed": 4,
+    "parent": "stone-stove",
+    "slots_required": 3
   },
   {
     "id": "dispatch-portal",
@@ -88,13 +98,17 @@
     "id": "iron-smelter",
     "name": "Iron Smelter",
     "category": "raw material production",
-    "heat_consuming_speed": 9
+    "heat_consuming_speed": 9,
+    "parent": "stone-stove",
+    "slots_required": 9
   },
   {
     "id": "kiln",
     "name": "Kiln",
     "category": "production",
-    "heat_consuming_speed": 15
+    "heat_consuming_speed": 15,
+    "parent": "stone-stove",
+    "slots_required": 6
   },
   {
     "id": "nursery",
@@ -105,7 +119,9 @@
     "id": "paradox-crucible",
     "name": "Paradox Crucible",
     "category": "production",
-    "heat_consuming_speed": 1200
+    "heat_consuming_speed": 1200,
+    "parent": "stone-stove",
+    "slots_required": 9
   },
   {
     "id": "purchasing-portal",
@@ -126,12 +142,30 @@
     "id": "stackable-crucible",
     "name": "Stackable Crucible",
     "category": "production",
-    "heat_consuming_speed": 6
+    "heat_consuming_speed": 6,
+    "parent": "stone-stove",
+    "slots_required": 3
   },
   {
     "id": "stone-crusher",
     "name": "Stone Crusher",
     "category": "raw material production"
+  },
+  {
+    "id": "stone-furnace",
+    "name": "Blast Furnace",
+    "category": "production",
+    "heat_consuming_speed": 4,
+    "heat_self": 4,
+    "slots": 42
+  },
+  {
+    "id": "stone-stove",
+    "name": "Stone Furnace",
+    "category": "production",
+    "heat_consuming_speed": 1,
+    "heat_self": 1,
+    "slots": 9
   },
   {
     "id": "table-saw",
@@ -142,7 +176,9 @@
     "id": "thermal-extractor",
     "name": "Thermal Extractor",
     "category": "production",
-    "heat_consuming_speed": 80
+    "heat_consuming_speed": 80,
+    "parent": "stone-stove",
+    "slots_required": 6
   },
   {
     "id": "world-tree-nursery",

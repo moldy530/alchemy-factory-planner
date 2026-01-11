@@ -1,0 +1,55 @@
+{
+  "comment": "Manual device metadata for parent/child relationships. This file is NOT overwritten by sync-data.ts",
+  "furnaces": {
+    "stone-stove": {
+      "heat_self": 1.0,
+      "slots": 9
+    },
+    "stone-furnace": {
+      "heat_self": 4.0,
+      "slots": 42
+    }
+  },
+  "heated_devices": {
+    "crucible": {
+      "parent": "stone-stove",
+      "slots_required": 3
+    },
+    "stackable-crucible": {
+      "parent": "stone-stove",
+      "slots_required": 3
+    },
+    "kiln": {
+      "parent": "stone-stove",
+      "slots_required": 6
+    },
+    "iron-smelter": {
+      "parent": "stone-stove",
+      "slots_required": 9
+    },
+    "alembic": {
+      "parent": "stone-stove",
+      "slots_required": 1
+    },
+    "advanced-alembic": {
+      "parent": "stone-stove",
+      "slots_required": 6
+    },
+    "athanor": {
+      "parent": "stone-stove",
+      "slots_required": 6
+    },
+    "advanced-athanor": {
+      "parent": "stone-stove",
+      "slots_required": 6
+    },
+    "thermal-extractor": {
+      "parent": "stone-stove",
+      "slots_required": 6
+    },
+    "paradox-crucible": {
+      "parent": "stone-stove",
+      "slots_required": 9
+    }
+  }
+}
