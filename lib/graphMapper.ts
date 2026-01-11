@@ -24,6 +24,10 @@ export function generateGraph(
     // Track nodes currently being traversed to detect cycles
     const visiting = new Set<string>();
 
+    // Track visited node objects globally to prevent double-counting
+    // Same object appearing in multiple paths should only be counted once
+    const visitedObjects = new WeakSet<ProductionNode>();
+
     function traverse(node: ProductionNode, parentName?: string) {
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
@@ -51,6 +55,14 @@ export function generateGraph(
             // The actual production chain was already traversed when the production node was created
             return;
         }
+
+        // Check if we've already processed this exact object
+        // If so, just record the edge but don't re-traverse or add to totals
+        if (visitedObjects.has(node)) {
+            // Already processed this node object, skip to avoid double-counting
+            return;
+        }
+        visitedObjects.add(node);
 
         // Update or Create (for non-consumption references)
         if (mergedNodes.has(key)) {
