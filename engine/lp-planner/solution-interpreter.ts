@@ -594,18 +594,22 @@ function linkProductionNodes(
 /**
  * Create an input reference to a source node.
  * Now that graphMapper has cycle detection, we can safely reference nodes with their inputs.
- * We create a shallow copy with the correct rate but keep the inputs reference.
+ * We create a shallow copy with appropriate rate handling based on node type.
  */
 function createInputReference(
   sourceNode: ProductionNode,
   inputRate: number,
   _itemName: string
 ): ProductionNode {
-  // Create a copy with the input rate for proper edge labeling,
-  // but keep the inputs array reference so graphMapper can traverse the full graph
+  // For raw materials, use inputRate (shows consumption by this consumer)
+  // For produced items, use sourceNode.rate (shows the production capacity)
+  // This ensures that produced items show their full production rate,
+  // while raw material nodes show how much is consumed by each consumer
+  const displayRate = sourceNode.isRaw ? inputRate : sourceNode.rate;
+
   return {
     ...sourceNode,
-    rate: inputRate,
+    rate: displayRate,
     // Keep the actual inputs array - graphMapper has cycle detection now
     inputs: sourceNode.inputs,
   };
