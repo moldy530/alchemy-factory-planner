@@ -28,6 +28,10 @@ export function generateGraph(
     // Same object appearing in multiple paths should only be counted once
     const visitedObjects = new WeakSet<ProductionNode>();
 
+    // Track which consumption reference keys have had their inputs traversed
+    // We accumulate rates but only traverse inputs once per key
+    const traversedConsumptionKeys = new Set<string>();
+
     function traverse(node: ProductionNode, parentName?: string) {
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
@@ -40,19 +44,34 @@ export function generateGraph(
         }
 
         // Cycle detection: if we're already visiting this node in current path, stop
+        // BUT: for consumption references, we still need to accumulate rates before stopping
         if (visiting.has(key)) {
+            // For consumption references in cycles, accumulate the rate
+            if (node.isConsumptionReference && mergedNodes.has(key)) {
+                const existing = mergedNodes.get(key)!;
+                existing.rate += node.rate;
+            }
             return;
         }
 
-        // For consumption references: create edge but don't add to production totals
-        // However, still add the node to mergedNodes so it appears in the graph
+        // For consumption references: create edge and show in graph, but accumulate separately
+        // We DO traverse inputs to show the full production chain including cycles
         if (node.isConsumptionReference) {
-            // Add to merged nodes if not already present (to show in graph)
-            if (!mergedNodes.has(key)) {
+            // Add or update merged node (accumulate consumption rates)
+            if (mergedNodes.has(key)) {
+                const existing = mergedNodes.get(key)!;
+                existing.rate += node.rate;
+            } else {
                 mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
             }
-            // Note: We don't traverse inputs here because consumption refs have inputs: []
-            // The actual production chain was already traversed when the production node was created
+            // Traverse inputs to show production chain (including circular dependencies)
+            // Only traverse inputs once per key, even if multiple consumption refs exist
+            if (!traversedConsumptionKeys.has(key)) {
+                traversedConsumptionKeys.add(key);
+                visiting.add(key);
+                node.inputs.forEach((input) => traverse(input, key));
+                visiting.delete(key);
+            }
             return;
         }
 
