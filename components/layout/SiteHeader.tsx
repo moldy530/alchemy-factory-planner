@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Sparkles, Calculator, Package, Cog, BookOpen } from "lucide-react";
 import { AlchemyIcon } from "@/components/icons/AlchemyIcon";
 import { FeedbackButton } from "@/components/ui/FeedbackButton";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 const codexLinks = [
@@ -159,8 +160,11 @@ export function SiteHeader() {
           </div>
         </div>
 
-        {/* Feedback Button */}
-        <FeedbackButton />
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <FeedbackButton />
+        </div>
       </div>
     </header>
   );

@@ -36,6 +36,43 @@
   --info: #6db8e8;
 }
 
+/* Light Mode - Sunlit Scriptorium */
+[data-theme="light"] {
+  /* Sunlit Scriptorium - Medieval alchemy in daylight */
+  --background: #faf7f0;
+  --background-deep: #f0ead8;
+  --surface: #fffef9;
+  --surface-elevated: #ffffff;
+  --border: #baa882;
+  --border-subtle: #d4ccb8;
+  --border-glow: #9d8a5f;
+
+  /* Gold Leaf - Rich and luminous in sunlight */
+  --accent-gold: #c9930e;
+  --accent-gold-bright: #eab308;
+  --accent-gold-dim: #a47a0a;
+  --accent-gold-muted: #7a5b08;
+
+  /* Royal Purple Ink - Deep and saturated */
+  --accent-purple: #7e22ce;
+  --accent-purple-bright: #a855f7;
+  --accent-purple-dim: #6b21a8;
+  --accent-purple-glow: rgba(126, 34, 206, 0.12);
+
+  /* Sepia Ink on Parchment */
+  --text-primary: #2d2415;
+  --text-secondary: #5c4d36;
+  --text-muted: #8f7e60;
+
+  /* Semantic colors - Adjusted for light backgrounds */
+  --success: #2e7d32;
+  --success-dim: #c8e6c9;
+  --warning: #f57c00;
+  --error: #c62828;
+  --error-dim: #ffcdd2;
+  --info: #1976d2;
+}
+
 body {
   color: var(--text-primary);
   background: var(--background);

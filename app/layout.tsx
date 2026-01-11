@@ -4,6 +4,7 @@ import { Cinzel } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { ThemeInitializer } from "@/components/ui/ThemeInitializer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -119,6 +120,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cinzel.variable} antialiased min-h-screen flex flex-col`}
       >
+        <ThemeInitializer />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <footer className="py-4 border-t border-[var(--border)] text-center text-sm text-[var(--text-muted)] bg-[var(--background)]">
