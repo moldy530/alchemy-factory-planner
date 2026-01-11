@@ -158,6 +158,70 @@ planners.forEach(({ name, fn: calculateFn }) => {
     expect(plankNode.inputs[0].itemName).toBe("Logs");
   });
 
+  test("Nursery production with fertilizer (Flax with Basic Fertilizer)", () => {
+    const config: PlannerConfig = {
+      targets: [{ item: "Flax", rate: 6000 }],
+      availableResources: [],
+      fuelEfficiency: 0,
+      alchemySkill: 0,
+      factoryEfficiency: 0,
+      logisticsEfficiency: 0,
+      throwingEfficiency: 0,
+      fertilizerEfficiency: 0,
+      salesAbility: 0,
+      negotiationSkill: 0,
+      customerMgmt: 0,
+      relicKnowledge: 0,
+      selectedFertilizer: "Basic Fertilizer",
+    };
+
+    const result = calculateFn(config);
+
+    console.log("\n=== Nursery Production Test ===");
+    console.log(JSON.stringify(result, null, 2));
+
+    // Should have 1 root node
+    expect(result).toHaveLength(1);
+
+    const flaxNode = result[0];
+    expect(flaxNode.itemName).toBe("Flax");
+    expect(flaxNode.rate).toBe(6000);
+    expect(flaxNode.isRaw).toBe(false);
+
+    // Flax nursery math with Basic Fertilizer:
+    // - required_nutrients = 24
+    // - nutrients_per_seconds (Basic Fertilizer) = 12
+    // - growth_time = 24 / 12 = 2 seconds
+    // - output per cycle = 200 Flax
+    // - items per second = 200 / 2 = 100 items/sec
+    // - items per minute = 100 * 60 = 6000 items/min per nursery
+    // For 6000 items/min target: 6000 / 6000 = 1 nursery
+    expect(flaxNode.deviceCount).toBeCloseTo(1, 2);
+
+    // Should have 2 inputs: Flax Seeds and Basic Fertilizer
+    expect(flaxNode.inputs.length).toBeGreaterThanOrEqual(2);
+
+    const fertilizerInput = flaxNode.inputs.find((i) => i.itemName === "Basic Fertilizer");
+    expect(fertilizerInput).toBeDefined();
+
+    // Fertilizer consumption calculation:
+    // - For 200 Flax, we need 24 nutrients
+    // - Basic Fertilizer has 144 nutrient_value
+    // - Fertilizer per cycle = 24 / 144 = 0.1667 units
+    // - For 6000 Flax/min (30 cycles/min), we need 30 * 0.1667 = 5 units/min
+    expect(fertilizerInput?.rate).toBeCloseTo(5, 1);
+
+    const seedInput = flaxNode.inputs.find((i) => i.itemName === "Flax Seeds");
+    expect(seedInput).toBeDefined();
+    // Seed consumption: 1 seed per cycle, 30 cycles/min = 30 seeds/min
+    expect(seedInput?.rate).toBeCloseTo(30, 1);
+
+    console.log("\n=== Test Summary ===");
+    console.log(`✓ Flax: ${flaxNode.deviceCount.toFixed(3)} nurseries`);
+    console.log(`✓ Fertilizer consumption: ${fertilizerInput?.rate.toFixed(2)}/min`);
+    console.log(`✓ Seed consumption: ${seedInput?.rate.toFixed(2)}/min`);
+  });
+
   test("Item ID normalization works correctly", () => {
     // Test that we can reference items by display name OR ID
     const configByName: PlannerConfig = {

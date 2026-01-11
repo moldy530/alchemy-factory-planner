@@ -1,9 +1,33 @@
 import { Solution } from "yalps";
-import { PlannerConfig, ProductionNode } from "../types";
+import { PlannerConfig, ProductionNode, Recipe } from "../types";
 import { EfficiencyContext, EPSILON } from "./types";
 import { getItem, getDevice, getRecipeById, getAllRecipes } from "./model-builder";
 import { isAlchemyMachine } from "./efficiency";
 import { normalizeItemId } from "../item-utils";
+
+/**
+ * Calculate effective recipe time, accounting for nursery fertilizer.
+ */
+function getEffectiveRecipeTime(recipe: Recipe, ctx: EfficiencyContext): number {
+  const machineName = recipe.crafted_in?.toLowerCase() || "";
+
+  if (machineName === "nursery" && ctx.selectedFertilizer) {
+    const fertilizerId = normalizeItemId(ctx.selectedFertilizer);
+    const fertilizerItem = getItem(fertilizerId);
+    const outputDef = recipe.outputs[0];
+    const outputId = outputDef?.id || (outputDef ? normalizeItemId(outputDef.name) : "");
+    const outputItem = outputId ? getItem(outputId) : null;
+
+    if (fertilizerItem?.nutrients_per_seconds && outputItem?.required_nutrients) {
+      // Calculate effective growth time based on fertilizer
+      // growth_time = required_nutrients / (nutrients_per_seconds * fertilizer_efficiency)
+      const nutrientsPerSec = fertilizerItem.nutrients_per_seconds * ctx.fertilizerMultiplier;
+      return outputItem.required_nutrients / nutrientsPerSec;
+    }
+  }
+
+  return recipe.time;
+}
 
 interface ItemFlow {
   produced: number;
@@ -61,7 +85,8 @@ export function interpretSolution(
     // activationRate is recipes per minute
     // Each machine completes 1 recipe every (time / speedMultiplier) seconds
     // So machines needed = activationRate * (time / 60 / speedMultiplier)
-    const effectiveTime = recipe.time / ctx.speedMultiplier;
+    const effectiveRecipeTime = getEffectiveRecipeTime(recipe, ctx);
+    const effectiveTime = effectiveRecipeTime / ctx.speedMultiplier;
     const machineCount = activationRate * (effectiveTime / 60);
 
     // Find primary output (first output)
@@ -321,14 +346,10 @@ function calculateItemFlows(
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
         const flow = getOrCreateFlow(fertilizerId);
 
-        const fertEffMult = ctx.fertilizerMultiplier;
-        const effectiveNutrientValue = fertilizerItem.nutrient_value * fertEffMult;
-        const fertilizerPerOutputItem = outputItem.required_nutrients / effectiveNutrientValue;
-
-        const outputCount = typeof recipe.outputs[0].count === "string"
-          ? parseFloat(recipe.outputs[0].count)
-          : recipe.outputs[0].count;
-        const fertilizerPerActivation = outputCount * fertilizerPerOutputItem;
+        // Note: Fertilizer efficiency affects delivery speed (nutrients_per_seconds), not total value
+        // required_nutrients is for the whole growth cycle, not per output item
+        const effectiveNutrientValue = fertilizerItem.nutrient_value;
+        const fertilizerPerActivation = outputItem.required_nutrients / effectiveNutrientValue;
         const rate = activationRate * fertilizerPerActivation;
 
         flow.consumed += rate;
@@ -358,7 +379,8 @@ function calculateItemFlows(
         const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
 
         // Heat per activation = heat per second × time per activation
-        const timePerActivation = recipe.time / ctx.speedMultiplier;
+        const effectiveRecipeTime = getEffectiveRecipeTime(recipe, ctx);
+        const timePerActivation = effectiveRecipeTime / ctx.speedMultiplier;
         const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelPerActivation = heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
         const rate = activationRate * fuelPerActivation;
@@ -482,11 +504,10 @@ function linkProductionNodes(
         const fertId = normalizeItemId(ctx.selectedFertilizer);
         const fertFlow = itemFlows.get(fertId);
 
-        const fertilizerPerOutputItem = outputItem.required_nutrients / (fertilizerItem.nutrient_value * ctx.fertilizerMultiplier);
-        const outputCount = typeof recipe.outputs[0].count === "string"
-          ? parseFloat(recipe.outputs[0].count)
-          : recipe.outputs[0].count;
-        const fertilizerRate = activationRate * outputCount * fertilizerPerOutputItem;
+        // Note: Fertilizer efficiency affects delivery speed (nutrients_per_seconds), not total value
+        // required_nutrients is for the whole growth cycle, not per output item
+        const fertilizerPerActivation = outputItem.required_nutrients / fertilizerItem.nutrient_value;
+        const fertilizerRate = activationRate * fertilizerPerActivation;
 
         // Link fertilizer (raw or produced)
         if (fertFlow && fertFlow.sources.length > 0) {
@@ -539,7 +560,8 @@ function linkProductionNodes(
         const deviceHeatPerSecond = device.heat_consuming_speed * ctx.speedMultiplier;
         const furnaceContribution = furnaceHeat * (deviceSlotsRequired / furnaceSlots) * ctx.speedMultiplier;
         const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
-        const timePerActivation = recipe.time / ctx.speedMultiplier;
+        const effectiveRecipeTime = getEffectiveRecipeTime(recipe, ctx);
+        const timePerActivation = effectiveRecipeTime / ctx.speedMultiplier;
         const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelRate = activationRate * heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
 

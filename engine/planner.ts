@@ -234,18 +234,26 @@ function solveNode(
 
         if (fertilizerItem && item.required_nutrients) {
             const fertEffMult = 1 + ctx.fertilizerEfficiency * 0.1;
-            const nutrientValue = (fertilizerItem.nutrient_value || 0) * fertEffMult;
+            // Fertilizer efficiency affects delivery rate (nutrients_per_seconds), not total value
+            const nutrientValue = fertilizerItem.nutrient_value || 0;
             const nutrientsPerSec =
                 (fertilizerItem.nutrients_per_seconds || 0) * fertEffMult;
 
-            let calculatedRate =
-                ((60 * nutrientsPerSec) / item.required_nutrients) *
+            // Nursery growth math:
+            // - Growth time = required_nutrients / nutrients_per_seconds
+            // - Items per cycle = outputCount (e.g., 200 Flax per cycle)
+            // - Items per second = outputCount / growth_time
+            // - Items per minute = items_per_second * 60
+            // Simplified: (outputCount * nutrients_per_sec * 60) / required_nutrients
+            // Calculate items per minute per nursery
+            itemsPerMinPerMachine =
+                ((60 * nutrientsPerSec * outputCount) / item.required_nutrients) *
                 ctx.speedMultiplier;
-            if (calculatedRate > ctx.beltLimit) calculatedRate = ctx.beltLimit;
 
-            itemsPerMinPerMachine = calculatedRate;
-
-            const fertNeededPerItem = item.required_nutrients / nutrientValue;
+            // Fertilizer consumption per output item
+            // required_nutrients is for the whole growth cycle which produces outputCount items
+            // So fertilizer per item = (required_nutrients / nutrient_value) / outputCount
+            const fertNeededPerItem = item.required_nutrients / (nutrientValue * outputCount);
             const totalFertilizerRate = neededRate * fertNeededPerItem;
 
             fertilizerInput = {
