@@ -75,6 +75,7 @@ export interface ProductionNode {
   itemName: string;
   rate: number; // Items per minute (gross production)
   netOutputRate?: number; // Net output after internal consumption (for loops)
+  isConsumptionReference?: boolean; // True if this is a fuel/fertilizer consumption reference
   isRaw: boolean;
   recipeId?: string;
   deviceId?: string;

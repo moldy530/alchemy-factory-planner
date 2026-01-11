@@ -40,7 +40,17 @@ export function generateGraph(
             return;
         }
 
-        // Update or Create
+        // Skip adding consumption references to merged nodes
+        // They're only used to create edges, not to contribute to production totals
+        if (node.isConsumptionReference) {
+            // Still mark as visiting and traverse inputs (though inputs should be empty)
+            visiting.add(key);
+            node.inputs.forEach((input) => traverse(input, key));
+            visiting.delete(key);
+            return;
+        }
+
+        // Update or Create (for non-consumption references)
         if (mergedNodes.has(key)) {
             const existing = mergedNodes.get(key)!;
             existing.rate += node.rate;
