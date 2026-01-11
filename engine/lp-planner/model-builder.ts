@@ -64,8 +64,8 @@ export function buildLPModel(
 
     // Process outputs (positive flow)
     recipe.outputs.forEach((output) => {
-      const itemName = output.name.toLowerCase();
-      allItems.add(itemName);
+      const itemId = output.id || normalizeItemId(output.name);
+      allItems.add(itemId);
 
       const count = typeof output.count === "string"
         ? parseFloat(output.count)
@@ -88,14 +88,14 @@ export function buildLPModel(
         true // isOutput
       );
 
-      const current = recipeCoeffs.get(itemName) || 0;
-      recipeCoeffs.set(itemName, current + itemsPerActivation);
+      const current = recipeCoeffs.get(itemId) || 0;
+      recipeCoeffs.set(itemId, current + itemsPerActivation);
 
       // Track which recipes produce this item
-      if (!itemProducedBy.has(itemName)) {
-        itemProducedBy.set(itemName, new Set());
+      if (!itemProducedBy.has(itemId)) {
+        itemProducedBy.set(itemId, new Set());
       }
-      itemProducedBy.get(itemName)!.add(recipe.id);
+      itemProducedBy.get(itemId)!.add(recipe.id);
     });
 
     // Process inputs (negative flow)
@@ -103,14 +103,15 @@ export function buildLPModel(
     const isNurseryRecipe = machineName === "nursery";
 
     recipe.inputs.forEach((input) => {
-      const itemName = input.name.toLowerCase();
+      const itemId = input.id || normalizeItemId(input.name);
+      const item = getItemById(itemId);
 
       // Skip seed inputs for nursery recipes (seeds aren't consumed, only fertilizer is)
-      if (isNurseryRecipe && itemName.endsWith(" seeds")) {
+      if (isNurseryRecipe && item?.name.toLowerCase().endsWith(" seeds")) {
         return;
       }
 
-      allItems.add(itemName);
+      allItems.add(itemId);
 
       const itemsPerActivation = calculatePerActivationRate(
         input.count,
@@ -121,14 +122,14 @@ export function buildLPModel(
         false // isInput
       );
 
-      const current = recipeCoeffs.get(itemName) || 0;
-      recipeCoeffs.set(itemName, current - itemsPerActivation);
+      const current = recipeCoeffs.get(itemId) || 0;
+      recipeCoeffs.set(itemId, current - itemsPerActivation);
 
       // Track which recipes consume this item
-      if (!itemConsumedBy.has(itemName)) {
-        itemConsumedBy.set(itemName, new Set());
+      if (!itemConsumedBy.has(itemId)) {
+        itemConsumedBy.set(itemId, new Set());
       }
-      itemConsumedBy.get(itemName)!.add(recipe.id);
+      itemConsumedBy.get(itemId)!.add(recipe.id);
     });
 
     // Handle nursery fertilizer consumption
@@ -136,15 +137,15 @@ export function buildLPModel(
     const isNursery = machineName === "nursery";
 
     if (isNursery && ctx.selectedFertilizer) {
-      const fertilizerItem = itemsMap.get(ctx.selectedFertilizer.toLowerCase());
+      const fertilizerId = normalizeItemId(ctx.selectedFertilizer);
+      const fertilizerItem = itemsMap.get(fertilizerId);
       // Get the output item to check its required_nutrients
-      const outputItem = recipe.outputs[0]
-        ? itemsMap.get(recipe.outputs[0].name.toLowerCase())
-        : null;
+      const outputDef = recipe.outputs[0];
+      const outputId = outputDef.id || normalizeItemId(outputDef.name);
+      const outputItem = itemsMap.get(outputId);
 
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
-        const fertilizerName = ctx.selectedFertilizer.toLowerCase();
-        allItems.add(fertilizerName);
+        allItems.add(fertilizerId);
 
         // Calculate fertilizer needed per output item
         // fertilizerPerItem = required_nutrients / (nutrient_value * fertilizerEfficiency)
@@ -153,7 +154,6 @@ export function buildLPModel(
         const fertilizerPerOutputItem = outputItem.required_nutrients / effectiveNutrientValue;
 
         // Get output count to calculate total fertilizer per activation
-        const outputDef = recipe.outputs[0];
         const outputCount = typeof outputDef.count === "string"
           ? parseFloat(outputDef.count)
           : outputDef.count;
@@ -167,13 +167,13 @@ export function buildLPModel(
         // Total fertilizer consumed per recipe activation
         const fertilizerPerActivation = effectiveOutputCount * fertilizerPerOutputItem;
 
-        const current = recipeCoeffs.get(fertilizerName) || 0;
-        recipeCoeffs.set(fertilizerName, current - fertilizerPerActivation);
+        const current = recipeCoeffs.get(fertilizerId) || 0;
+        recipeCoeffs.set(fertilizerId, current - fertilizerPerActivation);
 
-        if (!itemConsumedBy.has(fertilizerName)) {
-          itemConsumedBy.set(fertilizerName, new Set());
+        if (!itemConsumedBy.has(fertilizerId)) {
+          itemConsumedBy.set(fertilizerId, new Set());
         }
-        itemConsumedBy.get(fertilizerName)!.add(recipe.id);
+        itemConsumedBy.get(fertilizerId)!.add(recipe.id);
       }
     }
 
@@ -182,10 +182,10 @@ export function buildLPModel(
     // Future improvement: Allow selecting heater type and model heaters as explicit machines
     // with their own fuel consumption rates based on the selected heater device.
     if (device?.heat_consuming_speed && device.category !== "heating") {
-      const fuelItem = itemsMap.get(ctx.selectedFuel.toLowerCase());
+      const fuelId = normalizeItemId(ctx.selectedFuel);
+      const fuelItem = itemsMap.get(fuelId);
       if (fuelItem?.heat_value) {
-        const fuelName = ctx.selectedFuel.toLowerCase();
-        allItems.add(fuelName);
+        allItems.add(fuelId);
 
         // Heat consumption per activation
         // When recipe runs once (takes recipeTime seconds), how much fuel is consumed?
@@ -195,13 +195,13 @@ export function buildLPModel(
         const heatPerActivation = heatPerSecond * recipeTime / ctx.speedMultiplier; // Cancel out speed effect on time
         const fuelPerActivation = heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
 
-        const current = recipeCoeffs.get(fuelName) || 0;
-        recipeCoeffs.set(fuelName, current - fuelPerActivation);
+        const current = recipeCoeffs.get(fuelId) || 0;
+        recipeCoeffs.set(fuelId, current - fuelPerActivation);
 
-        if (!itemConsumedBy.has(fuelName)) {
-          itemConsumedBy.set(fuelName, new Set());
+        if (!itemConsumedBy.has(fuelId)) {
+          itemConsumedBy.set(fuelId, new Set());
         }
-        itemConsumedBy.get(fuelName)!.add(recipe.id);
+        itemConsumedBy.get(fuelId)!.add(recipe.id);
       }
     }
 
@@ -211,8 +211,9 @@ export function buildLPModel(
   // Build available resources lookup
   const availableResources = new Map<string, number>();
   config.availableResources?.forEach((res) => {
-    const current = availableResources.get(res.item.toLowerCase()) || 0;
-    availableResources.set(res.item.toLowerCase(), current + res.rate);
+    const itemId = normalizeItemId(res.item);
+    const current = availableResources.get(itemId) || 0;
+    availableResources.set(itemId, current + res.rate);
   });
 
   // Build target items lookup
@@ -224,8 +225,9 @@ export function buildLPModel(
       : [];
 
   finalTargets.forEach((t) => {
-    const current = targets.get(t.item.toLowerCase()) || 0;
-    targets.set(t.item.toLowerCase(), current + t.rate);
+    const itemId = normalizeItemId(t.item);
+    const current = targets.get(itemId) || 0;
+    targets.set(itemId, current + t.rate);
   });
 
   // Create constraints for each item

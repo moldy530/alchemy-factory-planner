@@ -1,8 +1,16 @@
 import { describe, test, expect } from "bun:test";
 import { calculateProduction } from "./planner";
-import { PlannerConfig } from "./types";
+import { calculateProductionLP } from "./lp-planner";
+import { PlannerConfig, ProductionNode } from "./types";
 
-describe("Production Planner", () => {
+// Run tests against both planner implementations
+const planners = [
+  { name: "Recursive Planner", fn: calculateProduction },
+  { name: "LP Planner", fn: calculateProductionLP },
+];
+
+planners.forEach(({ name, fn: calculateFn }) => {
+  describe(`${name}`, () => {
   test("Basic Fertilizer + Planks production (10/min each)", () => {
     const config: PlannerConfig = {
       targets: [
@@ -23,7 +31,7 @@ describe("Production Planner", () => {
       selectedFuel: "Logs",
     };
 
-    const result = calculateProduction(config);
+    const result = calculateFn(config);
 
     console.log("\n=== Production Plan ===");
     console.log(JSON.stringify(result, null, 2));
@@ -133,7 +141,7 @@ describe("Production Planner", () => {
       relicKnowledge: 0,
     };
 
-    const result = calculateProduction(config);
+    const result = calculateFn(config);
 
     expect(result).toHaveLength(1);
     const plankNode = result[0];
@@ -182,8 +190,8 @@ describe("Production Planner", () => {
       relicKnowledge: 0,
     };
 
-    const resultByName = calculateProduction(configByName);
-    const resultById = calculateProduction(configById);
+    const resultByName = calculateFn(configByName);
+    const resultById = calculateFn(configById);
 
     // Both should produce the same plan
     expect(resultByName).toHaveLength(1);
@@ -194,5 +202,6 @@ describe("Production Planner", () => {
 
     // Both should have the same device count
     expect(resultByName[0].deviceCount).toBe(resultById[0].deviceCount);
+  });
   });
 });

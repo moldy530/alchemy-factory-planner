@@ -20,7 +20,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0",
-    "yalps": "^0.6.3",
+    "yalps": "^0.6.4",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

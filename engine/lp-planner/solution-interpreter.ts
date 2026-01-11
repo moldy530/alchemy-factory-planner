@@ -3,6 +3,7 @@ import { PlannerConfig, ProductionNode } from "../types";
 import { EfficiencyContext, EPSILON } from "./types";
 import { getItem, getDevice, getRecipeById, getAllRecipes } from "./model-builder";
 import { isAlchemyMachine } from "./efficiency";
+import { normalizeItemId } from "../item-utils";
 
 interface ItemFlow {
   produced: number;
@@ -65,8 +66,8 @@ export function interpretSolution(
 
     // Find primary output (first output)
     const primaryOutput = recipe.outputs[0];
-    const primaryOutputName = primaryOutput.name.toLowerCase();
-    const primaryOutputItem = getItem(primaryOutputName);
+    const primaryOutputId = primaryOutput.id || normalizeItemId(primaryOutput.name);
+    const primaryOutputItem = getItem(primaryOutputId);
 
     // Calculate output rates
     const outputRates = new Map<string, number>();
@@ -77,15 +78,17 @@ export function interpretSolution(
         : 100;
       const alchemyBonus = isAlchemyMachine(machineName) ? ctx.alchemyMultiplier : 1;
       const rate = activationRate * count * (percentage / 100) * alchemyBonus;
-      outputRates.set(output.name.toLowerCase(), rate);
+      const outputId = output.id || normalizeItemId(output.name);
+      outputRates.set(outputId, rate);
     });
 
     // Calculate byproducts (all outputs except primary) - use proper names from items data
     const byproducts = recipe.outputs.slice(1).map((output) => {
-      const outputItem = getItem(output.name.toLowerCase());
+      const outputId = output.id || normalizeItemId(output.name);
+      const outputItem = getItem(outputId);
       return {
         itemName: outputItem?.name || output.name,
-        rate: outputRates.get(output.name.toLowerCase()) || 0,
+        rate: outputRates.get(outputId) || 0,
       };
     });
 
@@ -97,11 +100,11 @@ export function interpretSolution(
         60 * ctx.speedMultiplier * machineCount;
     }
 
-    const nodeId = `${primaryOutputName}-prod-${recipeId}`;
+    const nodeId = `${primaryOutputId}-prod-${recipeId}`;
     const node: ProductionNode = {
       id: nodeId,
       itemName: primaryOutputItem?.name || primaryOutput.name,
-      rate: outputRates.get(primaryOutputName) || 0,
+      rate: outputRates.get(primaryOutputId) || 0,
       isRaw: false,
       recipeId: recipe.id,
       deviceId: device?.id,
@@ -110,7 +113,7 @@ export function interpretSolution(
       inputs: [], // Will be linked later
       byproducts,
       beltLimit: ctx.beltLimit,
-      isBeltSaturated: (outputRates.get(primaryOutputName) || 0) > ctx.beltLimit,
+      isBeltSaturated: (outputRates.get(primaryOutputId) || 0) > ctx.beltLimit,
     };
 
     productionNodes.set(nodeId, node);
@@ -150,13 +153,16 @@ export function interpretSolution(
 
   const roots: ProductionNode[] = [];
   targets.forEach((target) => {
-    const targetItemName = target.item.toLowerCase();
+    const targetItemId = normalizeItemId(target.item);
+    const targetItem = getItem(targetItemId);
+    const targetItemName = targetItem?.name || target.item;
+
     // Find the production node(s) for this target
     productionNodes.forEach((node) => {
-      if (node.itemName.toLowerCase() === targetItemName && !node.isRaw) {
+      if (node.itemName === targetItemName && !node.isRaw) {
         // Calculate NET output rate (produced - consumed internally)
         // This shows actual output available, not gross production
-        const flow = itemFlows.get(targetItemName);
+        const flow = itemFlows.get(targetItemId);
         const netRate = flow ? flow.produced - flow.consumed : node.rate;
 
         // Create a copy with netOutputRate set for the target edge
@@ -208,8 +214,8 @@ function calculateItemFlows(
 
     // Track outputs
     recipe.outputs.forEach((output) => {
-      const itemName = output.name.toLowerCase();
-      const flow = getOrCreateFlow(itemName);
+      const itemId = output.id || normalizeItemId(output.name);
+      const flow = getOrCreateFlow(itemId);
 
       const count = typeof output.count === "string" ? parseFloat(output.count) : output.count;
       const percentage = output.percentage
@@ -227,14 +233,15 @@ function calculateItemFlows(
     const isNurseryRecipe = machineName === "nursery";
 
     recipe.inputs.forEach((input) => {
-      const itemName = input.name.toLowerCase();
+      const itemId = input.id || normalizeItemId(input.name);
+      const item = getItem(itemId);
 
       // Skip seed inputs for nursery recipes
-      if (isNurseryRecipe && itemName.endsWith(" seeds")) {
+      if (isNurseryRecipe && item?.name.toLowerCase().endsWith(" seeds")) {
         return;
       }
 
-      const flow = getOrCreateFlow(itemName);
+      const flow = getOrCreateFlow(itemId);
       const rate = activationRate * input.count;
 
       flow.consumed += rate;
@@ -310,8 +317,9 @@ function linkProductionNodes(
     const recipe = getRecipeById(recipeId);
     if (!recipe) return;
 
-    const primaryOutputName = recipe.outputs[0].name.toLowerCase();
-    const nodeId = `${primaryOutputName}-prod-${recipeId}`;
+    const primaryOutput = recipe.outputs[0];
+    const primaryOutputId = primaryOutput.id || normalizeItemId(primaryOutput.name);
+    const nodeId = `${primaryOutputId}-prod-${recipeId}`;
     const node = nodes.get(nodeId);
     if (!node) return;
 
@@ -327,39 +335,41 @@ function linkProductionNodes(
     const isNurseryRecipe = machineName === "nursery";
 
     recipe.inputs.forEach((input) => {
-      const inputName = input.name.toLowerCase();
+      const inputId = input.id || normalizeItemId(input.name);
+      const inputItem = getItem(inputId);
 
       // Skip seed inputs for nursery recipes
-      if (isNurseryRecipe && inputName.endsWith(" seeds")) {
+      if (isNurseryRecipe && inputItem?.name.toLowerCase().endsWith(" seeds")) {
         return;
       }
 
       const inputRate = activationRate * input.count;
 
       // Find the source node for this input
-      const flow = itemFlows.get(inputName);
+      const flow = itemFlows.get(inputId);
       if (flow && flow.sources.length > 0) {
         // Link to production source(s)
         flow.sources.forEach((source) => {
           const sourceRecipe = getRecipeById(source.recipeId);
           if (!sourceRecipe) return;
-          const sourceOutputName = sourceRecipe.outputs[0].name.toLowerCase();
-          const sourceNodeId = `${sourceOutputName}-prod-${source.recipeId}`;
+          const sourceOutput = sourceRecipe.outputs[0];
+          const sourceOutputId = sourceOutput.id || normalizeItemId(sourceOutput.name);
+          const sourceNodeId = `${sourceOutputId}-prod-${source.recipeId}`;
           const sourceNode = nodes.get(sourceNodeId);
 
           // Skip if already added or would create self-reference
           if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
           nodeInputs.add(sourceNodeId);
-          node.inputs.push(createInputReference(sourceNode, inputRate, inputName));
+          node.inputs.push(createInputReference(sourceNode, inputRate, inputId));
         });
       } else {
         // Link to raw material
-        const rawNodeId = `${inputName}-raw`;
+        const rawNodeId = `${inputId}-raw`;
         const rawNode = nodes.get(rawNodeId);
         if (rawNode && !nodeInputs.has(rawNodeId)) {
           nodeInputs.add(rawNodeId);
-          node.inputs.push(createInputReference(rawNode, inputRate, inputName));
+          node.inputs.push(createInputReference(rawNode, inputRate, inputId));
         }
       }
     });
@@ -388,27 +398,29 @@ function linkProductionNodes(
         const fertilizerRate = activationRate * fertilizerPerActivation;
 
         // Find fertilizer source
-        const fertFlow = itemFlows.get(fertilizerName);
+        const fertId = normalizeItemId(fertilizerName);
+        const fertFlow = itemFlows.get(fertId);
         if (fertFlow && fertFlow.sources.length > 0) {
           fertFlow.sources.forEach((source) => {
             const sourceRecipe = getRecipeById(source.recipeId);
             if (!sourceRecipe) return;
-            const sourceOutputName = sourceRecipe.outputs[0].name.toLowerCase();
-            const sourceNodeId = `${sourceOutputName}-prod-${source.recipeId}`;
+            const sourceOutput = sourceRecipe.outputs[0];
+            const sourceOutputId = sourceOutput.id || normalizeItemId(sourceOutput.name);
+            const sourceNodeId = `${sourceOutputId}-prod-${source.recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
 
             // Skip if already added or would create self-reference
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
             nodeInputs.add(sourceNodeId);
-            node.inputs.push(createInputReference(sourceNode, fertilizerRate, fertilizerName));
+            node.inputs.push(createInputReference(sourceNode, fertilizerRate, fertId));
           });
         } else {
-          const rawNodeId = `${fertilizerName}-raw`;
+          const rawNodeId = `${fertId}-raw`;
           const rawNode = nodes.get(rawNodeId);
           if (rawNode && !nodeInputs.has(rawNodeId)) {
             nodeInputs.add(rawNodeId);
-            node.inputs.push(createInputReference(rawNode, fertilizerRate, fertilizerName));
+            node.inputs.push(createInputReference(rawNode, fertilizerRate, fertId));
           }
         }
       }
@@ -427,27 +439,29 @@ function linkProductionNodes(
         const fuelRate = activationRate * fuelPerActivation;
 
         // Find fuel source
-        const fuelFlow = itemFlows.get(fuelName);
+        const fuelId = normalizeItemId(fuelName);
+        const fuelFlow = itemFlows.get(fuelId);
         if (fuelFlow && fuelFlow.sources.length > 0) {
           fuelFlow.sources.forEach((source) => {
             const sourceRecipe = getRecipeById(source.recipeId);
             if (!sourceRecipe) return;
-            const sourceOutputName = sourceRecipe.outputs[0].name.toLowerCase();
-            const sourceNodeId = `${sourceOutputName}-prod-${source.recipeId}`;
+            const sourceOutput = sourceRecipe.outputs[0];
+            const sourceOutputId = sourceOutput.id || normalizeItemId(sourceOutput.name);
+            const sourceNodeId = `${sourceOutputId}-prod-${source.recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
 
             // Skip if already added or would create self-reference
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
             nodeInputs.add(sourceNodeId);
-            node.inputs.push(createInputReference(sourceNode, fuelRate, fuelName));
+            node.inputs.push(createInputReference(sourceNode, fuelRate, fuelId));
           });
         } else {
-          const rawNodeId = `${fuelName}-raw`;
+          const rawNodeId = `${fuelId}-raw`;
           const rawNode = nodes.get(rawNodeId);
           if (rawNode && !nodeInputs.has(rawNodeId)) {
             nodeInputs.add(rawNodeId);
-            node.inputs.push(createInputReference(rawNode, fuelRate, fuelName));
+            node.inputs.push(createInputReference(rawNode, fuelRate, fuelId));
           }
         }
       }
