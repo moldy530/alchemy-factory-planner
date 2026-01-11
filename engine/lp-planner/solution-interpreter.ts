@@ -302,16 +302,30 @@ function calculateItemFlows(
       }
     }
 
-    // Track fuel consumption
+    // Track fuel consumption (parent/child relationship)
     if (device?.heat_consuming_speed && device.category !== "heating") {
       const fuelId = normalizeItemId(ctx.selectedFuel);
       const fuelItem = getItem(fuelId);
       if (fuelItem?.heat_value) {
         const flow = getOrCreateFlow(fuelId);
 
-        const heaterSpeed = 1;
-        const heatPerSecond = (heaterSpeed + device.heat_consuming_speed) * ctx.speedMultiplier;
-        const heatPerActivation = heatPerSecond * recipe.time / ctx.speedMultiplier;
+        // Get parent furnace information
+        const parentFurnace = device.parent ? getDevice(device.parent) : null;
+        const furnaceHeat = parentFurnace?.heat_self || 1; // Default to Stone Stove (1 P/s)
+        const furnaceSlots = parentFurnace?.slots || 9; // Default to Stone Stove (9 slots)
+        const deviceSlotsRequired = device.slots_required || 1;
+
+        // Heat per second calculation (must match model-builder.ts):
+        // - Device consumes heat at device.heat_consuming_speed P/s
+        // - Device uses fraction of furnace: deviceSlotsRequired / furnaceSlots
+        // - Furnace contributes: furnaceHeat × (deviceSlotsRequired / furnaceSlots) P/s
+        const deviceHeatPerSecond = device.heat_consuming_speed * ctx.speedMultiplier;
+        const furnaceContribution = furnaceHeat * (deviceSlotsRequired / furnaceSlots) * ctx.speedMultiplier;
+        const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
+
+        // Heat per activation = heat per second × time per activation
+        const timePerActivation = recipe.time / ctx.speedMultiplier;
+        const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelPerActivation = heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
         const rate = activationRate * fuelPerActivation;
 
@@ -400,6 +414,8 @@ function linkProductionNodes(
     });
 
     // Link fertilizer input if nursery
+    // NOTE: Skip linking if fertilizer would create a cycle (e.g., Basic Fertilizer used as fertilizer)
+    // Fertilizer consumption is already tracked in itemFlows for netOutputRate calculation
     const device = getDevice(machineName);
     const isNursery = machineName === "nursery";
 
@@ -410,37 +426,17 @@ function linkProductionNodes(
         : null;
 
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
-        const fertilizerName = ctx.selectedFertilizer.toLowerCase();
-
-        const fertEffMult = ctx.fertilizerMultiplier;
-        const effectiveNutrientValue = fertilizerItem.nutrient_value * fertEffMult;
-        const fertilizerPerOutputItem = outputItem.required_nutrients / effectiveNutrientValue;
-
-        const outputCount = typeof recipe.outputs[0].count === "string"
-          ? parseFloat(recipe.outputs[0].count)
-          : recipe.outputs[0].count;
-        const fertilizerPerActivation = outputCount * fertilizerPerOutputItem;
-        const fertilizerRate = activationRate * fertilizerPerActivation;
-
-        // Find fertilizer source
-        const fertId = normalizeItemId(fertilizerName);
+        const fertId = normalizeItemId(ctx.selectedFertilizer);
         const fertFlow = itemFlows.get(fertId);
-        if (fertFlow && fertFlow.sources.length > 0) {
-          fertFlow.sources.forEach((source) => {
-            const sourceRecipe = getRecipeById(source.recipeId);
-            if (!sourceRecipe) return;
-            const sourceOutput = sourceRecipe.outputs[0];
-            const sourceOutputId = sourceOutput.id || normalizeItemId(sourceOutput.name);
-            const sourceNodeId = `${sourceOutputId}-prod-${source.recipeId}`;
-            const sourceNode = nodes.get(sourceNodeId);
 
-            // Skip if already added or would create self-reference
-            if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
+        // Only link fertilizer if it's a raw material (prevents cycles)
+        if (!fertFlow || fertFlow.sources.length === 0) {
+          const fertilizerPerOutputItem = outputItem.required_nutrients / (fertilizerItem.nutrient_value * ctx.fertilizerMultiplier);
+          const outputCount = typeof recipe.outputs[0].count === "string"
+            ? parseFloat(recipe.outputs[0].count)
+            : recipe.outputs[0].count;
+          const fertilizerRate = activationRate * outputCount * fertilizerPerOutputItem;
 
-            nodeInputs.add(sourceNodeId);
-            node.inputs.push(createInputReference(sourceNode, fertilizerRate, fertId));
-          });
-        } else {
           const rawNodeId = `${fertId}-raw`;
           const rawNode = nodes.get(rawNodeId);
           if (rawNode && !nodeInputs.has(rawNodeId)) {
@@ -448,40 +444,26 @@ function linkProductionNodes(
             node.inputs.push(createInputReference(rawNode, fertilizerRate, fertId));
           }
         }
+        // If fertilizer is produced (not raw), it's tracked in itemFlows but not in tree to avoid cycles
       }
     }
 
     // Link fuel input if applicable
+    // NOTE: Skip linking if fuel would create a cycle (e.g., Plank used as fuel for crucible making planks)
+    // Fuel consumption is already tracked in itemFlows for netOutputRate calculation
     if (device?.heat_consuming_speed && device.category !== "heating") {
       const fuelItem = getItem(ctx.selectedFuel);
       if (fuelItem?.heat_value) {
-        const fuelName = ctx.selectedFuel.toLowerCase();
-
-        const heaterSpeed = 1;
-        const heatPerSecond = (heaterSpeed + device.heat_consuming_speed) * ctx.speedMultiplier;
-        const heatPerActivation = heatPerSecond * recipe.time / ctx.speedMultiplier;
-        const fuelPerActivation = heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
-        const fuelRate = activationRate * fuelPerActivation;
-
-        // Find fuel source
-        const fuelId = normalizeItemId(fuelName);
+        const fuelId = normalizeItemId(ctx.selectedFuel);
         const fuelFlow = itemFlows.get(fuelId);
-        if (fuelFlow && fuelFlow.sources.length > 0) {
-          fuelFlow.sources.forEach((source) => {
-            const sourceRecipe = getRecipeById(source.recipeId);
-            if (!sourceRecipe) return;
-            const sourceOutput = sourceRecipe.outputs[0];
-            const sourceOutputId = sourceOutput.id || normalizeItemId(sourceOutput.name);
-            const sourceNodeId = `${sourceOutputId}-prod-${source.recipeId}`;
-            const sourceNode = nodes.get(sourceNodeId);
 
-            // Skip if already added or would create self-reference
-            if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
+        // Only link fuel if it's a raw material (prevents cycles)
+        if (!fuelFlow || fuelFlow.sources.length === 0) {
+          const heaterSpeed = 1;
+          const heatPerSecond = (heaterSpeed + device.heat_consuming_speed) * ctx.speedMultiplier;
+          const heatPerActivation = heatPerSecond * recipe.time / ctx.speedMultiplier;
+          const fuelRate = activationRate * heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
 
-            nodeInputs.add(sourceNodeId);
-            node.inputs.push(createInputReference(sourceNode, fuelRate, fuelId));
-          });
-        } else {
           const rawNodeId = `${fuelId}-raw`;
           const rawNode = nodes.get(rawNodeId);
           if (rawNode && !nodeInputs.has(rawNodeId)) {
@@ -489,6 +471,7 @@ function linkProductionNodes(
             node.inputs.push(createInputReference(rawNode, fuelRate, fuelId));
           }
         }
+        // If fuel is produced (not raw), it's tracked in itemFlows but not in tree to avoid cycles
       }
     }
   });
