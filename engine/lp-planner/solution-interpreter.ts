@@ -154,7 +154,7 @@ export function interpretSolution(
     productionNodes.set(nodeId, node);
   });
 
-  // Create raw material nodes
+  // Create raw material nodes from LP solution
   rawPurchases.forEach((rate, itemName) => {
     if (rate < EPSILON) return;
 
@@ -174,6 +174,33 @@ export function interpretSolution(
     };
 
     productionNodes.set(nodeId, node);
+  });
+
+  // Create raw material nodes for available resources (even if item can be produced)
+  // The LP model doesn't create raw_ variables for producible items, so we add them manually
+  config.availableResources?.forEach((res) => {
+    const itemId = normalizeItemId(res.item);
+    const nodeId = `${itemId}-raw`;
+
+    // Only create if not already created from rawPurchases
+    if (!productionNodes.has(nodeId) && res.rate > EPSILON) {
+      const item = getItem(itemId);
+      const node: ProductionNode = {
+        id: nodeId,
+        itemName: item?.name || res.item,
+        rate: res.rate,
+        isRaw: true,
+        deviceCount: 0,
+        heatConsumption: 0,
+        inputs: [],
+        byproducts: [],
+        beltLimit: ctx.beltLimit,
+        isBeltSaturated: res.rate > ctx.beltLimit,
+        suppliedRate: res.rate, // Mark as supplied resource
+      };
+
+      productionNodes.set(nodeId, node);
+    }
   });
 
   // Create raw material nodes for seeds (not in LP model but needed for IO summary)
@@ -499,7 +526,7 @@ function linkProductionNodes(
         const fertilizerPerActivation = (outputCount * outputItem.required_nutrients) / fertilizerItem.nutrient_value;
         const fertilizerRate = activationRate * fertilizerPerActivation;
 
-        // Link fertilizer (raw or produced)
+        // Link fertilizer (production sources)
         if (fertFlow && fertFlow.sources.length > 0) {
           // Fertilizer is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
@@ -523,15 +550,23 @@ function linkProductionNodes(
               addDependency(nodeId, sourceNodeId);
             }
           });
-        } else {
-          // Fertilizer is raw material - link to raw node
-          const rawNodeId = `${fertId}-raw`;
-          const rawNode = nodes.get(rawNodeId);
-          if (rawNode && !nodeInputs.has(rawNodeId)) {
-            nodeInputs.add(rawNodeId);
-            node.inputs.push(createInputReference(rawNode, fertilizerRate, fertId));
-            addDependency(nodeId, rawNodeId);
-          }
+        }
+
+        // Link fertilizer (raw/purchased source if available)
+        // This allows showing both produced AND raw sources when both exist
+        const rawNodeId = `${fertId}-raw`;
+        const rawNode = nodes.get(rawNodeId);
+        if (rawNode && !nodeInputs.has(rawNodeId)) {
+          // Calculate how much raw fertilizer this node consumes
+          // If there's also production, the raw portion is proportional to raw supply
+          const rawFertRate = rawNode.rate;
+          const totalFertAvailable = (fertFlow?.produced || 0) + rawFertRate;
+          const rawPortion = totalFertAvailable > 0 ? rawFertRate / totalFertAvailable : 1;
+          const rawInputRate = fertilizerRate * rawPortion;
+
+          nodeInputs.add(rawNodeId);
+          node.inputs.push(createInputReference(rawNode, rawInputRate, fertId));
+          addDependency(nodeId, rawNodeId);
         }
       }
     }
@@ -558,7 +593,7 @@ function linkProductionNodes(
         const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelRate = activationRate * heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
 
-        // Link fuel (raw or produced)
+        // Link fuel (production sources)
         if (fuelFlow && fuelFlow.sources.length > 0) {
           // Fuel is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
@@ -582,15 +617,23 @@ function linkProductionNodes(
               addDependency(nodeId, sourceNodeId);
             }
           });
-        } else {
-          // Fuel is raw material - link to raw node
-          const rawNodeId = `${fuelId}-raw`;
-          const rawNode = nodes.get(rawNodeId);
-          if (rawNode && !nodeInputs.has(rawNodeId)) {
-            nodeInputs.add(rawNodeId);
-            node.inputs.push(createInputReference(rawNode, fuelRate, fuelId));
-            addDependency(nodeId, rawNodeId);
-          }
+        }
+
+        // Link fuel (raw/purchased source if available)
+        // This allows showing both produced AND raw sources when both exist
+        const rawNodeId = `${fuelId}-raw`;
+        const rawNode = nodes.get(rawNodeId);
+        if (rawNode && !nodeInputs.has(rawNodeId)) {
+          // Calculate how much raw fuel this node consumes
+          // If there's also production, the raw portion is proportional to raw supply
+          const rawFuelRate = rawNode.rate;
+          const totalFuelAvailable = (fuelFlow?.produced || 0) + rawFuelRate;
+          const rawPortion = totalFuelAvailable > 0 ? rawFuelRate / totalFuelAvailable : 1;
+          const rawInputRate = fuelRate * rawPortion;
+
+          nodeInputs.add(rawNodeId);
+          node.inputs.push(createInputReference(rawNode, rawInputRate, fuelId));
+          addDependency(nodeId, rawNodeId);
         }
       }
     }
