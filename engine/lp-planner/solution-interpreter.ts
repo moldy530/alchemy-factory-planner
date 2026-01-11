@@ -599,32 +599,33 @@ function linkProductionNodes(
 
 /**
  * Create an input reference to a source node.
- * Now that graphMapper has cycle detection, we can safely reference nodes with their inputs.
- * We create a shallow copy with appropriate rate handling based on node type.
+ * For produced items, we return the same object reference to prevent double-counting in the graph.
+ * For raw materials, we create a copy to show the specific consumption rate.
  */
 function createInputReference(
   sourceNode: ProductionNode,
   inputRate: number,
   _itemName: string
 ): ProductionNode {
-  // For raw materials, use inputRate (shows consumption by this consumer)
-  // For produced items, use sourceNode.rate (shows the production capacity)
-  // This ensures that produced items show their full production rate,
-  // while raw material nodes show how much is consumed by each consumer
-  const displayRate = sourceNode.isRaw ? inputRate : sourceNode.rate;
+  // For raw materials, create a copy with the consumption rate
+  // This allows different consumers to show different consumption amounts
+  if (sourceNode.isRaw) {
+    return {
+      ...sourceNode,
+      rate: inputRate,
+      inputs: sourceNode.inputs,
+    };
+  }
 
-  return {
-    ...sourceNode,
-    rate: displayRate,
-    // Keep the actual inputs array - graphMapper has cycle detection now
-    inputs: sourceNode.inputs,
-  };
+  // For produced items, return the original node object
+  // This ensures the node is only counted once when the graph deduplicates by reference
+  return sourceNode;
 }
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * These references show consumption edges in the graph without inflating production rates.
- * We don't include inputs because the production subtree is already traversed elsewhere.
+ * Returns the source node's ID and rate to show consumption without creating circular structures.
+ * The graph visualization should look up the full production chain separately using the recipeId.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
@@ -635,6 +636,7 @@ function createConsumptionReference(
     ...sourceNode,
     rate: consumptionRate,
     isConsumptionReference: true, // Mark as consumption so graphMapper doesn't add to total
-    inputs: [], // Don't traverse inputs again - they're already in the production tree
+    // Empty inputs to avoid circular references - graph should look up production chain via recipeId
+    inputs: [],
   };
 }
