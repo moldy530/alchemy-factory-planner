@@ -213,10 +213,6 @@ export function interpretSolution(
   // Link nodes based on item flow (create input references)
   linkProductionNodes(productionNodes, recipeActivations, itemFlows, ctx);
 
-  // Track which production nodes are referenced by consumption references
-  // These need to be included as additional roots so their production chains are visible
-  const consumptionRefProductionNodes = new Set<string>();
-
   // Find and return target roots
   const targets = config.targets?.length
     ? config.targets
@@ -254,36 +250,6 @@ export function interpretSolution(
     console.warn("[LP Planner] No root nodes found for targets");
     return [];
   }
-
-  // Traverse the tree to find all consumption references
-  // and add their production nodes as additional roots
-  function findConsumptionRefs(node: ProductionNode, visited = new Set<any>()) {
-    if (visited.has(node)) return;
-    visited.add(node);
-
-    if (node.isConsumptionReference && node.recipeId) {
-      consumptionRefProductionNodes.add(node.recipeId);
-    }
-
-    node.inputs.forEach(input => findConsumptionRefs(input, visited));
-  }
-
-  roots.forEach(root => findConsumptionRefs(root));
-
-  // Add production nodes for consumed items as additional roots
-  consumptionRefProductionNodes.forEach(recipeId => {
-    const nodeId = productionNodes.keys();
-    for (const key of nodeId) {
-      const node = productionNodes.get(key);
-      if (node && node.recipeId === recipeId && !node.isRaw) {
-        // Don't add if already in roots
-        if (!roots.some(r => r.id === node.id)) {
-          roots.push(node);
-        }
-        break;
-      }
-    }
-  });
 
   return roots;
 }
@@ -550,7 +516,7 @@ function linkProductionNodes(
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
-            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fertId));
+            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fertId, wouldCycle));
 
             // Only track dependencies if not cyclic to avoid infinite loops in traversal
             if (!wouldCycle) {
@@ -609,7 +575,7 @@ function linkProductionNodes(
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
-            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fuelId));
+            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fuelId, wouldCycle));
 
             // Only track dependencies if not cyclic to avoid infinite loops in traversal
             if (!wouldCycle) {
@@ -658,19 +624,20 @@ function createInputReference(
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * Returns the source node's ID and rate to show consumption without creating circular structures.
- * The graph visualization should look up the full production chain separately using the recipeId.
+ * Shows the consumption edge without including the production chain (to avoid cycles).
+ * The graph visualization will need to look up production chains separately for consumed items.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
   consumptionRate: number,
-  _itemName: string
+  _itemName: string,
+  _wouldCycle: boolean
 ): ProductionNode {
   return {
     ...sourceNode,
     rate: consumptionRate,
     isConsumptionReference: true, // Mark as consumption so graphMapper doesn't add to total
-    // Empty inputs to avoid circular references - graph should look up production chain via recipeId
+    // Always use empty inputs to avoid circular object references
     inputs: [],
   };
 }
