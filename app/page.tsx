@@ -89,12 +89,16 @@ export default function PlannerPage() {
     function traverse(node: ProductionNode, isRoot = false) {
       const key = node.id || node.itemName;
 
-      // Skip consumption references - they don't contribute to IO summary
-      // The actual production nodes will be traversed separately
-      if (node.isConsumptionReference) return;
-
+      // Check if already visited (for both production and consumption references)
       if (visited.has(key)) return;
       visited.add(key);
+
+      // Skip consumption references from IO totals, but still traverse their inputs
+      // to capture raw materials (e.g., Logs for Plank fuel)
+      if (node.isConsumptionReference) {
+        node.inputs.forEach((n) => traverse(n));
+        return;
+      }
 
       if (isRoot) {
         // Use netOutputRate for LP planner (accounts for internal consumption)
