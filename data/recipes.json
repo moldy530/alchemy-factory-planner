@@ -3,13 +3,15 @@
     "id": "flax",
     "inputs": [
       {
-        "name": "flax seed",
+        "id": "flaxseed",
+        "name": "Flax Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "flax",
+        "id": "flax",
+        "name": "Flax",
         "count": 200
       }
     ],
@@ -21,13 +23,15 @@
     "id": "sage",
     "inputs": [
       {
-        "name": "sage seed",
+        "id": "sageseed",
+        "name": "Sage Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "sage",
+        "id": "sage",
+        "name": "Sage",
         "count": 180
       }
     ],
@@ -39,13 +43,15 @@
     "id": "redcurrant",
     "inputs": [
       {
-        "name": "redcurrant seed",
+        "id": "redcurrantseed",
+        "name": "Redcurrant Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "redcurrant",
+        "id": "redcurrant",
+        "name": "Redcurrant",
         "count": 150
       }
     ],
@@ -57,13 +63,15 @@
     "id": "lavender",
     "inputs": [
       {
-        "name": "lavender seed",
+        "id": "lavenderseed",
+        "name": "Lavender Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "lavender",
+        "id": "lavender",
+        "name": "Lavender",
         "count": 120
       }
     ],
@@ -75,13 +83,15 @@
     "id": "chamomile",
     "inputs": [
       {
-        "name": "chamomile seed",
+        "id": "chamomileseed",
+        "name": "Chamomile Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "chamomile",
+        "id": "chamomile",
+        "name": "Chamomile",
         "count": 140
       }
     ],
@@ -93,17 +103,20 @@
     "id": "gentian",
     "inputs": [
       {
-        "name": "gentian seed",
+        "id": "gentianseed",
+        "name": "Gentian Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gentian",
+        "id": "gentian",
+        "name": "Gentian",
         "count": 80
       },
       {
-        "name": "gentian nectar",
+        "id": "gentiannectar",
+        "name": "Gentian Nectar",
         "count": 80
       }
     ],
@@ -115,12 +128,14 @@
     "id": "wood-board",
     "inputs": [
       {
-        "name": "wood",
+        "id": "wood",
+        "name": "Logs",
         "count": 1
       }
     ],
     "outputs": [
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 1
       }
@@ -133,13 +148,15 @@
     "id": "large-wood-gear",
     "inputs": [
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "large wood gear",
+        "id": "largewoodgear",
+        "name": "Large Wooden Gear",
         "count": 1
       }
     ],
@@ -151,13 +168,15 @@
     "id": "stone",
     "inputs": [
       {
-        "name": "limestone",
+        "id": "limestone",
+        "name": "Limestone",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "stone",
+        "id": "stone",
+        "name": "Stone",
         "count": 1
       }
     ],
@@ -169,13 +188,15 @@
     "id": "sand",
     "inputs": [
       {
-        "name": "stone",
+        "id": "stone",
+        "name": "Stone",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "sand",
+        "id": "sand",
+        "name": "Sand",
         "count": 1
       }
     ],
@@ -187,13 +208,15 @@
     "id": "mortar",
     "inputs": [
       {
-        "name": "stone",
+        "id": "stone",
+        "name": "Stone",
         "count": 5
       }
     ],
     "outputs": [
       {
-        "name": "mortar",
+        "id": "mortar",
+        "name": "Mortar",
         "count": 1
       }
     ],
@@ -205,13 +228,15 @@
     "id": "flax-fiber",
     "inputs": [
       {
-        "name": "flax",
+        "id": "flax",
+        "name": "Flax",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "flax fiber",
+        "id": "flaxfiber",
+        "name": "Flax Fiber",
         "count": 1
       }
     ],
@@ -223,13 +248,15 @@
     "id": "linen-thread",
     "inputs": [
       {
-        "name": "flax fiber",
+        "id": "flaxfiber",
+        "name": "Flax Fiber",
         "count": 3
       }
     ],
     "outputs": [
       {
-        "name": "linen thread",
+        "id": "linenthread",
+        "name": "Linen Thread",
         "count": 1
       }
     ],
@@ -241,13 +268,15 @@
     "id": "linen-rope",
     "inputs": [
       {
-        "name": "linen thread",
+        "id": "linenthread",
+        "name": "Linen Thread",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "linen rope",
+        "id": "linenrope",
+        "name": "Linen Rope",
         "count": 1
       }
     ],
@@ -259,13 +288,15 @@
     "id": "wood-gear",
     "inputs": [
       {
-        "name": "large wood gear",
+        "id": "largewoodgear",
+        "name": "Large Wooden Gear",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "wood gear",
+        "id": "woodgear",
+        "name": "Small Wooden Gear",
         "count": 3
       }
     ],
@@ -277,13 +308,15 @@
     "id": "iron-ingot",
     "inputs": [
       {
-        "name": "iron ore",
+        "id": "ironore",
+        "name": "Iron Ore",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 1
       }
     ],
@@ -295,13 +328,15 @@
     "id": "nails",
     "inputs": [
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "nails",
+        "id": "nails",
+        "name": "Iron Nails",
         "count": 3
       }
     ],
@@ -313,13 +348,15 @@
     "id": "iron-sand",
     "inputs": [
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "iron sand",
+        "id": "ironsand",
+        "name": "Iron Sand",
         "count": 1
       }
     ],
@@ -331,13 +368,15 @@
     "id": "plant-ash",
     "inputs": [
       {
-        "name": "sage",
+        "id": "sage",
+        "name": "Sage",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "plant ash",
+        "id": "plantash",
+        "name": "Plant Ash",
         "count": 1
       }
     ],
@@ -349,13 +388,15 @@
     "id": "sage-powder",
     "inputs": [
       {
-        "name": "sage",
+        "id": "sage",
+        "name": "Sage",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "sage powder",
+        "id": "sagepowder",
+        "name": "Sage Powder",
         "count": 1
       }
     ],
@@ -367,17 +408,20 @@
     "id": "healing-potion",
     "inputs": [
       {
-        "name": "sage powder",
+        "id": "sagepowder",
+        "name": "Sage Powder",
         "count": 6
       },
       {
-        "name": "flax fiber",
+        "id": "flaxfiber",
+        "name": "Flax Fiber",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "healing potion",
+        "id": "healingpotion",
+        "name": "Healing Potion",
         "count": 1
       }
     ],
@@ -389,13 +433,15 @@
     "id": "linen",
     "inputs": [
       {
-        "name": "linen thread",
+        "id": "linenthread",
+        "name": "Linen Thread",
         "count": 10
       }
     ],
     "outputs": [
       {
-        "name": "linen",
+        "id": "linen",
+        "name": "Linen",
         "count": 1
       }
     ],
@@ -407,17 +453,20 @@
     "id": "bandage",
     "inputs": [
       {
-        "name": "linen",
+        "id": "linen",
+        "name": "Linen",
         "count": 1
       },
       {
-        "name": "healing potion",
+        "id": "healingpotion",
+        "name": "Healing Potion",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "bandage",
+        "id": "bandage",
+        "name": "Bandage",
         "count": 1
       }
     ],
@@ -429,13 +478,15 @@
     "id": "quicklime",
     "inputs": [
       {
-        "name": "stone",
+        "id": "stone",
+        "name": "Stone",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "quicklime",
+        "id": "quicklime",
+        "name": "Quicklime",
         "count": 1
       }
     ],
@@ -447,13 +498,15 @@
     "id": "quicklime-powder",
     "inputs": [
       {
-        "name": "quicklime",
+        "id": "quicklime",
+        "name": "Quicklime",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "quicklime powder",
+        "id": "quicklimepowder",
+        "name": "Quicklime Powder",
         "count": 1
       }
     ],
@@ -465,13 +518,15 @@
     "id": "charcoal",
     "inputs": [
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "charcoal",
+        "id": "charcoal",
+        "name": "Charcoal",
         "count": 1
       }
     ],
@@ -483,13 +538,15 @@
     "id": "charcoal-powder",
     "inputs": [
       {
-        "name": "charcoal",
+        "id": "charcoal",
+        "name": "Charcoal",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "charcoal powder",
+        "id": "charcoalpowder",
+        "name": "Charcoal Powder",
         "count": 1
       }
     ],
@@ -501,17 +558,20 @@
     "id": "wood-pulley",
     "inputs": [
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 2
       },
       {
-        "name": "linen rope",
+        "id": "linenrope",
+        "name": "Linen Rope",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "wood pulley",
+        "id": "woodpulley",
+        "name": "Wooden Pulley",
         "count": 1
       }
     ],
@@ -523,17 +583,20 @@
     "id": "clay",
     "inputs": [
       {
-        "name": "charcoal powder",
+        "id": "charcoalpowder",
+        "name": "Charcoal Powder",
         "count": 2
       },
       {
-        "name": "sand",
+        "id": "sand",
+        "name": "Sand",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "clay",
+        "id": "clay",
+        "name": "Clay",
         "count": 1
       }
     ],
@@ -545,13 +608,15 @@
     "id": "clay-powder",
     "inputs": [
       {
-        "name": "clay",
+        "id": "clay",
+        "name": "Clay",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "clay powder",
+        "id": "claypowder",
+        "name": "Clay Powder",
         "count": 1
       }
     ],
@@ -563,13 +628,15 @@
     "id": "brick",
     "inputs": [
       {
-        "name": "clay",
+        "id": "clay",
+        "name": "Clay",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "brick",
+        "id": "brick",
+        "name": "Brick",
         "count": 1
       }
     ],
@@ -581,13 +648,15 @@
     "id": "linseed-oil",
     "inputs": [
       {
-        "name": "flax",
+        "id": "flax",
+        "name": "Flax",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "linseed oil",
+        "id": "linseedoil",
+        "name": "Linseed Oil",
         "count": 50
       }
     ],
@@ -599,13 +668,15 @@
     "id": "fruit-wine",
     "inputs": [
       {
-        "name": "redcurrant",
+        "id": "redcurrant",
+        "name": "Redcurrant",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "fruit wine",
+        "id": "fruitwine",
+        "name": "Fruit Wine",
         "count": 10
       }
     ],
@@ -617,13 +688,15 @@
     "id": "limewater",
     "inputs": [
       {
-        "name": "quicklime powder",
+        "id": "quicklimepowder",
+        "name": "Quicklime Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "limewater",
+        "id": "limewater",
+        "name": "Limewater",
         "count": 30
       }
     ],
@@ -635,13 +708,15 @@
     "id": "glass",
     "inputs": [
       {
-        "name": "sand",
+        "id": "sand",
+        "name": "Sand",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "glass",
+        "id": "glass",
+        "name": "Glass",
         "count": 1
       }
     ],
@@ -653,17 +728,20 @@
     "id": "soap",
     "inputs": [
       {
-        "name": "plant ash",
+        "id": "plantash",
+        "name": "Plant Ash",
         "count": 3
       },
       {
-        "name": "linseed oil",
+        "id": "linseedoil",
+        "name": "Linseed Oil",
         "count": 200
       }
     ],
     "outputs": [
       {
-        "name": "soap",
+        "id": "soap",
+        "name": "Soap",
         "count": 1
       }
     ],
@@ -675,13 +753,15 @@
     "id": "soap-powder",
     "inputs": [
       {
-        "name": "soap",
+        "id": "soap",
+        "name": "Soap",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "soap powder",
+        "id": "soappowder",
+        "name": "Soap Powder",
         "count": 1
       }
     ],
@@ -693,17 +773,20 @@
     "id": "vitality-potion",
     "inputs": [
       {
-        "name": "quicklime powder",
+        "id": "quicklimepowder",
+        "name": "Quicklime Powder",
         "count": 4
       },
       {
-        "name": "fruit wine",
+        "id": "fruitwine",
+        "name": "Fruit Wine",
         "count": 80
       }
     ],
     "outputs": [
       {
-        "name": "vitality potion",
+        "id": "vitalitypotion",
+        "name": "Vitality Potion",
         "count": 1
       }
     ],
@@ -715,17 +798,20 @@
     "id": "basic-fertilizer",
     "inputs": [
       {
-        "name": "plant ash",
+        "id": "plantash",
+        "name": "Plant Ash",
         "count": 1
       },
       {
-        "name": "quicklime powder",
+        "id": "quicklimepowder",
+        "name": "Quicklime Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "basic fertilizer",
+        "id": "basicfertilizer",
+        "name": "Basic Fertilizer",
         "count": 1
       }
     ],
@@ -737,17 +823,20 @@
     "id": "turquoise",
     "inputs": [
       {
-        "name": "healing potion",
+        "id": "healingpotion",
+        "name": "Healing Potion",
         "count": 2
       },
       {
-        "name": "sand",
+        "id": "sand",
+        "name": "Sand",
         "count": 12
       }
     ],
     "outputs": [
       {
-        "name": "turquoise",
+        "id": "turquoise",
+        "name": "Turquoise",
         "count": 1
       }
     ],
@@ -759,21 +848,25 @@
     "id": "jupiter",
     "inputs": [
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 4
       },
       {
-        "name": "wood gear",
+        "id": "woodgear",
+        "name": "Small Wooden Gear",
         "count": 6
       },
       {
-        "name": "wood pulley",
+        "id": "woodpulley",
+        "name": "Wooden Pulley",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "jupiter",
+        "id": "jupiter",
+        "name": "Jupiter",
         "count": 1
       }
     ],
@@ -783,13 +876,15 @@
     "id": "coke",
     "inputs": [
       {
-        "name": "charcoal powder",
+        "id": "charcoalpowder",
+        "name": "Charcoal Powder",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "coke",
+        "id": "coke",
+        "name": "Coke",
         "count": 1
       }
     ],
@@ -799,13 +894,15 @@
     "id": "coke-powder",
     "inputs": [
       {
-        "name": "coke",
+        "id": "coke",
+        "name": "Coke",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "coke powder",
+        "id": "cokepowder",
+        "name": "Coke Powder",
         "count": 1
       }
     ],
@@ -817,17 +914,20 @@
     "id": "steel-ingot",
     "inputs": [
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 1
       },
       {
-        "name": "coke powder",
+        "id": "cokepowder",
+        "name": "Coke Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "steel ingot",
+        "id": "steelingot",
+        "name": "Steel Ingot",
         "count": 1
       }
     ],
@@ -837,13 +937,15 @@
     "id": "steel-gear",
     "inputs": [
       {
-        "name": "steel ingot",
+        "id": "steelingot",
+        "name": "Steel Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "steel gear",
+        "id": "steelgear",
+        "name": "Steel Gear",
         "count": 1
       }
     ],
@@ -855,17 +957,20 @@
     "id": "yeast-powder",
     "inputs": [
       {
-        "name": "soap powder",
+        "id": "soappowder",
+        "name": "Soap Powder",
         "count": 2
       },
       {
-        "name": "fruit wine",
+        "id": "fruitwine",
+        "name": "Fruit Wine",
         "count": 40
       }
     ],
     "outputs": [
       {
-        "name": "yeast powder",
+        "id": "yeastpowder",
+        "name": "Yeast Powder",
         "count": 1
       }
     ],
@@ -877,17 +982,20 @@
     "id": "mana-potion",
     "inputs": [
       {
-        "name": "coke powder",
+        "id": "cokepowder",
+        "name": "Coke Powder",
         "count": 2
       },
       {
-        "name": "gloom spores",
+        "id": "gloomspores",
+        "name": "Gloom Spores",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "mana potion",
+        "id": "manapotion",
+        "name": "Transformation Potion",
         "count": 1
       }
     ],
@@ -899,16 +1007,19 @@
     "id": "gloom-fungus",
     "inputs": [
       {
-        "name": "rotten log",
+        "id": "rottenlog",
+        "name": "Rotten Log",
         "count": 5
       }
     ],
     "outputs": [
       {
-        "name": "gloom fungus",
+        "id": "gloomfungus",
+        "name": "Gloom Fungus",
         "count": 1
       },
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 4
       }
@@ -921,17 +1032,20 @@
     "id": "gloom-spores",
     "inputs": [
       {
-        "name": "gloom fungus",
+        "id": "gloomfungus",
+        "name": "Gloom Fungus",
         "count": 2
       },
       {
-        "name": "yeast powder",
+        "id": "yeastpowder",
+        "name": "Yeast Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gloom spores",
+        "id": "gloomspores",
+        "name": "Gloom Spores",
         "count": 1
       }
     ],
@@ -943,17 +1057,20 @@
     "id": "advanced-fertilizer",
     "inputs": [
       {
-        "name": "basic fertilizer",
+        "id": "basicfertilizer",
+        "name": "Basic Fertilizer",
         "count": 1
       },
       {
-        "name": "gloom fungus",
+        "id": "gloomfungus",
+        "name": "Gloom Fungus",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "advanced fertilizer",
+        "id": "advancedfertilizer",
+        "name": "Advanced Fertilizer",
         "count": 1
       }
     ],
@@ -965,13 +1082,15 @@
     "id": "chamomile-powder",
     "inputs": [
       {
-        "name": "chamomile",
+        "id": "chamomile",
+        "name": "Chamomile",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "chamomile powder",
+        "id": "chamomilepowder",
+        "name": "Chamomile Powder",
         "count": 1
       }
     ],
@@ -983,17 +1102,20 @@
     "id": "sulfur",
     "inputs": [
       {
-        "name": "pyrite",
+        "id": "pyrite",
+        "name": "Pyrite Ore",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "sulfur",
+        "id": "sulfur",
+        "name": "Sulfur",
         "count": 1
       },
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 3
       }
     ],
@@ -1005,13 +1127,15 @@
     "id": "sulfur-powder",
     "inputs": [
       {
-        "name": "sulfur",
+        "id": "sulfur",
+        "name": "Sulfur",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "sulfur powder",
+        "id": "sulfurpowder",
+        "name": "Sulfur Powder",
         "count": 1
       }
     ],
@@ -1023,13 +1147,15 @@
     "id": "coal",
     "inputs": [
       {
-        "name": "coal ore",
+        "id": "coalore",
+        "name": "Coal Ore",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "coal",
+        "id": "coal",
+        "name": "Coal",
         "count": 1
       }
     ],
@@ -1041,17 +1167,20 @@
     "id": "salt",
     "inputs": [
       {
-        "name": "charcoal powder",
+        "id": "charcoalpowder",
+        "name": "Charcoal Powder",
         "count": 2
       },
       {
-        "name": "quicklime powder",
+        "id": "quicklimepowder",
+        "name": "Quicklime Powder",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "salt",
+        "id": "salt",
+        "name": "Salt",
         "count": 1
       }
     ],
@@ -1061,13 +1190,15 @@
     "id": "salt-water",
     "inputs": [
       {
-        "name": "salt",
+        "id": "salt",
+        "name": "Salt",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "salt water",
+        "id": "saltwater",
+        "name": "Brine",
         "count": 20
       }
     ],
@@ -1079,17 +1210,20 @@
     "id": "copper-powder",
     "inputs": [
       {
-        "name": "iron sand",
+        "id": "ironsand",
+        "name": "Iron Sand",
         "count": 4
       },
       {
-        "name": "soap powder",
+        "id": "soappowder",
+        "name": "Soap Powder",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "copper powder",
+        "id": "copperpowder",
+        "name": "Impure Copper Powder",
         "count": 1
       }
     ],
@@ -1099,17 +1233,20 @@
     "id": "copper-powder2",
     "inputs": [
       {
-        "name": "iron sand",
+        "id": "ironsand",
+        "name": "Iron Sand",
         "count": 6
       },
       {
-        "name": "soap powder",
+        "id": "soappowder",
+        "name": "Soap Powder",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "copper powder2",
+        "id": "copperpowder2",
+        "name": "Copper Powder",
         "count": 1
       }
     ],
@@ -1119,13 +1256,15 @@
     "id": "bronze-ingot",
     "inputs": [
       {
-        "name": "copper powder",
+        "id": "copperpowder",
+        "name": "Impure Copper Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "bronze ingot",
+        "id": "bronzeingot",
+        "name": "Bronze Ingot",
         "count": 1
       }
     ],
@@ -1137,13 +1276,15 @@
     "id": "copper-ingot",
     "inputs": [
       {
-        "name": "copper powder2",
+        "id": "copperpowder2",
+        "name": "Copper Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       }
     ],
@@ -1155,13 +1296,15 @@
     "id": "copper-coin",
     "inputs": [
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "copper coin",
+        "id": "coppercoin",
+        "name": "Copper Coin",
         "count": 300
       }
     ],
@@ -1173,13 +1316,15 @@
     "id": "copper-bearing",
     "inputs": [
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "copper bearing",
+        "id": "copperbearing",
+        "name": "Copper Bearing",
         "count": 2
       }
     ],
@@ -1191,13 +1336,15 @@
     "id": "bronze-rivet",
     "inputs": [
       {
-        "name": "bronze ingot",
+        "id": "bronzeingot",
+        "name": "Bronze Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "bronze rivet",
+        "id": "bronzerivet",
+        "name": "Bronze Rivet",
         "count": 3
       }
     ],
@@ -1209,21 +1356,25 @@
     "id": "black-powder",
     "inputs": [
       {
-        "name": "sulfur powder",
+        "id": "sulfurpowder",
+        "name": "Sulfur Powder",
         "count": 1
       },
       {
-        "name": "charcoal powder",
+        "id": "charcoalpowder",
+        "name": "Charcoal Powder",
         "count": 12
       },
       {
-        "name": "limewater",
+        "id": "limewater",
+        "name": "Limewater",
         "count": 150
       }
     ],
     "outputs": [
       {
-        "name": "black powder",
+        "id": "blackpowder",
+        "name": "Black Powder",
         "count": 2
       }
     ],
@@ -1235,21 +1386,25 @@
     "id": "growth-potion",
     "inputs": [
       {
-        "name": "chamomile powder",
+        "id": "chamomilepowder",
+        "name": "Chamomile Powder",
         "count": 2
       },
       {
-        "name": "clay powder",
+        "id": "claypowder",
+        "name": "Clay Powder",
         "count": 6
       },
       {
-        "name": "salt water",
+        "id": "saltwater",
+        "name": "Brine",
         "count": 80
       }
     ],
     "outputs": [
       {
-        "name": "growth potion",
+        "id": "growthpotion",
+        "name": "Growth Potion",
         "count": 1
       }
     ],
@@ -1261,21 +1416,25 @@
     "id": "catalyst1",
     "inputs": [
       {
-        "name": "chamomile powder",
+        "id": "chamomilepowder",
+        "name": "Chamomile Powder",
         "count": 1
       },
       {
-        "name": "gloom spores",
+        "id": "gloomspores",
+        "name": "Gloom Spores",
         "count": 1
       },
       {
-        "name": "sulfur powder",
+        "id": "sulfurpowder",
+        "name": "Sulfur Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "catalyst1",
+        "id": "catalyst1",
+        "name": "Unstable Catalyst",
         "count": 1
       }
     ],
@@ -1285,21 +1444,25 @@
     "id": "pocket-watch",
     "inputs": [
       {
-        "name": "steel gear",
+        "id": "steelgear",
+        "name": "Steel Gear",
         "count": 2
       },
       {
-        "name": "copper bearing",
+        "id": "copperbearing",
+        "name": "Copper Bearing",
         "count": 2
       },
       {
-        "name": "glass",
+        "id": "glass",
+        "name": "Glass",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "pocket watch",
+        "id": "pocketwatch",
+        "name": "Pocket Watch",
         "count": 1
       }
     ],
@@ -1309,17 +1472,20 @@
     "id": "malachite",
     "inputs": [
       {
-        "name": "copper powder",
+        "id": "copperpowder",
+        "name": "Impure Copper Powder",
         "count": 2
       },
       {
-        "name": "clay powder",
+        "id": "claypowder",
+        "name": "Clay Powder",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "malachite",
+        "id": "malachite",
+        "name": "Malachite",
         "count": 1
       }
     ],
@@ -1329,21 +1495,25 @@
     "id": "saturn",
     "inputs": [
       {
-        "name": "salt",
+        "id": "salt",
+        "name": "Salt",
         "count": 6
       },
       {
-        "name": "brick",
+        "id": "brick",
+        "name": "Brick",
         "count": 6
       },
       {
-        "name": "glass",
+        "id": "glass",
+        "name": "Glass",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "saturn",
+        "id": "saturn",
+        "name": "Saturn",
         "count": 1
       }
     ],
@@ -1353,25 +1523,30 @@
     "id": "mars",
     "inputs": [
       {
-        "name": "nails",
+        "id": "nails",
+        "name": "Iron Nails",
         "count": 8
       },
       {
-        "name": "steel gear",
+        "id": "steelgear",
+        "name": "Steel Gear",
         "count": 4
       },
       {
-        "name": "bronze rivet",
+        "id": "bronzerivet",
+        "name": "Bronze Rivet",
         "count": 8
       },
       {
-        "name": "copper bearing",
+        "id": "copperbearing",
+        "name": "Copper Bearing",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "mars",
+        "id": "mars",
+        "name": "Mars",
         "count": 1
       }
     ],
@@ -1381,13 +1556,15 @@
     "id": "sand2",
     "inputs": [
       {
-        "name": "sand",
+        "id": "sand",
+        "name": "Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand2",
+        "id": "sand2",
+        "name": "Sand2",
         "count": 1
       }
     ],
@@ -1399,13 +1576,15 @@
     "id": "sand3",
     "inputs": [
       {
-        "name": "sand2",
+        "id": "sand2",
+        "name": "Sand2",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand3",
+        "id": "sand3",
+        "name": "Sand3",
         "count": 1
       }
     ],
@@ -1417,13 +1596,15 @@
     "id": "sand4",
     "inputs": [
       {
-        "name": "sand3",
+        "id": "sand3",
+        "name": "Sand3",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand4",
+        "id": "sand4",
+        "name": "Sand4",
         "count": 1
       }
     ],
@@ -1435,13 +1616,15 @@
     "id": "sand5",
     "inputs": [
       {
-        "name": "sand4",
+        "id": "sand4",
+        "name": "Sand4",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand5",
+        "id": "sand5",
+        "name": "Sand5",
         "count": 1
       }
     ],
@@ -1453,13 +1636,15 @@
     "id": "sand6",
     "inputs": [
       {
-        "name": "sand5",
+        "id": "sand5",
+        "name": "Sand5",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand6",
+        "id": "sand6",
+        "name": "Sand6",
         "count": 1
       }
     ],
@@ -1471,13 +1656,15 @@
     "id": "sand8",
     "inputs": [
       {
-        "name": "sand6",
+        "id": "sand6",
+        "name": "Sand6",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand8",
+        "id": "sand8",
+        "name": "Sand8",
         "count": 1
       }
     ],
@@ -1489,13 +1676,15 @@
     "id": "shard1",
     "inputs": [
       {
-        "name": "sand8",
+        "id": "sand8",
+        "name": "Sand8",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "shard1",
+        "id": "shard1",
+        "name": "Crude Shard",
         "count": 1
       }
     ],
@@ -1507,13 +1696,15 @@
     "id": "shard2",
     "inputs": [
       {
-        "name": "shard1",
+        "id": "shard1",
+        "name": "Crude Shard",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "shard2",
+        "id": "shard2",
+        "name": "Broken Shard",
         "count": 1
       }
     ],
@@ -1525,13 +1716,15 @@
     "id": "shard3",
     "inputs": [
       {
-        "name": "shard2",
+        "id": "shard2",
+        "name": "Broken Shard",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "shard3",
+        "id": "shard3",
+        "name": "Dull Shard",
         "count": 1
       }
     ],
@@ -1543,13 +1736,15 @@
     "id": "crystal1",
     "inputs": [
       {
-        "name": "shard3",
+        "id": "shard3",
+        "name": "Dull Shard",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "crystal1",
+        "id": "crystal1",
+        "name": "Shattered Crystal",
         "count": 1
       }
     ],
@@ -1561,13 +1756,15 @@
     "id": "crystal2",
     "inputs": [
       {
-        "name": "crystal1",
+        "id": "crystal1",
+        "name": "Shattered Crystal",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "crystal2",
+        "id": "crystal2",
+        "name": "Crude Crystal",
         "count": 1
       }
     ],
@@ -1579,13 +1776,15 @@
     "id": "crystal3",
     "inputs": [
       {
-        "name": "crystal2",
+        "id": "crystal2",
+        "name": "Crude Crystal",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "crystal3",
+        "id": "crystal3",
+        "name": "Polished Crystal",
         "count": 1
       }
     ],
@@ -1597,13 +1796,15 @@
     "id": "diamond1",
     "inputs": [
       {
-        "name": "crystal3",
+        "id": "crystal3",
+        "name": "Polished Crystal",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "diamond1",
+        "id": "diamond1",
+        "name": "Adamant",
         "count": 1
       }
     ],
@@ -1615,13 +1816,15 @@
     "id": "diamond2",
     "inputs": [
       {
-        "name": "diamond1",
+        "id": "diamond1",
+        "name": "Adamant",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "diamond2",
+        "id": "diamond2",
+        "name": "Diamond",
         "count": 1
       }
     ],
@@ -1633,13 +1836,15 @@
     "id": "diamond3",
     "inputs": [
       {
-        "name": "diamond2",
+        "id": "diamond2",
+        "name": "Diamond",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "diamond3",
+        "id": "diamond3",
+        "name": "Perfect Diamond",
         "count": 1
       }
     ],
@@ -1651,17 +1856,20 @@
     "id": "lavender-essential-oil",
     "inputs": [
       {
-        "name": "lavender",
+        "id": "lavender",
+        "name": "Lavender",
         "count": 3
       },
       {
-        "name": "linseed oil",
+        "id": "linseedoil",
+        "name": "Linseed Oil",
         "count": 300
       }
     ],
     "outputs": [
       {
-        "name": "lavender essential oil",
+        "id": "lavenderessentialoil",
+        "name": "Lavender Essential Oil",
         "count": 15
       }
     ],
@@ -1673,17 +1881,20 @@
     "id": "brandy",
     "inputs": [
       {
-        "name": "coke powder",
+        "id": "cokepowder",
+        "name": "Coke Powder",
         "count": 5
       },
       {
-        "name": "fruit wine",
+        "id": "fruitwine",
+        "name": "Fruit Wine",
         "count": 100
       }
     ],
     "outputs": [
       {
-        "name": "brandy",
+        "id": "brandy",
+        "name": "Brandy",
         "count": 40
       }
     ],
@@ -1695,17 +1906,20 @@
     "id": "sulfuric-acid",
     "inputs": [
       {
-        "name": "sulfur powder",
+        "id": "sulfurpowder",
+        "name": "Sulfur Powder",
         "count": 1
       },
       {
-        "name": "salt water",
+        "id": "saltwater",
+        "name": "Brine",
         "count": 60
       }
     ],
     "outputs": [
       {
-        "name": "sulfuric acid",
+        "id": "sulfuricacid",
+        "name": "Sulfuric Acid",
         "count": 20
       }
     ],
@@ -1717,17 +1931,20 @@
     "id": "topaz",
     "inputs": [
       {
-        "name": "shard1",
+        "id": "shard1",
+        "name": "Crude Shard",
         "count": 1
       },
       {
-        "name": "sulfuric acid",
+        "id": "sulfuricacid",
+        "name": "Sulfuric Acid",
         "count": 30
       }
     ],
     "outputs": [
       {
-        "name": "topaz",
+        "id": "topaz",
+        "name": "Topaz",
         "count": 1
       }
     ],
@@ -1739,21 +1956,25 @@
     "id": "blast-potion",
     "inputs": [
       {
-        "name": "mors",
+        "id": "mors",
+        "name": "Oblivion Essence",
         "count": 1
       },
       {
-        "name": "black powder",
+        "id": "blackpowder",
+        "name": "Black Powder",
         "count": 2
       },
       {
-        "name": "brandy",
+        "id": "brandy",
+        "name": "Brandy",
         "count": 40
       }
     ],
     "outputs": [
       {
-        "name": "blast potion",
+        "id": "blastpotion",
+        "name": "Blast Potion",
         "count": 1
       }
     ],
@@ -1765,21 +1986,25 @@
     "id": "catalyst2",
     "inputs": [
       {
-        "name": "catalyst1",
+        "id": "catalyst1",
+        "name": "Unstable Catalyst",
         "count": 1
       },
       {
-        "name": "vitae",
+        "id": "vitae",
+        "name": "Vitality Essence",
         "count": 1
       },
       {
-        "name": "lavender essential oil",
+        "id": "lavenderessentialoil",
+        "name": "Lavender Essential Oil",
         "count": 18
       }
     ],
     "outputs": [
       {
-        "name": "catalyst2",
+        "id": "catalyst2",
+        "name": "Fertile Catalyst",
         "count": 1
       }
     ],
@@ -1791,17 +2016,20 @@
     "id": "perfumed-soap",
     "inputs": [
       {
-        "name": "soap powder",
+        "id": "soappowder",
+        "name": "Soap Powder",
         "count": 4
       },
       {
-        "name": "lavender essential oil",
+        "id": "lavenderessentialoil",
+        "name": "Lavender Essential Oil",
         "count": 30
       }
     ],
     "outputs": [
       {
-        "name": "perfumed soap",
+        "id": "perfumedsoap",
+        "name": "Perfumed Soap",
         "count": 1
       }
     ],
@@ -1813,13 +2041,15 @@
     "id": "perfumed-soap-powder",
     "inputs": [
       {
-        "name": "perfumed soap",
+        "id": "perfumedsoap",
+        "name": "Perfumed Soap",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "perfumed soap powder",
+        "id": "perfumedsoappowder",
+        "name": "Perfumed Soap Powder",
         "count": 1
       }
     ],
@@ -1831,13 +2061,15 @@
     "id": "vitae",
     "inputs": [
       {
-        "name": "mors",
+        "id": "mors",
+        "name": "Oblivion Essence",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "vitae",
+        "id": "vitae",
+        "name": "Vitality Essence",
         "count": 1
       }
     ],
@@ -1847,33 +2079,40 @@
     "id": "venus",
     "inputs": [
       {
-        "name": "healing potion",
+        "id": "healingpotion",
+        "name": "Healing Potion",
         "count": 1
       },
       {
-        "name": "vitality potion",
+        "id": "vitalitypotion",
+        "name": "Vitality Potion",
         "count": 1
       },
       {
-        "name": "mana potion",
+        "id": "manapotion",
+        "name": "Transformation Potion",
         "count": 1
       },
       {
-        "name": "growth potion",
+        "id": "growthpotion",
+        "name": "Growth Potion",
         "count": 1
       },
       {
-        "name": "blast potion",
+        "id": "blastpotion",
+        "name": "Blast Potion",
         "count": 1
       },
       {
-        "name": "sulfuric acid",
+        "id": "sulfuricacid",
+        "name": "Sulfuric Acid",
         "count": 20
       }
     ],
     "outputs": [
       {
-        "name": "venus",
+        "id": "venus",
+        "name": "Venus",
         "count": 1
       }
     ],
@@ -1883,13 +2122,15 @@
     "id": "gentian-powder",
     "inputs": [
       {
-        "name": "gentian",
+        "id": "gentian",
+        "name": "Gentian",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gentian powder",
+        "id": "gentianpowder",
+        "name": "Gentian Powder",
         "count": 1
       }
     ],
@@ -1901,17 +2142,20 @@
     "id": "gentian-nectar",
     "inputs": [
       {
-        "name": "gentian seed",
+        "id": "gentianseed",
+        "name": "Gentian Seeds",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gentian nectar",
+        "id": "gentiannectar",
+        "name": "Gentian Nectar",
         "count": 80
       },
       {
-        "name": "gentian",
+        "id": "gentian",
+        "name": "Gentian",
         "count": 80
       }
     ],
@@ -1923,21 +2167,25 @@
     "id": "silver-powder",
     "inputs": [
       {
-        "name": "copper powder2",
+        "id": "copperpowder2",
+        "name": "Copper Powder",
         "count": 1
       },
       {
-        "name": "catalyst1",
+        "id": "catalyst1",
+        "name": "Unstable Catalyst",
         "count": 1
       },
       {
-        "name": "black powder",
+        "id": "blackpowder",
+        "name": "Black Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "silver powder",
+        "id": "silverpowder",
+        "name": "Crude Silver Powder",
         "count": 1
       }
     ],
@@ -1947,13 +2195,15 @@
     "id": "silver-powder2",
     "inputs": [
       {
-        "name": "silver powder",
+        "id": "silverpowder",
+        "name": "Crude Silver Powder",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "silver powder2",
+        "id": "silverpowder2",
+        "name": "Impure Silver Powder",
         "count": 1
       }
     ],
@@ -1965,21 +2215,25 @@
     "id": "silver-powder3",
     "inputs": [
       {
-        "name": "copper powder2",
+        "id": "copperpowder2",
+        "name": "Copper Powder",
         "count": 2
       },
       {
-        "name": "catalyst1",
+        "id": "catalyst1",
+        "name": "Unstable Catalyst",
         "count": 2
       },
       {
-        "name": "black powder",
+        "id": "blackpowder",
+        "name": "Black Powder",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "silver powder3",
+        "id": "silverpowder3",
+        "name": "Silver Powder",
         "count": 1
       }
     ],
@@ -1989,13 +2243,15 @@
     "id": "volcanic-ash_alt",
     "inputs": [
       {
-        "name": "obsidian",
+        "id": "obsidian",
+        "name": "Obsidian",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "volcanic ash",
+        "id": "volcanicash",
+        "name": "Volcanic Ash",
         "count": 1
       }
     ],
@@ -2007,21 +2263,25 @@
     "id": "obsidian",
     "inputs": [
       {
-        "name": "mors",
+        "id": "mors",
+        "name": "Oblivion Essence",
         "count": 1
       },
       {
-        "name": "crystal1",
+        "id": "crystal1",
+        "name": "Shattered Crystal",
         "count": 1
       },
       {
-        "name": "catalyst1",
+        "id": "catalyst1",
+        "name": "Unstable Catalyst",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "obsidian",
+        "id": "obsidian",
+        "name": "Obsidian",
         "count": 1
       }
     ],
@@ -2031,13 +2291,15 @@
     "id": "silver-ingot",
     "inputs": [
       {
-        "name": "silver powder3",
+        "id": "silverpowder3",
+        "name": "Silver Powder",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "silver ingot",
+        "id": "silveringot",
+        "name": "Silver Ingot",
         "count": 1
       }
     ],
@@ -2049,13 +2311,15 @@
     "id": "silver-coin",
     "inputs": [
       {
-        "name": "silver ingot",
+        "id": "silveringot",
+        "name": "Silver Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "silver coin",
+        "id": "silvercoin",
+        "name": "Silver Coin",
         "count": 5
       }
     ],
@@ -2067,17 +2331,20 @@
     "id": "silver-amulet",
     "inputs": [
       {
-        "name": "silver ingot",
+        "id": "silveringot",
+        "name": "Silver Ingot",
         "count": 2
       },
       {
-        "name": "lapis lazuli",
+        "id": "lapislazuli",
+        "name": "Lapis Lazuli",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "silver amulet",
+        "id": "silveramulet",
+        "name": "Silver Amulet",
         "count": 1
       }
     ],
@@ -2089,21 +2356,25 @@
     "id": "mercury",
     "inputs": [
       {
-        "name": "silver powder",
+        "id": "silverpowder",
+        "name": "Crude Silver Powder",
         "count": 1
       },
       {
-        "name": "vitae",
+        "id": "vitae",
+        "name": "Vitality Essence",
         "count": 1
       },
       {
-        "name": "sulfuric acid",
+        "id": "sulfuricacid",
+        "name": "Sulfuric Acid",
         "count": 80
       }
     ],
     "outputs": [
       {
-        "name": "mercury",
+        "id": "mercury",
+        "name": "Quicksilver",
         "count": 10
       }
     ],
@@ -2115,21 +2386,25 @@
     "id": "aqua-vitae",
     "inputs": [
       {
-        "name": "gentian nectar",
+        "id": "gentiannectar",
+        "name": "Gentian Nectar",
         "count": 1
       },
       {
-        "name": "world tree leaf",
+        "id": "worldtreeleaf",
+        "name": "World Tree Leaf",
         "count": 1
       },
       {
-        "name": "brandy",
+        "id": "brandy",
+        "name": "Brandy",
         "count": 200
       }
     ],
     "outputs": [
       {
-        "name": "aqua vitae",
+        "id": "aquavitae",
+        "name": "Aqua Vitae",
         "count": 10
       }
     ],
@@ -2141,21 +2416,25 @@
     "id": "lapis-lazuli",
     "inputs": [
       {
-        "name": "silver powder2",
+        "id": "silverpowder2",
+        "name": "Impure Silver Powder",
         "count": 1
       },
       {
-        "name": "shard1",
+        "id": "shard1",
+        "name": "Crude Shard",
         "count": 4
       },
       {
-        "name": "gentian powder",
+        "id": "gentianpowder",
+        "name": "Gentian Powder",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "lapis lazuli",
+        "id": "lapislazuli",
+        "name": "Lapis Lazuli",
         "count": 1
       }
     ],
@@ -2165,33 +2444,40 @@
     "id": "mercury-p",
     "inputs": [
       {
-        "name": "turquoise",
+        "id": "turquoise",
+        "name": "Turquoise",
         "count": 1
       },
       {
-        "name": "malachite",
+        "id": "malachite",
+        "name": "Malachite",
         "count": 1
       },
       {
-        "name": "topaz",
+        "id": "topaz",
+        "name": "Topaz",
         "count": 1
       },
       {
-        "name": "obsidian",
+        "id": "obsidian",
+        "name": "Obsidian",
         "count": 1
       },
       {
-        "name": "lapis lazuli",
+        "id": "lapislazuli",
+        "name": "Lapis Lazuli",
         "count": 1
       },
       {
-        "name": "mercury",
+        "id": "mercury",
+        "name": "Quicksilver",
         "count": 10
       }
     ],
     "outputs": [
       {
-        "name": "mercury p",
+        "id": "mercuryp",
+        "name": "Mercury",
         "count": 1
       }
     ],
@@ -2201,21 +2487,25 @@
     "id": "catalyst3",
     "inputs": [
       {
-        "name": "catalyst2",
+        "id": "catalyst2",
+        "name": "Fertile Catalyst",
         "count": 1
       },
       {
-        "name": "volcanic ash",
+        "id": "volcanicash",
+        "name": "Volcanic Ash",
         "count": 1
       },
       {
-        "name": "aqua vitae",
+        "id": "aquavitae",
+        "name": "Aqua Vitae",
         "count": 12
       }
     ],
     "outputs": [
       {
-        "name": "catalyst3",
+        "id": "catalyst3",
+        "name": "Resonant Catalyst",
         "count": 1
       }
     ],
@@ -2227,21 +2517,25 @@
     "id": "panacea-elixir",
     "inputs": [
       {
-        "name": "catalyst2",
+        "id": "catalyst2",
+        "name": "Fertile Catalyst",
         "count": 3
       },
       {
-        "name": "blast potion",
+        "id": "blastpotion",
+        "name": "Blast Potion",
         "count": 3
       },
       {
-        "name": "aqua vitae",
+        "id": "aquavitae",
+        "name": "Aqua Vitae",
         "count": 12
       }
     ],
     "outputs": [
       {
-        "name": "panacea elixir",
+        "id": "panaceaelixir",
+        "name": "Panacea Potion",
         "count": 1
       }
     ],
@@ -2253,25 +2547,30 @@
     "id": "gold-dust",
     "inputs": [
       {
-        "name": "silver powder3",
+        "id": "silverpowder3",
+        "name": "Silver Powder",
         "count": 0
       },
       {
-        "name": "volcanic ash",
+        "id": "volcanicash",
+        "name": "Volcanic Ash",
         "count": 0
       },
       {
-        "name": "catalyst2",
+        "id": "catalyst2",
+        "name": "Fertile Catalyst",
         "count": 0
       },
       {
-        "name": "mercury",
+        "id": "mercury",
+        "name": "Quicksilver",
         "count": 7
       }
     ],
     "outputs": [
       {
-        "name": "gold dust",
+        "id": "golddust",
+        "name": "Crude Gold Dust",
         "count": 1
       }
     ],
@@ -2281,13 +2580,15 @@
     "id": "gold-dust2",
     "inputs": [
       {
-        "name": "gold dust",
+        "id": "golddust",
+        "name": "Crude Gold Dust",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "gold dust2",
+        "id": "golddust2",
+        "name": "Impure Gold Dust",
         "count": 1
       }
     ],
@@ -2299,25 +2600,30 @@
     "id": "gold-dust3",
     "inputs": [
       {
-        "name": "silver powder3",
+        "id": "silverpowder3",
+        "name": "Silver Powder",
         "count": 1
       },
       {
-        "name": "volcanic ash",
+        "id": "volcanicash",
+        "name": "Volcanic Ash",
         "count": 1
       },
       {
-        "name": "catalyst2",
+        "id": "catalyst2",
+        "name": "Fertile Catalyst",
         "count": 1
       },
       {
-        "name": "mercury",
+        "id": "mercury",
+        "name": "Quicksilver",
         "count": 12
       }
     ],
     "outputs": [
       {
-        "name": "gold dust3",
+        "id": "golddust3",
+        "name": "Gold Dust",
         "count": 1
       }
     ],
@@ -2327,13 +2633,15 @@
     "id": "gold-dust5",
     "inputs": [
       {
-        "name": "gold dust3",
+        "id": "golddust3",
+        "name": "Gold Dust",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "gold dust5",
+        "id": "golddust5",
+        "name": "Pure Gold Dust",
         "count": 1
       }
     ],
@@ -2345,13 +2653,15 @@
     "id": "gold-ingot",
     "inputs": [
       {
-        "name": "gold dust5",
+        "id": "golddust5",
+        "name": "Pure Gold Dust",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gold ingot",
+        "id": "goldingot",
+        "name": "Gold Ingot",
         "count": 1
       }
     ],
@@ -2363,13 +2673,15 @@
     "id": "gold-coin",
     "inputs": [
       {
-        "name": "gold ingot",
+        "id": "goldingot",
+        "name": "Gold Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gold coin",
+        "id": "goldcoin",
+        "name": "Gold Coin",
         "count": 1
       }
     ],
@@ -2381,21 +2693,25 @@
     "id": "crown",
     "inputs": [
       {
-        "name": "gold ingot",
+        "id": "goldingot",
+        "name": "Gold Ingot",
         "count": 3
       },
       {
-        "name": "ruby",
+        "id": "ruby",
+        "name": "Ruby",
         "count": 1
       },
       {
-        "name": "sapphire",
+        "id": "sapphire",
+        "name": "Sapphire",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "crown",
+        "id": "crown",
+        "name": "Crown",
         "count": 1
       }
     ],
@@ -2405,17 +2721,20 @@
     "id": "catalyst4",
     "inputs": [
       {
-        "name": "catalyst3",
+        "id": "catalyst3",
+        "name": "Resonant Catalyst",
         "count": 15
       },
       {
-        "name": "philosopher stone",
+        "id": "philosopherstone",
+        "name": "Philosopher's Stone",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "catalyst4",
+        "id": "catalyst4",
+        "name": "Eternal Catalyst",
         "count": 1
       }
     ],
@@ -2425,21 +2744,25 @@
     "id": "star-dust",
     "inputs": [
       {
-        "name": "jupiter",
+        "id": "jupiter",
+        "name": "Jupiter",
         "count": 12
       },
       {
-        "name": "saturn",
+        "id": "saturn",
+        "name": "Saturn",
         "count": 4
       },
       {
-        "name": "mars",
+        "id": "mars",
+        "name": "Mars",
         "count": 3
       }
     ],
     "outputs": [
       {
-        "name": "star dust",
+        "id": "stardust",
+        "name": "Star Dust",
         "count": 2
       }
     ],
@@ -2449,21 +2772,25 @@
     "id": "fairy-dust",
     "inputs": [
       {
-        "name": "chamomile powder",
+        "id": "chamomilepowder",
+        "name": "Chamomile Powder",
         "count": 1
       },
       {
-        "name": "gentian powder",
+        "id": "gentianpowder",
+        "name": "Gentian Powder",
         "count": 1
       },
       {
-        "name": "world tree leaf",
+        "id": "worldtreeleaf",
+        "name": "World Tree Leaf",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "fairy dust",
+        "id": "fairydust",
+        "name": "Fairy Dust",
         "count": 1
       }
     ],
@@ -2473,13 +2800,15 @@
     "id": "fairy-tear",
     "inputs": [
       {
-        "name": "fairy dust",
+        "id": "fairydust",
+        "name": "Fairy Dust",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "fairy tear",
+        "id": "fairytear",
+        "name": "Fairy Tear",
         "count": 1
       }
     ],
@@ -2491,17 +2820,20 @@
     "id": "moon-tear",
     "inputs": [
       {
-        "name": "star dust",
+        "id": "stardust",
+        "name": "Star Dust",
         "count": 16
       },
       {
-        "name": "fairy tear",
+        "id": "fairytear",
+        "name": "Fairy Tear",
         "count": 10
       }
     ],
     "outputs": [
       {
-        "name": "moon tear",
+        "id": "moontear",
+        "name": "Moon Tear",
         "count": 1
       }
     ],
@@ -2513,17 +2845,20 @@
     "id": "moonlit-soap",
     "inputs": [
       {
-        "name": "perfumed soap powder",
+        "id": "perfumedsoappowder",
+        "name": "Perfumed Soap Powder",
         "count": 2
       },
       {
-        "name": "moon tear",
+        "id": "moontear",
+        "name": "Moon Tear",
         "count": 5
       }
     ],
     "outputs": [
       {
-        "name": "moonlit soap",
+        "id": "moonlitsoap",
+        "name": "Moonlit Soap",
         "count": 1
       }
     ],
@@ -2535,33 +2870,40 @@
     "id": "luna",
     "inputs": [
       {
-        "name": "steel ingot",
+        "id": "steelingot",
+        "name": "Steel Ingot",
         "count": 1
       },
       {
-        "name": "bronze ingot",
+        "id": "bronzeingot",
+        "name": "Bronze Ingot",
         "count": 1
       },
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       },
       {
-        "name": "silver ingot",
+        "id": "silveringot",
+        "name": "Silver Ingot",
         "count": 1
       },
       {
-        "name": "gold ingot",
+        "id": "goldingot",
+        "name": "Gold Ingot",
         "count": 1
       },
       {
-        "name": "moon tear",
+        "id": "moontear",
+        "name": "Moon Tear",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "luna",
+        "id": "luna",
+        "name": "Luna",
         "count": 1
       }
     ],
@@ -2571,45 +2913,55 @@
     "id": "sol",
     "inputs": [
       {
-        "name": "jupiter",
+        "id": "jupiter",
+        "name": "Jupiter",
         "count": 60
       },
       {
-        "name": "saturn",
+        "id": "saturn",
+        "name": "Saturn",
         "count": 20
       },
       {
-        "name": "mars",
+        "id": "mars",
+        "name": "Mars",
         "count": 15
       },
       {
-        "name": "venus",
+        "id": "venus",
+        "name": "Venus",
         "count": 40
       },
       {
-        "name": "mercury p",
+        "id": "mercuryp",
+        "name": "Mercury",
         "count": 20
       },
       {
-        "name": "luna",
+        "id": "luna",
+        "name": "Luna",
         "count": 15
       },
       {
-        "name": "diamond3",
+        "id": "diamond3",
+        "name": "Perfect Diamond",
         "count": 5
       },
       {
-        "name": "catalyst4",
+        "id": "catalyst4",
+        "name": "Eternal Catalyst",
         "count": 1
       },
       {
-        "name": "world tree core",
+        "id": "worldtreecore",
+        "name": "World Tree Core",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "sol",
+        "id": "sol",
+        "name": "Sol",
         "count": 1
       }
     ],
@@ -2619,17 +2971,20 @@
     "id": "salt_alt",
     "inputs": [
       {
-        "name": "rock salt",
+        "id": "rocksalt",
+        "name": "Rock Salt",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "salt",
+        "id": "salt",
+        "name": "Salt",
         "count": 1
       },
       {
-        "name": "sand",
+        "id": "sand",
+        "name": "Sand",
         "count": 1
       }
     ],
@@ -2641,13 +2996,15 @@
     "id": "meteorite_alt",
     "inputs": [
       {
-        "name": "meteorite",
+        "id": "meteorite",
+        "name": "Meteorite",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "stone",
+        "id": "stone",
+        "name": "Stone",
         "count": 1
       }
     ],
@@ -2659,13 +3016,15 @@
     "id": "coke_alt",
     "inputs": [
       {
-        "name": "coal",
+        "id": "coal",
+        "name": "Coal",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "coke",
+        "id": "coke",
+        "name": "Coke",
         "count": 1
       }
     ],
@@ -2677,13 +3036,15 @@
     "id": "copper-powder2_alt",
     "inputs": [
       {
-        "name": "copper powder",
+        "id": "copperpowder",
+        "name": "Impure Copper Powder",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "copper powder2",
+        "id": "copperpowder2",
+        "name": "Copper Powder",
         "count": 1
       }
     ],
@@ -2695,13 +3056,15 @@
     "id": "silver-powder3_alt",
     "inputs": [
       {
-        "name": "silver powder2",
+        "id": "silverpowder2",
+        "name": "Impure Silver Powder",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "silver powder3",
+        "id": "silverpowder3",
+        "name": "Silver Powder",
         "count": 1
       }
     ],
@@ -2713,13 +3076,15 @@
     "id": "gold-dust3_alt",
     "inputs": [
       {
-        "name": "gold dust2",
+        "id": "golddust2",
+        "name": "Impure Gold Dust",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "gold dust3",
+        "id": "golddust3",
+        "name": "Gold Dust",
         "count": 1
       }
     ],
@@ -2731,13 +3096,15 @@
     "id": "copper-ingot_alt",
     "inputs": [
       {
-        "name": "copper coin",
+        "id": "coppercoin",
+        "name": "Copper Coin",
         "count": 400
       }
     ],
     "outputs": [
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       }
     ],
@@ -2749,13 +3116,15 @@
     "id": "silver-ingot_alt",
     "inputs": [
       {
-        "name": "silver coin",
+        "id": "silvercoin",
+        "name": "Silver Coin",
         "count": 6
       }
     ],
     "outputs": [
       {
-        "name": "silver ingot",
+        "id": "silveringot",
+        "name": "Silver Ingot",
         "count": 1
       }
     ],
@@ -2767,13 +3136,15 @@
     "id": "gold-ingot_alt",
     "inputs": [
       {
-        "name": "gold coin",
+        "id": "goldcoin",
+        "name": "Gold Coin",
         "count": 3
       }
     ],
     "outputs": [
       {
-        "name": "gold ingot",
+        "id": "goldingot",
+        "name": "Gold Ingot",
         "count": 2
       }
     ],
@@ -2785,13 +3156,15 @@
     "id": "iron-ingot_alt",
     "inputs": [
       {
-        "name": "iron sand",
+        "id": "ironsand",
+        "name": "Iron Sand",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 1
       }
     ],
@@ -2803,13 +3176,15 @@
     "id": "copper-powder2_alt2",
     "inputs": [
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "copper powder2",
+        "id": "copperpowder2",
+        "name": "Copper Powder",
         "count": 1
       }
     ],
@@ -2821,13 +3196,15 @@
     "id": "silver-powder3_alt3",
     "inputs": [
       {
-        "name": "silver ingot",
+        "id": "silveringot",
+        "name": "Silver Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "silver powder3",
+        "id": "silverpowder3",
+        "name": "Silver Powder",
         "count": 1
       }
     ],
@@ -2839,13 +3216,15 @@
     "id": "gold-dust5_alt",
     "inputs": [
       {
-        "name": "gold ingot",
+        "id": "goldingot",
+        "name": "Gold Ingot",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "gold dust5",
+        "id": "golddust5",
+        "name": "Pure Gold Dust",
         "count": 1
       }
     ],
@@ -2857,13 +3236,15 @@
     "id": "shard1_alt",
     "inputs": [
       {
-        "name": "quartz ore",
+        "id": "quartzore",
+        "name": "Quartz Ore",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "shard1",
+        "id": "shard1",
+        "name": "Crude Shard",
         "count": 1
       }
     ],
@@ -2875,13 +3256,15 @@
     "id": "mors_alt",
     "inputs": [
       {
-        "name": "vitae",
+        "id": "vitae",
+        "name": "Vitality Essence",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "mors",
+        "id": "mors",
+        "name": "Oblivion Essence",
         "count": 1
       }
     ],
@@ -2891,21 +3274,25 @@
     "id": "philosopher-stone_alt",
     "inputs": [
       {
-        "name": "ruby",
+        "id": "ruby",
+        "name": "Ruby",
         "count": 1
       },
       {
-        "name": "sapphire",
+        "id": "sapphire",
+        "name": "Sapphire",
         "count": 1
       },
       {
-        "name": "emerald",
+        "id": "emerald",
+        "name": "Emerald",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "philosopher stone",
+        "id": "philosopherstone",
+        "name": "Philosopher's Stone",
         "count": 1
       }
     ],
@@ -2915,21 +3302,25 @@
     "id": "ruby_alt",
     "inputs": [
       {
-        "name": "diamond2",
+        "id": "diamond2",
+        "name": "Diamond",
         "count": 1
       },
       {
-        "name": "gold dust5",
+        "id": "golddust5",
+        "name": "Pure Gold Dust",
         "count": 1
       },
       {
-        "name": "catalyst3",
+        "id": "catalyst3",
+        "name": "Resonant Catalyst",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "ruby",
+        "id": "ruby",
+        "name": "Ruby",
         "count": 1
       }
     ],
@@ -2939,21 +3330,25 @@
     "id": "sapphire_alt",
     "inputs": [
       {
-        "name": "diamond3",
+        "id": "diamond3",
+        "name": "Perfect Diamond",
         "count": 1
       },
       {
-        "name": "world tree core",
+        "id": "worldtreecore",
+        "name": "World Tree Core",
         "count": 1
       },
       {
-        "name": "catalyst1",
+        "id": "catalyst1",
+        "name": "Unstable Catalyst",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "sapphire",
+        "id": "sapphire",
+        "name": "Sapphire",
         "count": 1
       }
     ],
@@ -2963,21 +3358,25 @@
     "id": "emerald_alt",
     "inputs": [
       {
-        "name": "moonlit soap",
+        "id": "moonlitsoap",
+        "name": "Moonlit Soap",
         "count": 1
       },
       {
-        "name": "lapis lazuli",
+        "id": "lapislazuli",
+        "name": "Lapis Lazuli",
         "count": 1
       },
       {
-        "name": "catalyst2",
+        "id": "catalyst2",
+        "name": "Fertile Catalyst",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "emerald",
+        "id": "emerald",
+        "name": "Emerald",
         "count": 1
       }
     ],
@@ -2987,17 +3386,20 @@
     "id": "iron-amulet",
     "inputs": [
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 1
       },
       {
-        "name": "linen rope",
+        "id": "linenrope",
+        "name": "Linen Rope",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "iron amulet",
+        "id": "ironamulet",
+        "name": "IronAmulet",
         "count": 1
       }
     ],
@@ -3009,17 +3411,20 @@
     "id": "fine-bandage",
     "inputs": [
       {
-        "name": "linen",
+        "id": "linen",
+        "name": "Linen",
         "count": 1
       },
       {
-        "name": "healing potion",
+        "id": "healingpotion",
+        "name": "Healing Potion",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "fine bandage",
+        "id": "finebandage",
+        "name": "FineBandage",
         "count": 2
       }
     ],
@@ -3031,17 +3436,20 @@
     "id": "copper-amulet",
     "inputs": [
       {
-        "name": "copper ingot",
+        "id": "copperingot",
+        "name": "Copper Ingot",
         "count": 1
       },
       {
-        "name": "turquoise",
+        "id": "turquoise",
+        "name": "Turquoise",
         "count": 1
       }
     ],
     "outputs": [
       {
-        "name": "copper amulet",
+        "id": "copperamulet",
+        "name": "CopperAmulet",
         "count": 1
       }
     ],
@@ -3053,21 +3461,25 @@
     "id": "cart",
     "inputs": [
       {
+        "id": "woodboard",
         "name": "Plank",
         "count": 10
       },
       {
-        "name": "iron ingot",
+        "id": "ironingot",
+        "name": "Iron Ingot",
         "count": 8
       },
       {
-        "name": "copper bearing",
+        "id": "copperbearing",
+        "name": "Copper Bearing",
         "count": 4
       }
     ],
     "outputs": [
       {
-        "name": "cart",
+        "id": "cart",
+        "name": "Cart",
         "count": 1
       }
     ],
@@ -3077,21 +3489,25 @@
     "id": "amethyst",
     "inputs": [
       {
-        "name": "sulfur powder",
+        "id": "sulfurpowder",
+        "name": "Sulfur Powder",
         "count": 1
       },
       {
-        "name": "chamomile powder",
+        "id": "chamomilepowder",
+        "name": "Chamomile Powder",
         "count": 1
       },
       {
-        "name": "lavender essential oil",
+        "id": "lavenderessentialoil",
+        "name": "Lavender Essential Oil",
         "count": 100
       }
     ],
     "outputs": [
       {
-        "name": "amethyst",
+        "id": "amethyst",
+        "name": "Amethyst",
         "count": 1
       }
     ],
@@ -3101,21 +3517,25 @@
     "id": "charisma-potion",
     "inputs": [
       {
-        "name": "black powder",
+        "id": "blackpowder",
+        "name": "Black Powder",
         "count": 1
       },
       {
-        "name": "perfumed soap powder",
+        "id": "perfumedsoappowder",
+        "name": "Perfumed Soap Powder",
         "count": 3
       },
       {
-        "name": "brandy",
+        "id": "brandy",
+        "name": "Brandy",
         "count": 40
       }
     ],
     "outputs": [
       {
-        "name": "charisma potion",
+        "id": "charismapotion",
+        "name": "CharismaPotion",
         "count": 1
       }
     ],
@@ -3127,21 +3547,25 @@
     "id": "sulfur_alt",
     "inputs": [
       {
-        "name": "chamomile powder",
+        "id": "chamomilepowder",
+        "name": "Chamomile Powder",
         "count": 1
       },
       {
-        "name": "coke powder",
+        "id": "cokepowder",
+        "name": "Coke Powder",
         "count": 3
       },
       {
-        "name": "salt water",
+        "id": "saltwater",
+        "name": "Brine",
         "count": 180
       }
     ],
     "outputs": [
       {
-        "name": "sulfur_alt",
+        "id": "sulfur_alt",
+        "name": "Sulfur_Alt",
         "count": 1
       }
     ],
@@ -3153,13 +3577,15 @@
     "id": "sand7",
     "inputs": [
       {
-        "name": "sand6",
+        "id": "sand6",
+        "name": "Sand6",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "sand7",
+        "id": "sand7",
+        "name": "Sand7",
         "count": 1
       }
     ],
@@ -3171,21 +3597,25 @@
     "id": "invisbility-potion",
     "inputs": [
       {
-        "name": "volcanic ash",
+        "id": "volcanicash",
+        "name": "Volcanic Ash",
         "count": 1
       },
       {
-        "name": "gentian nectar",
+        "id": "gentiannectar",
+        "name": "Gentian Nectar",
         "count": 5
       },
       {
-        "name": "mercury",
+        "id": "mercury",
+        "name": "Quicksilver",
         "count": 15
       }
     ],
     "outputs": [
       {
-        "name": "invisbility potion",
+        "id": "invisbilitypotion",
+        "name": "InvisbilityPotion",
         "count": 1
       }
     ],
@@ -3197,13 +3627,15 @@
     "id": "gold-dust4",
     "inputs": [
       {
-        "name": "gold dust3",
+        "id": "golddust3",
+        "name": "Gold Dust",
         "count": 2
       }
     ],
     "outputs": [
       {
-        "name": "gold dust4",
+        "id": "golddust4",
+        "name": "GoldDust4",
         "count": 1
       }
     ],

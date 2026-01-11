@@ -1,15 +1,16 @@
 import devicesData from "../data/devices.json";
-import itemsData from "../data/items.json";
 import recipesData from "../data/recipes.json";
 import { Device, Item, PlannerConfig, ProductionNode, Recipe } from "./types";
+import { normalizeItemId, getItem, getAllItems } from "./item-utils";
 
 // Index data for fast lookups
 const itemsMap = new Map<string, Item>();
 const recipesByOutput = new Map<string, Recipe[]>();
 const devicesMap = new Map<string, Device>();
 
-(itemsData as unknown as Item[]).forEach((item) => {
-    itemsMap.set(item.name.toLowerCase(), item);
+// Build itemsMap from the shared utility
+getAllItems().forEach((item) => {
+    itemsMap.set(item.id, item);
 });
 
 (devicesData as Device[]).forEach((device) => {
@@ -19,11 +20,12 @@ const devicesMap = new Map<string, Device>();
 
 (recipesData as unknown as Recipe[]).forEach((recipe) => {
     recipe.outputs.forEach((output) => {
-        const outputName = output.name.toLowerCase();
-        if (!recipesByOutput.has(outputName)) {
-            recipesByOutput.set(outputName, []);
+        // Use ID if available, otherwise fall back to name (for backwards compatibility)
+        const outputKey = output.id || output.name.toLowerCase();
+        if (!recipesByOutput.has(outputKey)) {
+            recipesByOutput.set(outputKey, []);
         }
-        recipesByOutput.get(outputName)?.push(recipe);
+        recipesByOutput.get(outputKey)?.push(recipe);
     });
 });
 
@@ -72,8 +74,9 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
     const resourcePool = new Map<string, number>();
     if (config.availableResources) {
         config.availableResources.forEach(res => {
-            const current = resourcePool.get(res.item.toLowerCase()) || 0;
-            resourcePool.set(res.item.toLowerCase(), current + res.rate);
+            const itemId = normalizeItemId(res.item);
+            const current = resourcePool.get(itemId) || 0;
+            resourcePool.set(itemId, current + res.rate);
         });
         console.log("[Planner] Resource Pool Initialized:", Array.from(resourcePool.entries()));
     }
@@ -99,7 +102,7 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
     const roots: ProductionNode[] = [];
 
     for (const t of finalTargets) {
-        const root = solveNode(t.item.toLowerCase(), t.rate, ctx, resourcePool);
+        const root = solveNode(t.item, t.rate, ctx, resourcePool);
         if (root) roots.push(root);
     }
 
@@ -107,41 +110,43 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
 }
 
 function solveNode(
-    itemName: string,
+    itemRef: string,
     requiredRate: number,
     ctx: CalcContext,
     resourcePool: Map<string, number>,
     visited = new Set<string>(),
 ): ProductionNode | null {
-    const item = itemsMap.get(itemName);
+    // Normalize item reference to ID
+    const itemId = normalizeItemId(itemRef);
+    const item = itemsMap.get(itemId);
     if (!item) return null;
 
     // --- CHECK AVAILABLE RESOURCES ---
     let neededRate = requiredRate;
-    const available = resourcePool.get(itemName) || 0;
+    const available = resourcePool.get(itemId) || 0;
 
-    console.log(`[Planner] Item: ${itemName}, Required: ${requiredRate}, Available: ${available}`);
+    console.log(`[Planner] Item: ${item.name} (${itemId}), Required: ${requiredRate}, Available: ${available}`);
 
     if (available > 0) {
         const used = Math.min(available, requiredRate);
-        resourcePool.set(itemName, available - used);
+        resourcePool.set(itemId, available - used);
         neededRate = requiredRate - used;
-        console.log(`[Planner] Consumed ${used} of ${itemName}. Remaining needed: ${neededRate}`);
+        console.log(`[Planner] Consumed ${used} of ${item.name}. Remaining needed: ${neededRate}`);
     }
 
     // Detect Loop: If already visited, we treat this as a "Loop Terminal".
     // We WILL calculate this node's machine needs (so user sees Nursery etc.),
     // but we will NOT recurse further into its inputs.
-    const isLoop = visited.has(itemName);
+    const isLoop = visited.has(itemId);
 
     const nextVisited = new Set(visited);
-    nextVisited.add(itemName);
+    nextVisited.add(itemId);
 
-    const recipes = recipesByOutput.get(itemName);
+    const recipes = recipesByOutput.get(itemId);
 
     // Helper to return a raw/source node
     const createRawNode = (rate: number, isSaturated: boolean) => ({
-        id: `${itemName}-raw`,
+        id: `${itemId}-raw`,
         itemName: item.name,
         rate: rate,
         isRaw: true,
@@ -178,7 +183,7 @@ function solveNode(
     // 2. Calculate Machines Needed
     let outputCount = 0;
     const outputDef = recipe.outputs.find(
-        (o) => o.name.toLowerCase() === itemName,
+        (o) => (o.id || o.name.toLowerCase()) === itemId,
     );
     if (outputDef) {
         const count =
@@ -224,7 +229,8 @@ function solveNode(
     const isNursery = machineName === "nursery";
 
     if (isNursery && ctx.selectedFertilizer) {
-        const fertilizerItem = itemsMap.get(ctx.selectedFertilizer.toLowerCase());
+        const fertilizerId = normalizeItemId(ctx.selectedFertilizer);
+        const fertilizerItem = itemsMap.get(fertilizerId);
 
         if (fertilizerItem && item.required_nutrients) {
             const fertEffMult = 1 + ctx.fertilizerEfficiency * 0.1;
@@ -276,12 +282,13 @@ function solveNode(
 
         // Fuel Logic - STOP IF LOOP
         if (!isLoop && ctx.selectedFuel) {
-            const fuelItem = itemsMap.get(ctx.selectedFuel.toLowerCase());
+            const fuelId = normalizeItemId(ctx.selectedFuel);
+            const fuelItem = itemsMap.get(fuelId);
             if (fuelItem && fuelItem.heat_value) {
                 const fuelRate =
                     heatConsumption / (fuelItem.heat_value * ctx.fuelMultiplier);
                 const fuelNode = solveNode(
-                    fuelItem.name.toLowerCase(),
+                    fuelItem.id,
                     fuelRate,
                     ctx,
                     resourcePool,
@@ -295,7 +302,8 @@ function solveNode(
     // Byproducts
     const byproducts: { itemName: string; rate: number }[] = [];
     recipe.outputs.forEach((out) => {
-        if (out.name.toLowerCase() !== itemName) {
+        const outId = out.id || out.name.toLowerCase();
+        if (outId !== itemId) {
             const count =
                 typeof out.count === "string" ? parseFloat(out.count) : out.count;
             let percentage = 100;
@@ -330,7 +338,7 @@ function solveNode(
         if (neededRate < requiredRate && neededRate > 0) {
             const suppliedAmount = requiredRate - neededRate;
             inputs.push({
-                id: `${itemName}-source`,
+                id: `${itemId}-source`,
                 itemName: item.name, // Display name matches (no "Available" suffix needed)
                 rate: suppliedAmount,
                 isRaw: true,
@@ -350,7 +358,7 @@ function solveNode(
 
             // Recurse
             const inputNode = solveNode(
-                input.name.toLowerCase(),
+                input.id || input.name.toLowerCase(),
                 inputRate,
                 ctx,
                 resourcePool,

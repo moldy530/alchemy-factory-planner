@@ -38,12 +38,14 @@ export interface Item {
 }
 
 export interface RecipeInput {
-  name: string;
+  id?: string; // Item ID for matching (e.g., "woodboard")
+  name: string; // Display name for UI (e.g., "Plank")
   count: number;
 }
 
 export interface RecipeOutput {
-  name: string;
+  id?: string; // Item ID for matching (e.g., "woodboard")
+  name: string; // Display name for UI (e.g., "Plank")
   count: number | string; // Sometimes string in source? "2"
   percentage?: number | string; // "50"
 }

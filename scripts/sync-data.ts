@@ -78,8 +78,8 @@ interface RemoteCrafting {
 
 interface LocalRecipe {
   id: string;
-  inputs: Array<{ name: string; count: number }>;
-  outputs: Array<{ name: string; count: number }>;
+  inputs: Array<{ id?: string; name: string; count: number }>;
+  outputs: Array<{ id?: string; name: string; count: number }>;
   time: number;
   crafted_in?: string;
   category?: string;
@@ -183,12 +183,15 @@ function transformItems(
       return name && name !== 'none';
     })
     .map(item => {
-      const itemName = item.displayName || item.name || '';
-      const itemId = itemName.toLowerCase().replace(/\s+/g, '-');
+      // Use internal name for ID (e.g., "WoodBoard" -> "woodboard")
+      const internalName = item.name || '';
+      const itemId = internalName.toLowerCase();
+      // Use displayName for user-facing name (e.g., "Plank")
+      const displayName = item.displayName || internalName;
 
       const transformed: LocalItem = {
         id: itemId,
-        name: itemName,
+        name: displayName,
       };
 
       // Determine categories
@@ -383,16 +386,33 @@ function camelCaseToSpaced(name: string): string {
     .toLowerCase();
 }
 
-function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
+function transformCrafting(
+  remoteCrafting: RemoteCrafting[],
+  remoteItems: RemoteItem[]
+): LocalRecipe[] {
+  // Build lookup map: internal name (lowercase) -> display name
+  const itemDisplayNames = new Map<string, string>();
+  remoteItems.forEach(item => {
+    const internalName = (item.name || '').toLowerCase();
+    const displayName = item.displayName || item.name || '';
+    itemDisplayNames.set(internalName, displayName);
+  });
+
   return remoteCrafting.map(craft => {
     const recipe: LocalRecipe = {
       id: nameToKebab(craft.craftIdName),
-      inputs: craft.ingredientList.map(ing => ({
-        name: camelCaseToSpaced(ing.name),
-        count: ing.qty,
-      })),
+      inputs: craft.ingredientList.map(ing => {
+        const itemId = ing.name.toLowerCase();
+        const displayName = itemDisplayNames.get(itemId) || ing.name;
+        return {
+          id: itemId,
+          name: displayName,
+          count: ing.qty,
+        };
+      }),
       outputs: [{
-        name: camelCaseToSpaced(craft.productInfo.name),
+        id: craft.productInfo.name.toLowerCase(),
+        name: itemDisplayNames.get(craft.productInfo.name.toLowerCase()) || craft.productInfo.name,
         count: craft.productInfo.qty,
       }],
       time: craft.craftTime,
@@ -400,8 +420,10 @@ function transformCrafting(remoteCrafting: RemoteCrafting[]): LocalRecipe[] {
 
     // Add side product to outputs if it exists
     if (craft.sideProduct && craft.sideProduct.name.toLowerCase() !== 'none') {
+      const sideId = craft.sideProduct.name.toLowerCase();
       recipe.outputs.push({
-        name: camelCaseToSpaced(craft.sideProduct.name),
+        id: sideId,
+        name: itemDisplayNames.get(sideId) || craft.sideProduct.name,
         count: craft.sideProduct.qty,
       });
     }
@@ -441,7 +463,7 @@ async function main() {
 
     // Transform data (pass dependencies for proper transformation)
     console.log('🔄 Transforming data...');
-    const localRecipes = transformCrafting(remoteCrafting);
+    const localRecipes = transformCrafting(remoteCrafting, remoteItems);
     const localItems = transformItems(remoteItems, plantSeeds, remoteCrafting);
     const localDevices = transformBuildings(remoteBuildings, remoteCrafting);
 

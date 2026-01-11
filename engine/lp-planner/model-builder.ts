@@ -1,18 +1,18 @@
 import { Model, Constraint } from "yalps";
 import devicesData from "../../data/devices.json";
-import itemsData from "../../data/items.json";
 import recipesData from "../../data/recipes.json";
 import { Device, Item, PlannerConfig, Recipe } from "../types";
 import { EfficiencyContext, EPSILON } from "./types";
 import { isAlchemyMachine } from "./efficiency";
+import { normalizeItemId, getItem as getItemById, getAllItems } from "../item-utils";
 
 // Pre-index data
 const itemsMap = new Map<string, Item>();
 const devicesMap = new Map<string, Device>();
 const allRecipes: Recipe[] = recipesData as unknown as Recipe[];
 
-(itemsData as unknown as Item[]).forEach((item) => {
-  itemsMap.set(item.name.toLowerCase(), item);
+getAllItems().forEach((item) => {
+  itemsMap.set(item.id, item);
 });
 
 (devicesData as Device[]).forEach((device) => {
@@ -24,7 +24,8 @@ const allRecipes: Recipe[] = recipesData as unknown as Recipe[];
 const itemsWithRecipes = new Set<string>();
 allRecipes.forEach((recipe) => {
   recipe.outputs.forEach((output) => {
-    itemsWithRecipes.add(output.name.toLowerCase());
+    const outputId = output.id || output.name.toLowerCase();
+    itemsWithRecipes.add(outputId);
   });
 });
 
@@ -321,8 +322,9 @@ function calculatePerActivationRate(
 /**
  * Get item data by name
  */
-export function getItem(name: string): Item | undefined {
-  return itemsMap.get(name.toLowerCase());
+export function getItem(nameOrId: string): Item | undefined {
+  const itemId = normalizeItemId(nameOrId);
+  return itemsMap.get(itemId);
 }
 
 /**
