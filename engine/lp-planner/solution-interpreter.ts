@@ -253,14 +253,14 @@ function calculateItemFlows(
     const isNursery = machineName === "nursery";
 
     if (isNursery && ctx.selectedFertilizer) {
-      const fertilizerItem = getItem(ctx.selectedFertilizer);
-      const outputItem = recipe.outputs[0]
-        ? getItem(recipe.outputs[0].name)
-        : null;
+      const fertilizerId = normalizeItemId(ctx.selectedFertilizer);
+      const fertilizerItem = getItem(fertilizerId);
+      const outputDef = recipe.outputs[0];
+      const outputId = outputDef?.id || (outputDef ? normalizeItemId(outputDef.name) : "");
+      const outputItem = outputId ? getItem(outputId) : null;
 
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
-        const fertilizerName = ctx.selectedFertilizer.toLowerCase();
-        const flow = getOrCreateFlow(fertilizerName);
+        const flow = getOrCreateFlow(fertilizerId);
 
         const fertEffMult = ctx.fertilizerMultiplier;
         const effectiveNutrientValue = fertilizerItem.nutrient_value * fertEffMult;
@@ -279,10 +279,10 @@ function calculateItemFlows(
 
     // Track fuel consumption
     if (device?.heat_consuming_speed && device.category !== "heating") {
-      const fuelItem = getItem(ctx.selectedFuel);
+      const fuelId = normalizeItemId(ctx.selectedFuel);
+      const fuelItem = getItem(fuelId);
       if (fuelItem?.heat_value) {
-        const fuelName = ctx.selectedFuel.toLowerCase();
-        const flow = getOrCreateFlow(fuelName);
+        const flow = getOrCreateFlow(fuelId);
 
         const heaterSpeed = 1;
         const heatPerSecond = (heaterSpeed + device.heat_consuming_speed) * ctx.speedMultiplier;

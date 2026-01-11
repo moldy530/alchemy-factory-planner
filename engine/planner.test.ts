@@ -205,3 +205,62 @@ planners.forEach(({ name, fn: calculateFn }) => {
   });
   });
 });
+
+// LP Planner-specific tests for advanced scenarios
+describe("LP Planner - Circular Dependencies", () => {
+  test("Basic Fertilizer + Planks with self-consumption (fertilizer=Basic Fertilizer, fuel=Plank)", () => {
+    const config: PlannerConfig = {
+      targets: [
+        { item: "Basic Fertilizer", rate: 10 },
+        { item: "Plank", rate: 10 },
+      ],
+      availableResources: [],
+      fuelEfficiency: 0,
+      alchemySkill: 0,
+      factoryEfficiency: 0,
+      logisticsEfficiency: 0,
+      throwingEfficiency: 0,
+      fertilizerEfficiency: 0,
+      salesAbility: 0,
+      negotiationSkill: 0,
+      customerMgmt: 0,
+      relicKnowledge: 0,
+      selectedFuel: "Plank",  // Planks used as fuel
+      selectedFertilizer: "Basic Fertilizer",  // Basic Fertilizer used as fertilizer
+    };
+
+    const result = calculateProductionLP(config);
+
+    console.log("\n=== Circular Dependency Test ===");
+    console.log(`Root nodes: ${result.length}`);
+    result.forEach((root) => {
+      console.log(`  ${root.itemName}: rate=${root.rate}, netOutputRate=${root.netOutputRate}`);
+    });
+
+    // Should have 2 root nodes
+    expect(result).toHaveLength(2);
+
+    // Find the target nodes
+    const basicFertNode = result.find((n) => n.itemName === "Basic Fertilizer");
+    const plankNode = result.find((n) => n.itemName === "Plank");
+
+    expect(basicFertNode).toBeDefined();
+    expect(plankNode).toBeDefined();
+
+    // CRITICAL: For circular dependencies, gross production (rate) will be higher than net output
+    // because some production is consumed internally as fuel/fertilizer
+
+    // Net output should match the target (10/min each) - use toBeCloseTo for floating point
+    expect(basicFertNode?.netOutputRate).toBeCloseTo(10, 1);
+    expect(plankNode?.netOutputRate).toBeCloseTo(10, 1);
+
+    // Gross production should be >= net output (accounting for internal consumption)
+    expect(basicFertNode?.rate).toBeGreaterThanOrEqual(10);
+    expect(plankNode?.rate).toBeGreaterThanOrEqual(10);
+
+    console.log("\n=== Test Summary ===");
+    console.log(`✓ Basic Fertilizer: gross=${basicFertNode?.rate.toFixed(2)}/min, net=${basicFertNode?.netOutputRate}/min`);
+    console.log(`✓ Plank: gross=${plankNode?.rate.toFixed(2)}/min, net=${plankNode?.netOutputRate}/min`);
+    console.log(`✓ Internal consumption correctly accounted for`);
+  });
+});
