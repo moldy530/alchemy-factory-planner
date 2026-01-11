@@ -516,7 +516,7 @@ function linkProductionNodes(
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
-            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fertId, wouldCycle));
+            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fertId));
 
             // Only track dependencies if not cyclic to avoid infinite loops in traversal
             if (!wouldCycle) {
@@ -575,7 +575,7 @@ function linkProductionNodes(
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
-            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fuelId, wouldCycle));
+            node.inputs.push(createConsumptionReference(sourceNode, inputRate, fuelId));
 
             // Only track dependencies if not cyclic to avoid infinite loops in traversal
             if (!wouldCycle) {
@@ -624,20 +624,19 @@ function createInputReference(
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * Shows the consumption edge without including the production chain (to avoid cycles).
- * The graph visualization will need to look up production chains separately for consumed items.
+ * Shows the consumption edge along with the full production chain, including circular dependencies.
+ * The graph visualization will properly handle cycles via object reference deduplication.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
   consumptionRate: number,
-  _itemName: string,
-  _wouldCycle: boolean
+  _itemName: string
 ): ProductionNode {
   return {
     ...sourceNode,
     rate: consumptionRate,
     isConsumptionReference: true, // Mark as consumption so graphMapper doesn't add to total
-    // Always use empty inputs to avoid circular object references
-    inputs: [],
+    // Keep inputs to show full production chain including circular dependencies
+    inputs: sourceNode.inputs,
   };
 }

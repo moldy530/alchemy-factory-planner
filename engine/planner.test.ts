@@ -178,7 +178,8 @@ planners.forEach(({ name, fn: calculateFn }) => {
     const result = calculateFn(config);
 
     console.log("\n=== Nursery Production Test ===");
-    console.log(JSON.stringify(result, null, 2));
+    console.log(`Root nodes: ${result.length}`);
+    result.forEach(r => console.log(`  ${r.itemName}: ${r.rate}/min`));
 
     // LP Planner includes consumption-referenced nodes (Basic Fertilizer) as additional roots
     // Recursive Planner only returns the target
@@ -248,7 +249,8 @@ planners.forEach(({ name, fn: calculateFn }) => {
     const result = calculateFn(config);
 
     console.log("\n=== Complex Bandage Production Test ===");
-    console.log(JSON.stringify(result, null, 2));
+    console.log(`Root nodes: ${result.length}`);
+    result.forEach(r => console.log(`  ${r.itemName}: ${r.rate}/min`));
 
     // LP Planner includes consumption-referenced nodes (Basic Fertilizer) as additional roots
     // Recursive Planner only returns the target
@@ -265,7 +267,11 @@ planners.forEach(({ name, fn: calculateFn }) => {
 
     // Helper to recursively find all UNIQUE nodes by item name
     // Excludes consumption references and deduplicates by object reference to avoid double-counting
-    function findAllNodesByName(node: any, name: string, seenNodes = new Set<any>()): any[] {
+    function findAllNodesByName(node: any, name: string, seenNodes = new Set<any>(), visiting = new Set<any>()): any[] {
+      // Prevent infinite recursion on cycles
+      if (visiting.has(node)) return [];
+      visiting.add(node);
+
       const matches: any[] = [];
       if (node.itemName === name && !node.isConsumptionReference) {
         // Only count each unique node object once (by reference)
@@ -276,9 +282,11 @@ planners.forEach(({ name, fn: calculateFn }) => {
       }
       if (node.inputs) {
         for (const input of node.inputs) {
-          matches.push(...findAllNodesByName(input, name, seenNodes));
+          matches.push(...findAllNodesByName(input, name, seenNodes, visiting));
         }
       }
+
+      visiting.delete(node);
       return matches;
     }
 
@@ -329,7 +337,11 @@ planners.forEach(({ name, fn: calculateFn }) => {
     }
 
     // Helper to find consumption nodes (includes consumption references)
-    function findConsumptionByName(node: any, name: string, seenNodes = new Set<any>()): any[] {
+    function findConsumptionByName(node: any, name: string, seenNodes = new Set<any>(), visiting = new Set<any>()): any[] {
+      // Prevent infinite recursion on cycles
+      if (visiting.has(node)) return [];
+      visiting.add(node);
+
       const matches: any[] = [];
       if (node.itemName === name) {
         // Include all nodes (both production and consumption references)
@@ -340,9 +352,11 @@ planners.forEach(({ name, fn: calculateFn }) => {
       }
       if (node.inputs) {
         for (const input of node.inputs) {
-          matches.push(...findConsumptionByName(input, name, seenNodes));
+          matches.push(...findConsumptionByName(input, name, seenNodes, visiting));
         }
       }
+
+      visiting.delete(node);
       return matches;
     }
 
