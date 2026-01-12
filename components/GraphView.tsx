@@ -119,6 +119,7 @@ export function GraphView() {
       <div className="absolute inset-0 bg-arcane-pattern opacity-20 pointer-events-none"></div>
 
       <ReactFlow
+        key={activeFactory.id}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
