@@ -44,13 +44,7 @@ export function generateGraph(
         }
 
         // Cycle detection: if we're already visiting this node in current path, stop
-        // BUT: for consumption references, we still need to accumulate rates before stopping
         if (visiting.has(key)) {
-            // For consumption references in cycles, accumulate the rate
-            if (node.isConsumptionReference && mergedNodes.has(key)) {
-                const existing = mergedNodes.get(key)!;
-                existing.rate += node.rate;
-            }
             return;
         }
 
