@@ -43,11 +43,20 @@ export function generateGraph(
 
         // For consumption references: record edge with consumption rate, then traverse inputs
         if (node.isConsumptionReference) {
+            // Debug logging
+            if (key.includes('basicfertilizer')) {
+                console.log(`[graphMapper] Consumption ref: key=${key}, parentName=${parentName}, rate=${node.rate.toFixed(2)}, hasParent=${!!parentName}`);
+            }
+
             // Always record the edge for this consumption reference
             if (parentName) {
                 const edgeKey = `${key}___${parentName}`;
                 const currentRate = edgeRates.get(edgeKey) || 0;
                 edgeRates.set(edgeKey, currentRate + node.rate);
+
+                if (key.includes('basicfertilizer')) {
+                    console.log(`[graphMapper] Recorded edge: ${edgeKey} = ${(currentRate + node.rate).toFixed(2)}/min`);
+                }
             }
 
             // Traverse inputs to show production chain (including circular dependencies)
