@@ -54,8 +54,26 @@ export function buildLPModel(
   const itemProducedBy = new Map<string, Set<string>>(); // item -> recipes that produce it
   const itemConsumedBy = new Map<string, Set<string>>(); // item -> recipes that consume it
 
+  // Normalize fuel and fertilizer IDs for filtering
+  const fuelId = normalizeItemId(ctx.selectedFuel);
+  const fertilizerId = ctx.selectedFertilizer ? normalizeItemId(ctx.selectedFertilizer) : null;
+
   // Build item flow coefficients for each recipe
   allRecipes.forEach((recipe) => {
+    // Skip recipes that produce fuel/fertilizer if self-production is disabled
+    const recipeProducesFuel = !ctx.selfFuel && recipe.outputs.some(output => {
+      const outputId = output.id || normalizeItemId(output.name);
+      return outputId === fuelId;
+    });
+    const recipeProducesFertilizer = !ctx.selfFertilizer && fertilizerId && recipe.outputs.some(output => {
+      const outputId = output.id || normalizeItemId(output.name);
+      return outputId === fertilizerId;
+    });
+
+    if (recipeProducesFuel || recipeProducesFertilizer) {
+      return; // Skip this recipe
+    }
+
     const recipeVar = `recipe_${recipe.id}`;
     const recipeCoeffs = new Map<string, number>();
 
@@ -244,7 +262,18 @@ export function buildLPModel(
     const isTarget = targets.has(itemName);
     const targetRate = targets.get(itemName) || 0;
     const availableRate = availableResources.get(itemName) || 0;
-    const isRawMaterial = !itemProducedBy.has(itemName) || itemProducedBy.get(itemName)!.size === 0;
+    let isRawMaterial = !itemProducedBy.has(itemName) || itemProducedBy.get(itemName)!.size === 0;
+
+    // Force fuel/fertilizer to be raw materials if self-production is disabled
+    const fuelId = normalizeItemId(ctx.selectedFuel);
+    const fertilizerId = ctx.selectedFertilizer ? normalizeItemId(ctx.selectedFertilizer) : null;
+
+    if (!ctx.selfFuel && itemName === fuelId) {
+      isRawMaterial = true;
+    }
+    if (!ctx.selfFertilizer && fertilizerId && itemName === fertilizerId) {
+      isRawMaterial = true;
+    }
 
     // Create raw material variable if needed
     if (isRawMaterial) {

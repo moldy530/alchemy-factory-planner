@@ -37,6 +37,8 @@ interface CalcContext {
     fertilizerEfficiency: number;
     selectedFertilizer?: string;
     selectedFuel: string;
+    selfFuel: boolean;
+    selfFertilizer: boolean;
 }
 
 export function calculateProduction(config: PlannerConfig): ProductionNode[] {
@@ -56,6 +58,8 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
         // relicKnowledge,
         selectedFertilizer,
         selectedFuel,
+        selfFuel,
+        selfFertilizer,
     } = config;
 
     // Modifiers
@@ -89,6 +93,8 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
         fertilizerEfficiency,
         selectedFertilizer,
         selectedFuel: selectedFuel || "Coal",
+        selfFuel: selfFuel ?? true,
+        selfFertilizer: selfFertilizer ?? true,
     };
 
     // Normalize targets
@@ -298,14 +304,31 @@ function solveNode(
             if (fuelItem && fuelItem.heat_value) {
                 const fuelRate =
                     heatConsumption / (fuelItem.heat_value * ctx.fuelMultiplier);
-                const fuelNode = solveNode(
-                    fuelItem.id,
-                    fuelRate,
-                    ctx,
-                    resourcePool,
-                    nextVisited,
-                );
-                if (fuelNode) inputs.push(fuelNode);
+
+                if (ctx.selfFuel) {
+                    // Produce fuel internally
+                    const fuelNode = solveNode(
+                        fuelItem.id,
+                        fuelRate,
+                        ctx,
+                        resourcePool,
+                        nextVisited,
+                    );
+                    if (fuelNode) inputs.push(fuelNode);
+                } else {
+                    // Treat fuel as external input
+                    inputs.push({
+                        itemName: fuelItem.name,
+                        rate: fuelRate,
+                        isRaw: true,
+                        deviceCount: 0,
+                        heatConsumption: 0,
+                        inputs: [],
+                        byproducts: [],
+                        beltLimit: ctx.beltLimit,
+                        isBeltSaturated: fuelRate > ctx.beltLimit,
+                    });
+                }
             }
         }
     }
@@ -394,17 +417,46 @@ function solveNode(
         });
 
         if (fertilizerInput) {
-            inputs.push({
-                itemName: fertilizerInput.name,
-                rate: fertilizerInput.rate,
-                isRaw: true,
-                deviceCount: 0,
-                heatConsumption: 0,
-                inputs: [],
-                byproducts: [],
-                beltLimit: ctx.beltLimit,
-                isBeltSaturated: fertilizerInput.rate > ctx.beltLimit,
-            });
+            if (ctx.selfFertilizer) {
+                // Produce fertilizer internally
+                const fertilizerId = normalizeItemId(fertilizerInput.name);
+                const fertilizerNode = solveNode(
+                    fertilizerId,
+                    fertilizerInput.rate,
+                    ctx,
+                    resourcePool,
+                    nextVisited,
+                );
+                if (fertilizerNode) {
+                    inputs.push(fertilizerNode);
+                } else {
+                    // Fallback to raw if no recipe found
+                    inputs.push({
+                        itemName: fertilizerInput.name,
+                        rate: fertilizerInput.rate,
+                        isRaw: true,
+                        deviceCount: 0,
+                        heatConsumption: 0,
+                        inputs: [],
+                        byproducts: [],
+                        beltLimit: ctx.beltLimit,
+                        isBeltSaturated: fertilizerInput.rate > ctx.beltLimit,
+                    });
+                }
+            } else {
+                // Treat fertilizer as external input
+                inputs.push({
+                    itemName: fertilizerInput.name,
+                    rate: fertilizerInput.rate,
+                    isRaw: true,
+                    deviceCount: 0,
+                    heatConsumption: 0,
+                    inputs: [],
+                    byproducts: [],
+                    beltLimit: ctx.beltLimit,
+                    isBeltSaturated: fertilizerInput.rate > ctx.beltLimit,
+                });
+            }
         }
     } else {
         // It IS a loop (visited). We calculated machines, but we stop inputs to avoid recursion.
@@ -424,7 +476,7 @@ function solveNode(
                 isBeltSaturated: inputRate > ctx.beltLimit,
             });
         });
-        // Also fertilizer if applicable?
+        // Also fertilizer if applicable - always treated as raw in loop case
         if (fertilizerInput) {
             inputs.push({
                 itemName: fertilizerInput.name,

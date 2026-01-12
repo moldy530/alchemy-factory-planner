@@ -109,6 +109,8 @@ export interface PlannerConfig {
   relicKnowledge: number;
   selectedFertilizer?: string;
   selectedFuel?: string;
+  selfFuel?: boolean; // If true, fuel is produced internally; if false, treated as external input
+  selfFertilizer?: boolean; // If true, fertilizer is produced internally; if false, treated as external input
 }
 
 export interface ResearchState {

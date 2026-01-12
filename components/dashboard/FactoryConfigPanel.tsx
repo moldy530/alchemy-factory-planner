@@ -110,12 +110,14 @@ export function FactorySettingsPanel({
     const config = {
         selectedFertilizer: activeFactory.config.selectedFertilizer || "",
         selectedFuel: activeFactory.config.selectedFuel || "",
+        selfFuel: activeFactory.config.selfFuel ?? true,
+        selfFertilizer: activeFactory.config.selfFertilizer ?? true,
     };
 
     const sortedFertilizers = [...fertilizers].sort((a, b) => (a.nutrient_value || 0) - (b.nutrient_value || 0));
     const sortedFuels = [...fuels].sort((a, b) => (a.heat_value || 0) - (b.heat_value || 0));
 
-    const updateConfig = (field: "selectedFertilizer" | "selectedFuel", value: string) => {
+    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer", value: string | boolean) => {
         updateFactoryConfig(activeFactory.id, { [field]: value });
     };
 
@@ -158,6 +160,17 @@ export function FactorySettingsPanel({
                         placeholder="Select Fertilizer..."
                         className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
                     />
+                    {config.selectedFertilizer && (
+                        <label className="flex items-center gap-2 mt-2 text-xs text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={config.selfFertilizer}
+                                onChange={(e) => updateConfig("selfFertilizer", e.target.checked)}
+                                className="accent-[var(--accent-gold)] cursor-pointer"
+                            />
+                            <span>Produce fertilizer internally</span>
+                        </label>
+                    )}
                 </div>
 
                 <div>
@@ -172,6 +185,17 @@ export function FactorySettingsPanel({
                         placeholder="Select Fuel..."
                         className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
                     />
+                    {config.selectedFuel && (
+                        <label className="flex items-center gap-2 mt-2 text-xs text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={config.selfFuel}
+                                onChange={(e) => updateConfig("selfFuel", e.target.checked)}
+                                className="accent-[var(--accent-gold)] cursor-pointer"
+                            />
+                            <span>Produce fuel internally</span>
+                        </label>
+                    )}
                 </div>
 
                 <div>

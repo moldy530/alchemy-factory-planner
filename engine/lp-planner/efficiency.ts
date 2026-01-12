@@ -93,6 +93,8 @@ export function buildEfficiencyContext(config: PlannerConfig): EfficiencyContext
     beltLimit,
     selectedFuel: config.selectedFuel || "Coal",
     selectedFertilizer: config.selectedFertilizer,
+    selfFuel: config.selfFuel ?? true,
+    selfFertilizer: config.selfFertilizer ?? true,
   };
 }
 

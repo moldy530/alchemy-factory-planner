@@ -8,6 +8,8 @@ export interface EfficiencyContext {
   beltLimit: number;
   selectedFuel: string;
   selectedFertilizer?: string;
+  selfFuel: boolean;
+  selfFertilizer: boolean;
 }
 
 export interface LPSolution {

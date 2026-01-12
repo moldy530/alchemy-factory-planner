@@ -61,6 +61,8 @@ const DEFAULT_FACTORY_CONFIG: Omit<
     relicKnowledge: 0,
     selectedFertilizer: "",
     selectedFuel: "",
+    selfFuel: true,
+    selfFertilizer: true,
 };
 
 interface FactoryStore {
@@ -256,6 +258,8 @@ export const useFactoryStore = create<FactoryStore>()(
                     ...state.research,
                     selectedFertilizer: factory.config.selectedFertilizer,
                     selectedFuel: factory.config.selectedFuel,
+                    selfFuel: factory.config.selfFuel,
+                    selfFertilizer: factory.config.selfFertilizer,
                 };
 
                 const productionNodes = factory.plannerMode === "lp"
@@ -289,6 +293,8 @@ export const useFactoryStore = create<FactoryStore>()(
                     ...state.research,
                     selectedFertilizer: factory.config.selectedFertilizer,
                     selectedFuel: factory.config.selectedFuel,
+                    selfFuel: factory.config.selfFuel,
+                    selfFertilizer: factory.config.selfFertilizer,
                 };
 
                 const productionNodes = factory.plannerMode === "lp"
