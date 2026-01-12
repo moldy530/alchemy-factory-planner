@@ -1,9 +1,18 @@
 import { Solution } from "yalps";
-import { PlannerConfig, ProductionNode } from "../types";
+import { PlannerConfig, ProductionNode, Recipe } from "../types";
 import { EfficiencyContext, EPSILON } from "./types";
 import { getItem, getDevice, getRecipeById, getAllRecipes } from "./model-builder";
 import { isAlchemyMachine } from "./efficiency";
 import { normalizeItemId } from "../item-utils";
+
+/**
+ * Calculate effective recipe time.
+ * For nursery recipes, fertilizer provides nutrients but doesn't speed up growth.
+ * Growth time remains the same: recipe.time (growthSeconds from plantseeds.json)
+ */
+function getEffectiveRecipeTime(recipe: Recipe, ctx: EfficiencyContext): number {
+  return recipe.time;
+}
 
 interface ItemFlow {
   produced: number;
@@ -61,7 +70,8 @@ export function interpretSolution(
     // activationRate is recipes per minute
     // Each machine completes 1 recipe every (time / speedMultiplier) seconds
     // So machines needed = activationRate * (time / 60 / speedMultiplier)
-    const effectiveTime = recipe.time / ctx.speedMultiplier;
+    const effectiveRecipeTime = getEffectiveRecipeTime(recipe, ctx);
+    const effectiveTime = effectiveRecipeTime / ctx.speedMultiplier;
     const machineCount = activationRate * (effectiveTime / 60);
 
     // Find primary output (first output)
@@ -144,7 +154,7 @@ export function interpretSolution(
     productionNodes.set(nodeId, node);
   });
 
-  // Create raw material nodes
+  // Create raw material nodes from LP solution
   rawPurchases.forEach((rate, itemName) => {
     if (rate < EPSILON) return;
 
@@ -164,6 +174,33 @@ export function interpretSolution(
     };
 
     productionNodes.set(nodeId, node);
+  });
+
+  // Create raw material nodes for available resources (even if item can be produced)
+  // The LP model doesn't create raw_ variables for producible items, so we add them manually
+  config.availableResources?.forEach((res) => {
+    const itemId = normalizeItemId(res.item);
+    const nodeId = `${itemId}-raw`;
+
+    // Only create if not already created from rawPurchases
+    if (!productionNodes.has(nodeId) && res.rate > EPSILON) {
+      const item = getItem(itemId);
+      const node: ProductionNode = {
+        id: nodeId,
+        itemName: item?.name || res.item,
+        rate: res.rate,
+        isRaw: true,
+        deviceCount: 0,
+        heatConsumption: 0,
+        inputs: [],
+        byproducts: [],
+        beltLimit: ctx.beltLimit,
+        isBeltSaturated: res.rate > ctx.beltLimit,
+        suppliedRate: res.rate, // Mark as supplied resource
+      };
+
+      productionNodes.set(nodeId, node);
+    }
   });
 
   // Create raw material nodes for seeds (not in LP model but needed for IO summary)
@@ -321,14 +358,13 @@ function calculateItemFlows(
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
         const flow = getOrCreateFlow(fertilizerId);
 
-        const fertEffMult = ctx.fertilizerMultiplier;
-        const effectiveNutrientValue = fertilizerItem.nutrient_value * fertEffMult;
-        const fertilizerPerOutputItem = outputItem.required_nutrients / effectiveNutrientValue;
-
+        // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
+        // Each Flax needs 24 nutrients, so per cycle (200 Flax) = 200 * 24 nutrients
         const outputCount = typeof recipe.outputs[0].count === "string"
           ? parseFloat(recipe.outputs[0].count)
           : recipe.outputs[0].count;
-        const fertilizerPerActivation = outputCount * fertilizerPerOutputItem;
+        const effectiveNutrientValue = fertilizerItem.nutrient_value;
+        const fertilizerPerActivation = (outputCount * outputItem.required_nutrients) / effectiveNutrientValue;
         const rate = activationRate * fertilizerPerActivation;
 
         flow.consumed += rate;
@@ -358,7 +394,8 @@ function calculateItemFlows(
         const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
 
         // Heat per activation = heat per second × time per activation
-        const timePerActivation = recipe.time / ctx.speedMultiplier;
+        const effectiveRecipeTime = getEffectiveRecipeTime(recipe, ctx);
+        const timePerActivation = effectiveRecipeTime / ctx.speedMultiplier;
         const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelPerActivation = heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
         const rate = activationRate * fuelPerActivation;
@@ -482,42 +519,60 @@ function linkProductionNodes(
         const fertId = normalizeItemId(ctx.selectedFertilizer);
         const fertFlow = itemFlows.get(fertId);
 
-        const fertilizerPerOutputItem = outputItem.required_nutrients / (fertilizerItem.nutrient_value * ctx.fertilizerMultiplier);
+        // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
         const outputCount = typeof recipe.outputs[0].count === "string"
           ? parseFloat(recipe.outputs[0].count)
           : recipe.outputs[0].count;
-        const fertilizerRate = activationRate * outputCount * fertilizerPerOutputItem;
+        const fertilizerPerActivation = (outputCount * outputItem.required_nutrients) / fertilizerItem.nutrient_value;
+        const fertilizerRate = activationRate * fertilizerPerActivation;
 
-        // Link fertilizer (raw or produced)
+        // Link fertilizer (production sources)
         if (fertFlow && fertFlow.sources.length > 0) {
-          // Fertilizer is produced - link to production nodes with cycle detection
+          // Calculate how much comes from production vs raw (if raw is available)
+          const rawFertRate = nodes.get(`${fertId}-raw`)?.rate || 0;
+          const totalFertAvailable = fertFlow.produced + rawFertRate;
+          const prodPortion = totalFertAvailable > 0 ? fertFlow.produced / totalFertAvailable : 1;
+
+          // Fertilizer is produced - link to production nodes
+          // Note: We create consumption references even for cycles so they appear in the graph
           fertFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
             const sourceNodeId = `${fertId}-prod-${recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
-            const inputRate = fertilizerRate * (sourceRate / fertFlow.produced);
+            // Calculate consumption rate from this production source, scaled by production portion
+            const inputRate = fertilizerRate * (sourceRate / fertFlow.produced) * prodPortion;
 
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
-            // Check for cycles before linking
-            if (wouldCreateCycleNew(nodeId, sourceNodeId)) {
-              // Skip linking to avoid cycle - consumption tracked in itemFlows for netOutputRate
-              return;
-            }
+            // Check for cycles - if detected, still create the link but don't add to dependencies
+            // This allows the graph to show circular fertilizer flows without breaking traversal
+            const wouldCycle = wouldCreateCycleNew(nodeId, sourceNodeId);
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
             node.inputs.push(createConsumptionReference(sourceNode, inputRate, fertId));
-            addDependency(nodeId, sourceNodeId);
+
+            // Only track dependencies if not cyclic to avoid infinite loops in traversal
+            if (!wouldCycle) {
+              addDependency(nodeId, sourceNodeId);
+            }
           });
-        } else {
-          // Fertilizer is raw material - link to raw node
-          const rawNodeId = `${fertId}-raw`;
-          const rawNode = nodes.get(rawNodeId);
-          if (rawNode && !nodeInputs.has(rawNodeId)) {
-            nodeInputs.add(rawNodeId);
-            node.inputs.push(createInputReference(rawNode, fertilizerRate, fertId));
-            addDependency(nodeId, rawNodeId);
-          }
+        }
+
+        // Link fertilizer (raw/purchased source if available)
+        // This allows showing both produced AND raw sources when both exist
+        const rawNodeId = `${fertId}-raw`;
+        const rawNode = nodes.get(rawNodeId);
+        if (rawNode && !nodeInputs.has(rawNodeId)) {
+          // Calculate how much raw fertilizer this node consumes
+          // If there's also production, the raw portion is proportional to raw supply
+          const rawFertRate = rawNode.rate;
+          const totalFertAvailable = (fertFlow?.produced || 0) + rawFertRate;
+          const rawPortion = totalFertAvailable > 0 ? rawFertRate / totalFertAvailable : 1;
+          const rawInputRate = fertilizerRate * rawPortion;
+
+          nodeInputs.add(rawNodeId);
+          node.inputs.push(createInputReference(rawNode, rawInputRate, fertId));
+          addDependency(nodeId, rawNodeId);
         }
       }
     }
@@ -539,40 +594,58 @@ function linkProductionNodes(
         const deviceHeatPerSecond = device.heat_consuming_speed * ctx.speedMultiplier;
         const furnaceContribution = furnaceHeat * (deviceSlotsRequired / furnaceSlots) * ctx.speedMultiplier;
         const totalHeatPerSecond = deviceHeatPerSecond + furnaceContribution;
-        const timePerActivation = recipe.time / ctx.speedMultiplier;
+        const effectiveRecipeTime = getEffectiveRecipeTime(recipe, ctx);
+        const timePerActivation = effectiveRecipeTime / ctx.speedMultiplier;
         const heatPerActivation = totalHeatPerSecond * timePerActivation;
         const fuelRate = activationRate * heatPerActivation / (fuelItem.heat_value * ctx.fuelMultiplier);
 
-        // Link fuel (raw or produced)
+        // Link fuel (production sources)
         if (fuelFlow && fuelFlow.sources.length > 0) {
-          // Fuel is produced - link to production nodes with cycle detection
+          // Calculate how much comes from production vs raw (if raw is available)
+          const rawFuelRate = nodes.get(`${fuelId}-raw`)?.rate || 0;
+          const totalFuelAvailable = fuelFlow.produced + rawFuelRate;
+          const prodPortion = totalFuelAvailable > 0 ? fuelFlow.produced / totalFuelAvailable : 1;
+
+          // Fuel is produced - link to production nodes
+          // Note: We create consumption references even for cycles so they appear in the graph
           fuelFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
             const sourceNodeId = `${fuelId}-prod-${recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
-            const inputRate = fuelRate * (sourceRate / fuelFlow.produced);
+            // Calculate consumption rate from this production source, scaled by production portion
+            const inputRate = fuelRate * (sourceRate / fuelFlow.produced) * prodPortion;
 
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
-            // Check for cycles before linking
-            if (wouldCreateCycleNew(nodeId, sourceNodeId)) {
-              // Skip linking to avoid cycle - consumption tracked in itemFlows for netOutputRate
-              return;
-            }
+            // Check for cycles - if detected, still create the link but don't add to dependencies
+            // This allows the graph to show circular fuel flows without breaking traversal
+            const wouldCycle = wouldCreateCycleNew(nodeId, sourceNodeId);
 
             nodeInputs.add(sourceNodeId);
             // Use consumption reference to show edge without inflating production rate
             node.inputs.push(createConsumptionReference(sourceNode, inputRate, fuelId));
-            addDependency(nodeId, sourceNodeId);
+
+            // Only track dependencies if not cyclic to avoid infinite loops in traversal
+            if (!wouldCycle) {
+              addDependency(nodeId, sourceNodeId);
+            }
           });
-        } else {
-          // Fuel is raw material - link to raw node
-          const rawNodeId = `${fuelId}-raw`;
-          const rawNode = nodes.get(rawNodeId);
-          if (rawNode && !nodeInputs.has(rawNodeId)) {
-            nodeInputs.add(rawNodeId);
-            node.inputs.push(createInputReference(rawNode, fuelRate, fuelId));
-            addDependency(nodeId, rawNodeId);
-          }
+        }
+
+        // Link fuel (raw/purchased source if available)
+        // This allows showing both produced AND raw sources when both exist
+        const rawNodeId = `${fuelId}-raw`;
+        const rawNode = nodes.get(rawNodeId);
+        if (rawNode && !nodeInputs.has(rawNodeId)) {
+          // Calculate how much raw fuel this node consumes
+          // If there's also production, the raw portion is proportional to raw supply
+          const rawFuelRate = rawNode.rate;
+          const totalFuelAvailable = (fuelFlow?.produced || 0) + rawFuelRate;
+          const rawPortion = totalFuelAvailable > 0 ? rawFuelRate / totalFuelAvailable : 1;
+          const rawInputRate = fuelRate * rawPortion;
+
+          nodeInputs.add(rawNodeId);
+          node.inputs.push(createInputReference(rawNode, rawInputRate, fuelId));
+          addDependency(nodeId, rawNodeId);
         }
       }
     }
@@ -581,38 +654,44 @@ function linkProductionNodes(
 
 /**
  * Create an input reference to a source node.
- * Now that graphMapper has cycle detection, we can safely reference nodes with their inputs.
- * We create a shallow copy with the correct rate but keep the inputs reference.
+ * For produced items, we return the same object reference to prevent double-counting in the graph.
+ * For raw materials, we create a copy to show the specific consumption rate.
  */
 function createInputReference(
   sourceNode: ProductionNode,
   inputRate: number,
   _itemName: string
 ): ProductionNode {
-  // Create a copy with the input rate for proper edge labeling,
-  // but keep the inputs array reference so graphMapper can traverse the full graph
-  return {
-    ...sourceNode,
-    rate: inputRate,
-    // Keep the actual inputs array - graphMapper has cycle detection now
-    inputs: sourceNode.inputs,
-  };
+  // For raw materials, create a copy with the consumption rate
+  // This allows different consumers to show different consumption amounts
+  if (sourceNode.isRaw) {
+    return {
+      ...sourceNode,
+      rate: inputRate,
+      inputs: sourceNode.inputs,
+    };
+  }
+
+  // For produced items, return the original node object
+  // This ensures the node is only counted once when the graph deduplicates by reference
+  return sourceNode;
 }
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * These references show consumption edges in the graph without inflating production rates.
- * We don't include inputs because the production subtree is already traversed elsewhere.
+ * These are NOT visible nodes in the graph - they just create edges.
+ * The graphMapper skips adding them to merged nodes but traverses their inputs.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
   consumptionRate: number,
-  _itemName: string
+  _itemId: string
 ): ProductionNode {
   return {
     ...sourceNode,
     rate: consumptionRate,
-    isConsumptionReference: true, // Mark as consumption so graphMapper doesn't add to total
-    inputs: [], // Don't traverse inputs again - they're already in the production tree
+    isConsumptionReference: true,
+    // Link to the actual production node so it's accessible from the tree
+    inputs: [sourceNode],
   };
 }

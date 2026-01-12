@@ -24,15 +24,35 @@ export function generateGraph(
     // Track nodes currently being traversed to detect cycles
     const visiting = new Set<string>();
 
+    // Track visited node objects globally to prevent double-counting
+    // Same object appearing in multiple paths should only be counted once
+    const visitedObjects = new WeakSet<ProductionNode>();
+
+    // Track which consumption reference keys have had their inputs traversed
+    // We accumulate rates but only traverse inputs once per key
+    const traversedConsumptionKeys = new Set<string>();
+
     function traverse(node: ProductionNode, parentName?: string) {
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
-        // Record Relationship & Rate (do this before cycle check to capture edges)
-        if (parentName) {
-            const edgeKey = `${key}___${parentName}`;
-            const currentRate = edgeRates.get(edgeKey) || 0;
-            edgeRates.set(edgeKey, currentRate + node.rate);
+        // For consumption references: record edge with consumption rate, then traverse inputs
+        // Check BEFORE cycle detection - consumption refs should always record edges
+        if (node.isConsumptionReference) {
+            // Always record the edge for this consumption reference
+            if (parentName) {
+                const edgeKey = `${key}___${parentName}`;
+                const currentRate = edgeRates.get(edgeKey) || 0;
+                edgeRates.set(edgeKey, currentRate + node.rate);
+            }
+
+            // Traverse inputs to show production chain (including circular dependencies)
+            // Only traverse inputs once per key to avoid duplicate traversals
+            if (!traversedConsumptionKeys.has(key)) {
+                traversedConsumptionKeys.add(key);
+                node.inputs.forEach((input) => traverse(input, parentName));
+            }
+            return;
         }
 
         // Cycle detection: if we're already visiting this node in current path, stop
@@ -40,15 +60,20 @@ export function generateGraph(
             return;
         }
 
-        // Skip adding consumption references to merged nodes
-        // They're only used to create edges, not to contribute to production totals
-        if (node.isConsumptionReference) {
-            // Still mark as visiting and traverse inputs (though inputs should be empty)
-            visiting.add(key);
-            node.inputs.forEach((input) => traverse(input, key));
-            visiting.delete(key);
+        // Record Relationship & Rate for production nodes (skip if already traversed as consumption ref)
+        if (parentName && !traversedConsumptionKeys.has(key)) {
+            const edgeKey = `${key}___${parentName}`;
+            const currentRate = edgeRates.get(edgeKey) || 0;
+            edgeRates.set(edgeKey, currentRate + node.rate);
+        }
+
+        // Check if we've already processed this exact object
+        // If so, just record the edge but don't re-traverse or add to totals
+        if (visitedObjects.has(node)) {
+            // Already processed this node object, skip to avoid double-counting
             return;
         }
+        visitedObjects.add(node);
 
         // Update or Create (for non-consumption references)
         if (mergedNodes.has(key)) {

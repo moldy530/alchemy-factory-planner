@@ -60,7 +60,12 @@ export function buildLPModel(
     const recipeCoeffs = new Map<string, number>();
 
     const machineName = recipe.crafted_in?.toLowerCase() || "";
-    const recipeTime = recipe.time;
+    let recipeTime = recipe.time;
+
+    // For nursery recipes, use base growth time (fertilizer doesn't speed up growth)
+    // Fertilizer only provides the nutrients needed for growth
+    // Growth time remains the same: recipe.time (growthSeconds from plantseeds.json)
+    const isNurseryRecipe = machineName === "nursery";
 
     // Process outputs (positive flow)
     recipe.outputs.forEach((output) => {
@@ -100,8 +105,6 @@ export function buildLPModel(
 
     // Process inputs (negative flow)
     // Note: Nursery recipes list seeds as input, but seeds aren't consumed - only fertilizer is
-    const isNurseryRecipe = machineName === "nursery";
-
     recipe.inputs.forEach((input) => {
       const itemId = input.id || normalizeItemId(input.name);
       const item = getItemById(itemId);
@@ -147,13 +150,7 @@ export function buildLPModel(
       if (fertilizerItem?.nutrient_value && outputItem?.required_nutrients) {
         allItems.add(fertilizerId);
 
-        // Calculate fertilizer needed per output item
-        // fertilizerPerItem = required_nutrients / (nutrient_value * fertilizerEfficiency)
-        const fertEffMult = ctx.fertilizerMultiplier;
-        const effectiveNutrientValue = fertilizerItem.nutrient_value * fertEffMult;
-        const fertilizerPerOutputItem = outputItem.required_nutrients / effectiveNutrientValue;
-
-        // Get output count to calculate total fertilizer per activation
+        // Get output count for later use
         const outputCount = typeof outputDef.count === "string"
           ? parseFloat(outputDef.count)
           : outputDef.count;
@@ -164,8 +161,12 @@ export function buildLPModel(
           : 100;
         const effectiveOutputCount = outputCount * (outputPercentage / 100);
 
-        // Total fertilizer consumed per recipe activation
-        const fertilizerPerActivation = effectiveOutputCount * fertilizerPerOutputItem;
+        // Calculate fertilizer needed per recipe activation
+        // Nutrients are per OUTPUT ITEM, not per cycle!
+        // Each Flax needs 24 nutrients, so total = outputCount * 24
+        // Fertilizer consumption = (outputCount * required_nutrients) / nutrient_value
+        const effectiveNutrientValue = fertilizerItem.nutrient_value;
+        const fertilizerPerActivation = (effectiveOutputCount * outputItem.required_nutrients) / effectiveNutrientValue;
 
         const current = recipeCoeffs.get(fertilizerId) || 0;
         recipeCoeffs.set(fertilizerId, current - fertilizerPerActivation);

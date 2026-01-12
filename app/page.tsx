@@ -69,6 +69,14 @@ export default function PlannerPage() {
 
     function traverse(node: ProductionNode) {
       const key = node.id || node.itemName;
+
+      // Skip consumption references - they're transparent pass-throughs
+      // DON'T add them to visited since they share IDs with production nodes
+      if (node.isConsumptionReference) {
+        node.inputs.forEach(traverse);
+        return;
+      }
+
       if (visited.has(key)) return;
       visited.add(key);
 
@@ -89,10 +97,15 @@ export default function PlannerPage() {
     function traverse(node: ProductionNode, isRoot = false) {
       const key = node.id || node.itemName;
 
-      // Skip consumption references - they don't contribute to IO summary
-      // The actual production nodes will be traversed separately
-      if (node.isConsumptionReference) return;
+      // Skip consumption references from IO totals, but still traverse their inputs
+      // to capture raw materials (e.g., Logs for Plank fuel)
+      // DON'T add consumption refs to visited - they share IDs with production nodes
+      if (node.isConsumptionReference) {
+        node.inputs.forEach((n) => traverse(n));
+        return;
+      }
 
+      // Check if already visited (skip for production nodes we've seen)
       if (visited.has(key)) return;
       visited.add(key);
 
