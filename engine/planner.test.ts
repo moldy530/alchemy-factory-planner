@@ -360,11 +360,17 @@ planners.forEach(({ name, fn: calculateFn }) => {
       return matches;
     }
 
-    // Find all Basic Fertilizer consumption (including consumption references)
+    // Find all Basic Fertilizer consumption
     const fertilizerNodes = findConsumptionByName(bandageNode, "Basic Fertilizer");
-    console.log(`\nFound ${fertilizerNodes.length} Basic Fertilizer consumption nodes`);
+    console.log(`\nFound ${fertilizerNodes.length} Basic Fertilizer nodes (${fertilizerNodes.filter(n => n.isConsumptionReference).length} consumption refs)`);
 
-    const totalFertilizerRate = fertilizerNodes.reduce((sum, node) => sum + (node.rate || 0), 0);
+    // LP Planner: Only count consumption references (not production nodes)
+    // Recursive Planner: Count all nodes (doesn't use isConsumptionReference)
+    const consumptionRefs = fertilizerNodes.filter(n => n.isConsumptionReference);
+    const hasConsumptionRefs = consumptionRefs.length > 0;
+    const totalFertilizerRate = hasConsumptionRefs
+      ? consumptionRefs.reduce((sum, node) => sum + (node.rate || 0), 0)
+      : fertilizerNodes.reduce((sum, node) => sum + (node.rate || 0), 0);
     console.log(`Total Basic Fertilizer: ${totalFertilizerRate}/min`);
 
     // Fertilizer consumption (nutrients are per output item):
@@ -488,10 +494,10 @@ describe("LP Planner - Circular Dependencies", () => {
     console.log(`✓ Internal consumption correctly accounted for`);
   });
 
-  test("Bandage with partial Basic Fertilizer input (10 available, 80 total needed)", () => {
+  test("Bandage with partial Basic Fertilizer input (20 available)", () => {
     const config: PlannerConfig = {
       targets: [{ item: "Bandage", rate: 6 }],
-      availableResources: [{ item: "Basic Fertilizer", rate: 10 }],
+      availableResources: [{ item: "Basic Fertilizer", rate: 20 }],
       fuelEfficiency: 0,
       alchemySkill: 0,
       factoryEfficiency: 0,
@@ -574,6 +580,11 @@ describe("LP Planner - Circular Dependencies", () => {
       console.log(`  Node ${i + 1}: ${node.rate}/min, isRaw=${node.isRaw}, deviceCount=${node.deviceCount}`);
     });
 
+    // Calculate totals by type
+    const rawTotal = allFertNodesIncludingConsumption.filter((n: any) => n.isRaw && !n.isConsumptionReference).reduce((sum: number, n: any) => sum + n.rate, 0);
+    const prodNodesNonConsumption = allFertNodesIncludingConsumption.filter((n: any) => !n.isRaw && !n.isConsumptionReference);
+    const prodTotal = prodNodesNonConsumption.reduce((sum: number, n: any) => sum + n.rate, 0);
+
     // Expectations:
     // Should find Basic Fertilizer nodes accessible from the tree
     // Note: Production node accessibility depends on whether consumption refs include it
@@ -581,6 +592,8 @@ describe("LP Planner - Circular Dependencies", () => {
 
     console.log("\n=== Test Summary ===");
     console.log(`✓ Found ${allFertNodes.length} production node(s) accessible from tree`);
+    console.log(`✓ Raw (available): ${rawTotal.toFixed(2)}/min`);
+    console.log(`✓ Production: ${prodTotal.toFixed(2)}/min (${prodNodesNonConsumption.length} nodes)`);
 
     const totalRate = allFertNodes.reduce((sum, n) => sum + n.rate, 0);
     console.log(`✓ Total rate accessible: ${totalRate.toFixed(1)}/min`);

@@ -667,19 +667,26 @@ function createInputReference(
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * Marks this as a consumption edge while preserving inputs to show production chains.
- * The graphMapper will handle deduplication via visitedObjects WeakSet.
+ * Links to the production node to show consumption edges.
+ * The consumption ref's single input is the production node, making it accessible in the graph.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
   consumptionRate: number,
-  _itemName: string
+  _itemId: string
 ): ProductionNode {
   return {
-    ...sourceNode,
+    id: `${sourceNode.id}-consumption-${Math.random()}`,
+    itemName: sourceNode.itemName, // Use display name from source node
     rate: consumptionRate,
+    isRaw: false,
+    deviceCount: 0,
+    heatConsumption: 0,
     isConsumptionReference: true,
-    // Preserve inputs so production chains are accessible in the graph
-    inputs: sourceNode.inputs,
+    // Link to the actual production node so it's accessible from the tree
+    inputs: [sourceNode],
+    byproducts: [],
+    beltLimit: sourceNode.beltLimit,
+    isBeltSaturated: false,
   };
 }
