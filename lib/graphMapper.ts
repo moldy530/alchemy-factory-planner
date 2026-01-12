@@ -54,18 +54,11 @@ export function generateGraph(
             return;
         }
 
-        // For consumption references: create edge and show in graph, but accumulate separately
-        // We DO traverse inputs to show the full production chain including cycles
+        // For consumption references: don't create visible nodes, just traverse inputs
+        // This creates edges without duplicate nodes in the graph
         if (node.isConsumptionReference) {
-            // Add or update merged node (accumulate consumption rates)
-            if (mergedNodes.has(key)) {
-                const existing = mergedNodes.get(key)!;
-                existing.rate += node.rate;
-            } else {
-                mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
-            }
             // Traverse inputs to show production chain (including circular dependencies)
-            // Only traverse inputs once per key, even if multiple consumption refs exist
+            // Only traverse inputs once per key to avoid duplicate traversals
             if (!traversedConsumptionKeys.has(key)) {
                 traversedConsumptionKeys.add(key);
                 visiting.add(key);

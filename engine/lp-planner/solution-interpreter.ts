@@ -667,8 +667,8 @@ function createInputReference(
 
 /**
  * Create a consumption reference for fuel/fertilizer.
- * Links to the production node to show consumption edges.
- * The consumption ref's single input is the production node, making it accessible in the graph.
+ * These are NOT visible nodes in the graph - they just create edges.
+ * The graphMapper skips adding them to merged nodes but traverses their inputs.
  */
 function createConsumptionReference(
   sourceNode: ProductionNode,
@@ -676,17 +676,10 @@ function createConsumptionReference(
   _itemId: string
 ): ProductionNode {
   return {
-    id: `${sourceNode.id}-consumption-${Math.random()}`,
-    itemName: sourceNode.itemName, // Use display name from source node
+    ...sourceNode,
     rate: consumptionRate,
-    isRaw: false,
-    deviceCount: 0,
-    heatConsumption: 0,
     isConsumptionReference: true,
     // Link to the actual production node so it's accessible from the tree
     inputs: [sourceNode],
-    byproducts: [],
-    beltLimit: sourceNode.beltLimit,
-    isBeltSaturated: false,
   };
 }
