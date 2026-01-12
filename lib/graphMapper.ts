@@ -36,14 +36,6 @@ export function generateGraph(
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
-        // Record Relationship & Rate (do this before cycle/consumption checks)
-        // Only record edges if this key hasn't been traversed as a consumption ref yet
-        if (parentName && !traversedConsumptionKeys.has(key)) {
-            const edgeKey = `${key}___${parentName}`;
-            const currentRate = edgeRates.get(edgeKey) || 0;
-            edgeRates.set(edgeKey, currentRate + node.rate);
-        }
-
         // Cycle detection: if we're already visiting this node in current path, stop
         if (visiting.has(key)) {
             return;
@@ -51,14 +43,27 @@ export function generateGraph(
 
         // For consumption references: record edge with consumption rate, then traverse inputs
         if (node.isConsumptionReference) {
+            // Always record the edge for this consumption reference
+            if (parentName) {
+                const edgeKey = `${key}___${parentName}`;
+                const currentRate = edgeRates.get(edgeKey) || 0;
+                edgeRates.set(edgeKey, currentRate + node.rate);
+            }
+
             // Traverse inputs to show production chain (including circular dependencies)
             // Only traverse inputs once per key to avoid duplicate traversals
-            // Mark this key as traversed so production node doesn't add to the edge again
             if (!traversedConsumptionKeys.has(key)) {
                 traversedConsumptionKeys.add(key);
                 node.inputs.forEach((input) => traverse(input, parentName));
             }
             return;
+        }
+
+        // Record Relationship & Rate for production nodes (skip if already traversed as consumption ref)
+        if (parentName && !traversedConsumptionKeys.has(key)) {
+            const edgeKey = `${key}___${parentName}`;
+            const currentRate = edgeRates.get(edgeKey) || 0;
+            edgeRates.set(edgeKey, currentRate + node.rate);
         }
 
         // Check if we've already processed this exact object
