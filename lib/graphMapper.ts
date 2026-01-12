@@ -95,6 +95,15 @@ export function generateGraph(
 
     rootNodes.forEach((root) => traverse(root));
 
+    // Debug: Log all edges from Basic Fertilizer
+    const fertEdges = Array.from(edgeRates.entries()).filter(([key]) =>
+        key.includes('basicfertilizer') && !key.includes('raw')
+    );
+    if (fertEdges.length > 0) {
+        console.log('[graphMapper] Basic Fertilizer production edges:');
+        fertEdges.forEach(([key, rate]) => console.log(`  ${key}: ${rate.toFixed(2)}/min`));
+    }
+
     // Create React Flow Nodes (Production Network)
     const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => ({
         id: n.id || n.itemName, // Use ID if distinct
