@@ -69,6 +69,14 @@ export default function PlannerPage() {
 
     function traverse(node: ProductionNode) {
       const key = node.id || node.itemName;
+
+      // Skip consumption references - they're transparent pass-throughs
+      // DON'T add them to visited since they share IDs with production nodes
+      if (node.isConsumptionReference) {
+        node.inputs.forEach(traverse);
+        return;
+      }
+
       if (visited.has(key)) return;
       visited.add(key);
 
