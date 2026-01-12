@@ -39,20 +39,11 @@ export function generateGraph(
         // For consumption references: record edge with consumption rate, then traverse inputs
         // Check BEFORE cycle detection - consumption refs should always record edges
         if (node.isConsumptionReference) {
-            // Debug logging
-            if (key.includes('basicfertilizer')) {
-                console.log(`[graphMapper] Consumption ref: key=${key}, parentName=${parentName}, rate=${node.rate.toFixed(2)}, hasParent=${!!parentName}`);
-            }
-
             // Always record the edge for this consumption reference
             if (parentName) {
                 const edgeKey = `${key}___${parentName}`;
                 const currentRate = edgeRates.get(edgeKey) || 0;
                 edgeRates.set(edgeKey, currentRate + node.rate);
-
-                if (key.includes('basicfertilizer')) {
-                    console.log(`[graphMapper] Recorded edge: ${edgeKey} = ${(currentRate + node.rate).toFixed(2)}/min`);
-                }
             }
 
             // Traverse inputs to show production chain (including circular dependencies)
@@ -80,21 +71,9 @@ export function generateGraph(
         // If so, just record the edge but don't re-traverse or add to totals
         if (visitedObjects.has(node)) {
             // Already processed this node object, skip to avoid double-counting
-            if (key.includes('sage-prod-sage')) {
-                console.log(`[graphMapper] Sage already in visitedObjects, skipping traversal (parentName=${parentName})`);
-            }
             return;
         }
         visitedObjects.add(node);
-
-        // Debug: Log when Sage is traversed
-        if (key.includes('sage-prod-sage')) {
-            console.log(`[graphMapper] Traversing Sage production node (parentName=${parentName}), inputs.length=${node.inputs.length}`);
-            node.inputs.forEach((input, i) => {
-                const inputKey = input.id || input.itemName;
-                console.log(`  Input ${i}: key=${inputKey}, isConsumptionRef=${input.isConsumptionReference}, rate=${input.rate}`);
-            });
-        }
 
         // Update or Create (for non-consumption references)
         if (mergedNodes.has(key)) {
@@ -116,15 +95,6 @@ export function generateGraph(
     }
 
     rootNodes.forEach((root) => traverse(root));
-
-    // Debug: Log all edges from Basic Fertilizer
-    const fertEdges = Array.from(edgeRates.entries()).filter(([key]) =>
-        key.includes('basicfertilizer') && !key.includes('raw')
-    );
-    if (fertEdges.length > 0) {
-        console.log('[graphMapper] Basic Fertilizer production edges:');
-        fertEdges.forEach(([key, rate]) => console.log(`  ${key}: ${rate.toFixed(2)}/min`));
-    }
 
     // Create React Flow Nodes (Production Network)
     const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => ({
