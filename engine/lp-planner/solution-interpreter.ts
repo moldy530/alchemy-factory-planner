@@ -528,12 +528,18 @@ function linkProductionNodes(
 
         // Link fertilizer (production sources)
         if (fertFlow && fertFlow.sources.length > 0) {
+          // Calculate how much comes from production vs raw (if raw is available)
+          const rawFertRate = nodes.get(`${fertId}-raw`)?.rate || 0;
+          const totalFertAvailable = fertFlow.produced + rawFertRate;
+          const prodPortion = totalFertAvailable > 0 ? fertFlow.produced / totalFertAvailable : 1;
+
           // Fertilizer is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
           fertFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
             const sourceNodeId = `${fertId}-prod-${recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
-            const inputRate = fertilizerRate * (sourceRate / fertFlow.produced);
+            // Calculate consumption rate from this production source, scaled by production portion
+            const inputRate = fertilizerRate * (sourceRate / fertFlow.produced) * prodPortion;
 
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
@@ -595,12 +601,18 @@ function linkProductionNodes(
 
         // Link fuel (production sources)
         if (fuelFlow && fuelFlow.sources.length > 0) {
+          // Calculate how much comes from production vs raw (if raw is available)
+          const rawFuelRate = nodes.get(`${fuelId}-raw`)?.rate || 0;
+          const totalFuelAvailable = fuelFlow.produced + rawFuelRate;
+          const prodPortion = totalFuelAvailable > 0 ? fuelFlow.produced / totalFuelAvailable : 1;
+
           // Fuel is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
           fuelFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
             const sourceNodeId = `${fuelId}-prod-${recipeId}`;
             const sourceNode = nodes.get(sourceNodeId);
-            const inputRate = fuelRate * (sourceRate / fuelFlow.produced);
+            // Calculate consumption rate from this production source, scaled by production portion
+            const inputRate = fuelRate * (sourceRate / fuelFlow.produced) * prodPortion;
 
             if (!sourceNode || sourceNodeId === nodeId || nodeInputs.has(sourceNodeId)) return;
 
