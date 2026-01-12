@@ -533,6 +533,15 @@ function linkProductionNodes(
 
         // Link fertilizer (production sources)
         if (fertFlow && fertFlow.sources.length > 0) {
+          // Debug logging
+          if (fertId === 'basicfertilizer') {
+            console.log(`[solution-interpreter] Linking fertilizer for ${nodeId}:`, {
+              fertFlowSources: fertFlow.sources.length,
+              fertFlowProduced: fertFlow.produced,
+              fertilizerRate
+            });
+          }
+
           // Fertilizer is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
           fertFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
