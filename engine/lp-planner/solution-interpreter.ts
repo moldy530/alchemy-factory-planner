@@ -152,6 +152,11 @@ export function interpretSolution(
     };
 
     productionNodes.set(nodeId, node);
+
+    // Debug: Log Basic Fertilizer production nodes
+    if (nodeId.includes('basicfertilizer')) {
+      console.log(`[solution-interpreter] Created production node: ${nodeId}, rate=${node.rate}, devices=${node.deviceCount}`);
+    }
   });
 
   // Create raw material nodes from LP solution
@@ -675,6 +680,11 @@ function createConsumptionReference(
   consumptionRate: number,
   _itemId: string
 ): ProductionNode {
+  // Debug logging
+  if (sourceNode.id?.includes('basicfertilizer')) {
+    console.log(`[solution-interpreter] Creating consumption ref to ${sourceNode.id}, rate=${consumptionRate}, sourceNode.rate=${sourceNode.rate}`);
+  }
+
   return {
     ...sourceNode,
     rate: consumptionRate,
