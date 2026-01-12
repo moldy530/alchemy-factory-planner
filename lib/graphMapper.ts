@@ -55,14 +55,15 @@ export function generateGraph(
         }
 
         // For consumption references: don't create visible nodes, just traverse inputs
-        // This creates edges without duplicate nodes in the graph
+        // Pass through to the parent so edges connect directly from production to consumer
         if (node.isConsumptionReference) {
             // Traverse inputs to show production chain (including circular dependencies)
             // Only traverse inputs once per key to avoid duplicate traversals
+            // Use parentName so edges connect directly to the actual consumer, not the consumption ref
             if (!traversedConsumptionKeys.has(key)) {
                 traversedConsumptionKeys.add(key);
                 visiting.add(key);
-                node.inputs.forEach((input) => traverse(input, key));
+                node.inputs.forEach((input) => traverse(input, parentName));
                 visiting.delete(key);
             }
             return;
