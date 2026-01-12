@@ -36,12 +36,8 @@ export function generateGraph(
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
-        // Cycle detection: if we're already visiting this node in current path, stop
-        if (visiting.has(key)) {
-            return;
-        }
-
         // For consumption references: record edge with consumption rate, then traverse inputs
+        // Check BEFORE cycle detection - consumption refs should always record edges
         if (node.isConsumptionReference) {
             // Debug logging
             if (key.includes('basicfertilizer')) {
@@ -65,6 +61,11 @@ export function generateGraph(
                 traversedConsumptionKeys.add(key);
                 node.inputs.forEach((input) => traverse(input, parentName));
             }
+            return;
+        }
+
+        // Cycle detection: if we're already visiting this node in current path, stop
+        if (visiting.has(key)) {
             return;
         }
 
