@@ -36,11 +36,6 @@ export function generateGraph(
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
-        // Debug logging for Basic Fertilizer
-        if (key.includes('basicfertilizer') && !node.isRaw) {
-            console.log(`[graphMapper] Traversing: key=${key}, isConsumptionRef=${node.isConsumptionReference}, parentName=${parentName}, rate=${node.rate}`);
-        }
-
         // Record Relationship & Rate (do this before cycle check to capture edges)
         if (parentName) {
             const edgeKey = `${key}___${parentName}`;
@@ -65,11 +60,10 @@ export function generateGraph(
             // Traverse inputs to show production chain (including circular dependencies)
             // Only traverse inputs once per key to avoid duplicate traversals
             // Use parentName so edges connect directly to the actual consumer, not the consumption ref
+            // DON'T add to visiting set - consumption refs are transparent and share keys with production nodes
             if (!traversedConsumptionKeys.has(key)) {
                 traversedConsumptionKeys.add(key);
-                visiting.add(key);
                 node.inputs.forEach((input) => traverse(input, parentName));
-                visiting.delete(key);
             }
             return;
         }
@@ -93,9 +87,6 @@ export function generateGraph(
             existing.isBeltSaturated = existing.rate > (existing.beltLimit || 60);
         } else {
             mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
-            if (key.includes('basicfertilizer') && !node.isRaw) {
-                console.log(`[graphMapper] Added to mergedNodes: key=${key}, rate=${node.rate}`);
-            }
         }
 
         // Mark as visiting, recurse, then unmark
@@ -105,15 +96,6 @@ export function generateGraph(
     }
 
     rootNodes.forEach((root) => traverse(root));
-
-    // Debug: Log Basic Fertilizer nodes in mergedNodes
-    const fertNodes = Array.from(mergedNodes.values()).filter(n =>
-        (n.id || n.itemName).includes('basicfertilizer') && !n.isRaw
-    );
-    if (fertNodes.length > 0) {
-        console.log(`[graphMapper] Final Basic Fertilizer production nodes in mergedNodes: ${fertNodes.length}`);
-        fertNodes.forEach(n => console.log(`  - ${n.id || n.itemName}: ${n.rate}/min, devices=${n.deviceCount}`));
-    }
 
     // Create React Flow Nodes (Production Network)
     const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => ({

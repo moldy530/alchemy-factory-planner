@@ -152,11 +152,6 @@ export function interpretSolution(
     };
 
     productionNodes.set(nodeId, node);
-
-    // Debug: Log Basic Fertilizer production nodes
-    if (nodeId.includes('basicfertilizer')) {
-      console.log(`[solution-interpreter] Created production node: ${nodeId}, rate=${node.rate}, devices=${node.deviceCount}`);
-    }
   });
 
   // Create raw material nodes from LP solution
@@ -533,15 +528,6 @@ function linkProductionNodes(
 
         // Link fertilizer (production sources)
         if (fertFlow && fertFlow.sources.length > 0) {
-          // Debug logging
-          if (fertId === 'basicfertilizer') {
-            console.log(`[solution-interpreter] Linking fertilizer for ${nodeId}:`, {
-              fertFlowSources: fertFlow.sources.length,
-              fertFlowProduced: fertFlow.produced,
-              fertilizerRate
-            });
-          }
-
           // Fertilizer is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
           fertFlow.sources.forEach(({ recipeId, rate: sourceRate }) => {
@@ -689,11 +675,6 @@ function createConsumptionReference(
   consumptionRate: number,
   _itemId: string
 ): ProductionNode {
-  // Debug logging
-  if (sourceNode.id?.includes('basicfertilizer')) {
-    console.log(`[solution-interpreter] Creating consumption ref to ${sourceNode.id}, rate=${consumptionRate}, sourceNode.rate=${sourceNode.rate}`);
-  }
-
   return {
     ...sourceNode,
     rate: consumptionRate,
