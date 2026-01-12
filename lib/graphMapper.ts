@@ -79,9 +79,21 @@ export function generateGraph(
         // If so, just record the edge but don't re-traverse or add to totals
         if (visitedObjects.has(node)) {
             // Already processed this node object, skip to avoid double-counting
+            if (key.includes('sage-prod-sage')) {
+                console.log(`[graphMapper] Sage already in visitedObjects, skipping traversal (parentName=${parentName})`);
+            }
             return;
         }
         visitedObjects.add(node);
+
+        // Debug: Log when Sage is traversed
+        if (key.includes('sage-prod-sage')) {
+            console.log(`[graphMapper] Traversing Sage production node (parentName=${parentName}), inputs.length=${node.inputs.length}`);
+            node.inputs.forEach((input, i) => {
+                const inputKey = input.id || input.itemName;
+                console.log(`  Input ${i}: key=${inputKey}, isConsumptionRef=${input.isConsumptionReference}, rate=${input.rate}`);
+            });
+        }
 
         // Update or Create (for non-consumption references)
         if (mergedNodes.has(key)) {
