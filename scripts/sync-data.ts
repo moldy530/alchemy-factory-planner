@@ -126,23 +126,33 @@ const BUILDING_ID_OVERRIDES: Record<string, string> = {
   'portal-wholesaling': 'dispatch-portal',
 };
 
-// Craft type to device name mapping
+// Craft type to device name mapping (from machine_types.json in AlchemyFactoryData)
+// Device names use kebab-case to match device IDs in devices.json
 const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
-  0: 'table saw',
-  1: 'stone crusher',
-  2: 'iron smelter',
-  3: 'nursery',        // Growing plants with fertilizer
+  0: 'table-saw',
+  1: 'stone-crusher',
+  2: 'iron-smelter',
+  3: 'nursery',              // Growing plants with fertilizer
   4: 'grinder',
   5: 'extractor',
   6: 'crucible',
-  7: 'cauldron',
+  7: 'refiner',
   8: 'kiln',
-  9: 'shaper',
+  9: 'processor',
   10: 'assembler',
   11: 'blender',
-  12: 'athanor',
+  12: 'advanced-blender',
   13: 'alembic',
-  14: 'refiner',
+  14: 'advanced-alembic',
+  15: 'athanor',
+  16: 'advanced-athanor',
+  17: 'omni-machine',        // Advanced Assembler
+  18: 'shaper',
+  19: 'advanced-shaper',
+  20: 'aether-shaper',       // Arcane Shaper
+  21: 'paradox-crucible',
+  22: 'cauldron',
+  23: 'arcane-processor',    // Arcane Processor
 };
 
 const CRAFT_TYPE_CATEGORIES: Record<number, string> = {

@@ -39,6 +39,11 @@
     "slots_required": 1
   },
   {
+    "id": "arcane-processor",
+    "name": "Arcane Processor",
+    "category": "production"
+  },
+  {
     "id": "assembler",
     "name": "Assembler",
     "category": "production"
@@ -116,12 +121,22 @@
     "category": "raw material production"
   },
   {
+    "id": "omni-machine",
+    "name": "Advanced Assembler",
+    "category": "production"
+  },
+  {
     "id": "paradox-crucible",
     "name": "Paradox Crucible",
     "category": "production",
     "heat_consuming_speed": 1200,
     "parent": "stone-stove",
     "slots_required": 9
+  },
+  {
+    "id": "processor",
+    "name": "Processor",
+    "category": "production"
   },
   {
     "id": "purchasing-portal",
