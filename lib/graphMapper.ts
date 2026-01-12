@@ -36,8 +36,9 @@ export function generateGraph(
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
-        // Record Relationship & Rate (do this before cycle check to capture edges)
-        if (parentName) {
+        // Record Relationship & Rate (do this before cycle/consumption checks)
+        // Only record edges if this key hasn't been traversed as a consumption ref yet
+        if (parentName && !traversedConsumptionKeys.has(key)) {
             const edgeKey = `${key}___${parentName}`;
             const currentRate = edgeRates.get(edgeKey) || 0;
             edgeRates.set(edgeKey, currentRate + node.rate);
@@ -48,13 +49,11 @@ export function generateGraph(
             return;
         }
 
-        // For consumption references: don't create visible nodes, just traverse inputs
-        // Pass through to the parent so edges connect directly from production to consumer
+        // For consumption references: record edge with consumption rate, then traverse inputs
         if (node.isConsumptionReference) {
             // Traverse inputs to show production chain (including circular dependencies)
             // Only traverse inputs once per key to avoid duplicate traversals
-            // Use parentName so edges connect directly to the actual consumer, not the consumption ref
-            // DON'T add to visiting set - consumption refs are transparent and share keys with production nodes
+            // Mark this key as traversed so production node doesn't add to the edge again
             if (!traversedConsumptionKeys.has(key)) {
                 traversedConsumptionKeys.add(key);
                 node.inputs.forEach((input) => traverse(input, parentName));
