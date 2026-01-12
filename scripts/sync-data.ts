@@ -127,10 +127,11 @@ const BUILDING_ID_OVERRIDES: Record<string, string> = {
 };
 
 // Craft type to device name mapping (from machine_types.json in AlchemyFactoryData)
+// Device names use kebab-case to match device IDs in devices.json
 const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
-  0: 'table saw',
-  1: 'stone crusher',
-  2: 'iron smelter',
+  0: 'table-saw',
+  1: 'stone-crusher',
+  2: 'iron-smelter',
   3: 'nursery',              // Growing plants with fertilizer
   4: 'grinder',
   5: 'extractor',
@@ -151,7 +152,7 @@ const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
   20: 'aether-shaper',       // Arcane Shaper
   21: 'paradox-crucible',
   22: 'cauldron',
-  23: 'aether-processor',    // Arcane Processor
+  23: 'arcane-processor',    // Arcane Processor
 };
 
 const CRAFT_TYPE_CATEGORIES: Record<number, string> = {

@@ -141,7 +141,7 @@
       }
     ],
     "time": 2,
-    "crafted_in": "table saw",
+    "crafted_in": "table-saw",
     "category": "fuel"
   },
   {
@@ -181,7 +181,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "stone crusher",
+    "crafted_in": "stone-crusher",
     "category": "solid"
   },
   {
@@ -321,7 +321,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "iron smelter",
+    "crafted_in": "iron-smelter",
     "category": "solid"
   },
   {
@@ -1028,7 +1028,7 @@
       }
     ],
     "time": 10,
-    "crafted_in": "table saw",
+    "crafted_in": "table-saw",
     "category": "fuel"
   },
   {
@@ -1123,7 +1123,7 @@
       }
     ],
     "time": 24,
-    "crafted_in": "iron smelter",
+    "crafted_in": "iron-smelter",
     "category": "solid"
   },
   {
@@ -1163,7 +1163,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "stone crusher",
+    "crafted_in": "stone-crusher",
     "category": "solid"
   },
   {
@@ -2760,7 +2760,7 @@
       }
     ],
     "time": 60,
-    "crafted_in": "aether-processor"
+    "crafted_in": "arcane-processor"
   },
   {
     "id": "star-dust",
@@ -2789,7 +2789,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "aether-processor"
+    "crafted_in": "arcane-processor"
   },
   {
     "id": "fairy-dust",
@@ -2818,7 +2818,7 @@
       }
     ],
     "time": 4,
-    "crafted_in": "aether-processor"
+    "crafted_in": "arcane-processor"
   },
   {
     "id": "fairy-tear",
@@ -3015,7 +3015,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "stone crusher",
+    "crafted_in": "stone-crusher",
     "category": "solid"
   },
   {
@@ -3035,7 +3035,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "stone crusher",
+    "crafted_in": "stone-crusher",
     "category": "solid"
   },
   {
@@ -3275,7 +3275,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "stone crusher",
+    "crafted_in": "stone-crusher",
     "category": "solid"
   },
   {
