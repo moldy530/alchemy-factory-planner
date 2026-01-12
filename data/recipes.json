@@ -221,7 +221,7 @@
       }
     ],
     "time": 20,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -261,7 +261,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -281,7 +281,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -301,7 +301,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -341,7 +341,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -870,7 +870,8 @@
         "count": 1
       }
     ],
-    "time": 2
+    "time": 2,
+    "crafted_in": "shaper"
   },
   {
     "id": "coke",
@@ -888,7 +889,8 @@
         "count": 1
       }
     ],
-    "time": 3
+    "time": 3,
+    "crafted_in": "athanor"
   },
   {
     "id": "coke-powder",
@@ -931,7 +933,8 @@
         "count": 1
       }
     ],
-    "time": 4
+    "time": 4,
+    "crafted_in": "athanor"
   },
   {
     "id": "steel-gear",
@@ -950,7 +953,7 @@
       }
     ],
     "time": 16,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -1184,7 +1187,8 @@
         "count": 1
       }
     ],
-    "time": 6
+    "time": 6,
+    "crafted_in": "athanor"
   },
   {
     "id": "salt-water",
@@ -1227,7 +1231,8 @@
         "count": 1
       }
     ],
-    "time": 6
+    "time": 6,
+    "crafted_in": "athanor"
   },
   {
     "id": "copper-powder2",
@@ -1250,7 +1255,8 @@
         "count": 1
       }
     ],
-    "time": 6
+    "time": 6,
+    "crafted_in": "athanor"
   },
   {
     "id": "bronze-ingot",
@@ -1309,7 +1315,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -1329,7 +1335,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -1349,7 +1355,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -1379,7 +1385,7 @@
       }
     ],
     "time": 12,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -1409,7 +1415,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -1438,7 +1444,8 @@
         "count": 1
       }
     ],
-    "time": 4
+    "time": 4,
+    "crafted_in": "omni-machine"
   },
   {
     "id": "pocket-watch",
@@ -1466,7 +1473,8 @@
         "count": 1
       }
     ],
-    "time": 12
+    "time": 12,
+    "crafted_in": "omni-machine"
   },
   {
     "id": "malachite",
@@ -1489,7 +1497,8 @@
         "count": 1
       }
     ],
-    "time": 12
+    "time": 12,
+    "crafted_in": "athanor"
   },
   {
     "id": "saturn",
@@ -1517,7 +1526,8 @@
         "count": 1
       }
     ],
-    "time": 3
+    "time": 3,
+    "crafted_in": "shaper"
   },
   {
     "id": "mars",
@@ -1550,7 +1560,8 @@
         "count": 1
       }
     ],
-    "time": 4
+    "time": 4,
+    "crafted_in": "shaper"
   },
   {
     "id": "sand2",
@@ -1569,7 +1580,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1589,7 +1600,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1609,7 +1620,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1629,7 +1640,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1649,7 +1660,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1669,7 +1680,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1689,7 +1700,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1709,7 +1720,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1729,7 +1740,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1749,7 +1760,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1769,7 +1780,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1789,7 +1800,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1809,7 +1820,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1829,7 +1840,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1849,7 +1860,7 @@
       }
     ],
     "time": 3,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -1979,7 +1990,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -2009,7 +2020,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -2073,7 +2084,8 @@
         "count": 1
       }
     ],
-    "time": 5
+    "time": 5,
+    "crafted_in": "paradox-crucible"
   },
   {
     "id": "venus",
@@ -2116,7 +2128,8 @@
         "count": 1
       }
     ],
-    "time": 6
+    "time": 6,
+    "crafted_in": "advanced-shaper"
   },
   {
     "id": "gentian-powder",
@@ -2189,7 +2202,8 @@
         "count": 1
       }
     ],
-    "time": 6.4
+    "time": 6.4,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "silver-powder2",
@@ -2208,7 +2222,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -2237,7 +2251,8 @@
         "count": 1
       }
     ],
-    "time": 6.4
+    "time": 6.4,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "volcanic-ash_alt",
@@ -2285,7 +2300,8 @@
         "count": 1
       }
     ],
-    "time": 6
+    "time": 6,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "silver-ingot",
@@ -2324,7 +2340,7 @@
       }
     ],
     "time": 16,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -2379,7 +2395,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "refiner",
+    "crafted_in": "advanced-alembic",
     "category": "liquid"
   },
   {
@@ -2409,7 +2425,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "refiner",
+    "crafted_in": "advanced-alembic",
     "category": "liquid"
   },
   {
@@ -2438,7 +2454,8 @@
         "count": 1
       }
     ],
-    "time": 12
+    "time": 12,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "mercury-p",
@@ -2481,7 +2498,8 @@
         "count": 1
       }
     ],
-    "time": 6
+    "time": 6,
+    "crafted_in": "advanced-shaper"
   },
   {
     "id": "catalyst3",
@@ -2510,7 +2528,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -2540,7 +2558,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -2574,7 +2592,8 @@
         "count": 1
       }
     ],
-    "time": 8
+    "time": 8,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "gold-dust2",
@@ -2593,7 +2612,7 @@
       }
     ],
     "time": 10,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -2627,7 +2646,8 @@
         "count": 1
       }
     ],
-    "time": 8
+    "time": 8,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "gold-dust5",
@@ -2646,7 +2666,7 @@
       }
     ],
     "time": 10,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -2686,7 +2706,7 @@
       }
     ],
     "time": 40,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -2715,7 +2735,8 @@
         "count": 1
       }
     ],
-    "time": 15
+    "time": 15,
+    "crafted_in": "omni-machine"
   },
   {
     "id": "catalyst4",
@@ -2738,7 +2759,8 @@
         "count": 1
       }
     ],
-    "time": 60
+    "time": 60,
+    "crafted_in": "aether-processor"
   },
   {
     "id": "star-dust",
@@ -2766,7 +2788,8 @@
         "count": 2
       }
     ],
-    "time": 12
+    "time": 12,
+    "crafted_in": "aether-processor"
   },
   {
     "id": "fairy-dust",
@@ -2794,7 +2817,8 @@
         "count": 1
       }
     ],
-    "time": 4
+    "time": 4,
+    "crafted_in": "aether-processor"
   },
   {
     "id": "fairy-tear",
@@ -2838,7 +2862,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "refiner",
+    "crafted_in": "advanced-alembic",
     "category": "liquid"
   },
   {
@@ -2907,7 +2931,8 @@
         "count": 1
       }
     ],
-    "time": 8
+    "time": 8,
+    "crafted_in": "advanced-shaper"
   },
   {
     "id": "sol",
@@ -2965,7 +2990,8 @@
         "count": 1
       }
     ],
-    "time": 60
+    "time": 60,
+    "crafted_in": "aether-shaper"
   },
   {
     "id": "salt_alt",
@@ -3049,7 +3075,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -3069,7 +3095,7 @@
       }
     ],
     "time": 8,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -3089,7 +3115,7 @@
       }
     ],
     "time": 10,
-    "crafted_in": "cauldron",
+    "crafted_in": "refiner",
     "category": "misc"
   },
   {
@@ -3268,7 +3294,8 @@
         "count": 1
       }
     ],
-    "time": 5
+    "time": 5,
+    "crafted_in": "paradox-crucible"
   },
   {
     "id": "philosopher-stone_alt",
@@ -3296,7 +3323,8 @@
         "count": 1
       }
     ],
-    "time": 60
+    "time": 60,
+    "crafted_in": "cauldron"
   },
   {
     "id": "ruby_alt",
@@ -3324,7 +3352,8 @@
         "count": 1
       }
     ],
-    "time": 30.9
+    "time": 30.9,
+    "crafted_in": "cauldron"
   },
   {
     "id": "sapphire_alt",
@@ -3352,7 +3381,8 @@
         "count": 1
       }
     ],
-    "time": 38.2
+    "time": 38.2,
+    "crafted_in": "cauldron"
   },
   {
     "id": "emerald_alt",
@@ -3380,7 +3410,8 @@
         "count": 1
       }
     ],
-    "time": 45.5
+    "time": 45.5,
+    "crafted_in": "cauldron"
   },
   {
     "id": "iron-amulet",
@@ -3483,7 +3514,8 @@
         "count": 1
       }
     ],
-    "time": 40
+    "time": 40,
+    "crafted_in": "omni-machine"
   },
   {
     "id": "amethyst",
@@ -3511,7 +3543,8 @@
         "count": 1
       }
     ],
-    "time": 1
+    "time": 1,
+    "crafted_in": "advanced-athanor"
   },
   {
     "id": "charisma-potion",
@@ -3540,7 +3573,7 @@
       }
     ],
     "time": 9,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -3570,7 +3603,7 @@
       }
     ],
     "time": 6,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -3590,7 +3623,7 @@
       }
     ],
     "time": 4,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   },
   {
@@ -3620,7 +3653,7 @@
       }
     ],
     "time": 10,
-    "crafted_in": "athanor",
+    "crafted_in": "advanced-blender",
     "category": "potions"
   },
   {
@@ -3640,7 +3673,7 @@
       }
     ],
     "time": 10,
-    "crafted_in": "shaper",
+    "crafted_in": "processor",
     "category": "solid"
   }
 ]
