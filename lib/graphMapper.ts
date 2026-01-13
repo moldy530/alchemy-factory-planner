@@ -114,9 +114,13 @@ export function generateGraph(
     rootNodes.forEach((root) => traverse(root));
 
     // Calculate consumption for each item (how much is being consumed internally)
+    // Skip consumption references - they're just edges showing fuel/fertilizer flow
     const consumption = new Map<string, number>();
     mergedNodes.forEach((node, key) => {
         node.inputs?.forEach((input) => {
+            // Skip consumption references - they don't represent actual production nodes
+            if (input.isConsumptionReference) return;
+
             // Key by ITEM NAME, not node ID (input.id can be node ID like "woodboard-prod-wood-board")
             const inputItemName = input.itemName;
             const current = consumption.get(inputItemName) || 0;
@@ -135,18 +139,24 @@ export function generateGraph(
     const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => {
         const nodeKey = n.id || n.itemName;
 
-        // Look up consumption by ITEM name, not node ID
-        // Consumption map is keyed by item ID/name (e.g., "woodboard"),
-        // but nodeKey might be node ID (e.g., "woodboard-prod-wood-board")
-        const itemKey = n.itemName;
-        const internalConsumption = consumption.get(itemKey) || 0;
+        // Only calculate displayRate if LP planner didn't already set netOutputRate
+        // LP planner's netOutputRate is more accurate for self-consumption scenarios
+        let displayRate: number | undefined;
 
-        // If this item is being consumed internally, show net output
-        const displayRate = internalConsumption > 0 ? n.rate - internalConsumption : n.rate;
+        if (!n.netOutputRate) {
+            // Look up consumption by ITEM name, not node ID
+            const itemKey = n.itemName;
+            const internalConsumption = consumption.get(itemKey) || 0;
 
-        // DEBUG
-        if (nodeKey.toLowerCase().includes("plank") || nodeKey.toLowerCase().includes("woodboard")) {
-            console.log("[GraphMapper] Node display:", nodeKey, "itemKey:", itemKey, "gross:", n.rate, "consumption:", internalConsumption, "net:", displayRate);
+            // If this item is being consumed internally, show net output
+            if (internalConsumption > 0) {
+                displayRate = n.rate - internalConsumption;
+            }
+
+            // DEBUG
+            if (nodeKey.toLowerCase().includes("plank") || nodeKey.toLowerCase().includes("woodboard")) {
+                console.log("[GraphMapper] Node display:", nodeKey, "itemKey:", itemKey, "gross:", n.rate, "consumption:", internalConsumption, "displayRate:", displayRate, "netOutputRate:", n.netOutputRate);
+            }
         }
 
         return {
@@ -154,8 +164,8 @@ export function generateGraph(
             type: "custom",
             data: {
                 ...n,
-                // Show net output if there's internal consumption
-                displayRate: displayRate,
+                // Only set displayRate if we calculated it (and LP didn't provide netOutputRate)
+                ...(displayRate !== undefined && { displayRate }),
             } as unknown as Record<string, unknown>,
             position: { x: 0, y: 0 },
         };
