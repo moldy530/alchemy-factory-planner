@@ -36,6 +36,18 @@ export function generateGraph(
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
+        // DEBUG: Log when processing plank nodes
+        if (node.itemName === "Plank" || node.itemName.toLowerCase().includes("plank")) {
+            console.log("[GraphMapper] Processing Plank node:", {
+                key,
+                rate: node.rate,
+                deviceCount: node.deviceCount,
+                isConsumptionReference: node.isConsumptionReference,
+                parentName,
+                hasInputs: node.inputs.length,
+            });
+        }
+
         // For consumption references: record edge with consumption rate, then traverse inputs
         // Check BEFORE cycle detection - consumption refs should always record edges
         if (node.isConsumptionReference) {
@@ -84,6 +96,11 @@ export function generateGraph(
             existing.suppliedRate = (existing.suppliedRate || 0) + (node.suppliedRate || 0);
             // Recalculate saturation based on total rate
             existing.isBeltSaturated = existing.rate > (existing.beltLimit || 60);
+
+            // DEBUG: Log accumulation
+            if (key.toLowerCase().includes("plank") || key.toLowerCase().includes("woodboard")) {
+                console.log("[GraphMapper] Accumulating node:", key, "old:", existing.rate - node.rate, "adding:", node.rate, "new total:", existing.rate);
+            }
         } else {
             mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
         }
@@ -96,13 +113,47 @@ export function generateGraph(
 
     rootNodes.forEach((root) => traverse(root));
 
+    // Calculate consumption for each item (how much is being consumed internally)
+    const consumption = new Map<string, number>();
+    mergedNodes.forEach((node, key) => {
+        node.inputs?.forEach((input) => {
+            const inputKey = input.id || input.itemName;
+            const current = consumption.get(inputKey) || 0;
+            consumption.set(inputKey, current + (input.rate || 0));
+        });
+    });
+
+    // DEBUG: Log consumption
+    consumption.forEach((rate, key) => {
+        if (key.toLowerCase().includes("plank") || key.toLowerCase().includes("woodboard")) {
+            console.log("[GraphMapper] Internal consumption of", key, ":", rate, "/m");
+        }
+    });
+
     // Create React Flow Nodes (Production Network)
-    const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => ({
-        id: n.id || n.itemName, // Use ID if distinct
-        type: "custom",
-        data: n as unknown as Record<string, unknown>,
-        position: { x: 0, y: 0 },
-    }));
+    const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => {
+        const nodeKey = n.id || n.itemName;
+        const internalConsumption = consumption.get(nodeKey) || 0;
+
+        // If this item is being consumed internally, show net output
+        const displayRate = internalConsumption > 0 ? n.rate - internalConsumption : n.rate;
+
+        // DEBUG
+        if (nodeKey.toLowerCase().includes("plank") || nodeKey.toLowerCase().includes("woodboard")) {
+            console.log("[GraphMapper] Node display:", nodeKey, "gross:", n.rate, "consumption:", internalConsumption, "net:", displayRate);
+        }
+
+        return {
+            id: nodeKey, // Use ID if distinct
+            type: "custom",
+            data: {
+                ...n,
+                // Show net output if there's internal consumption
+                displayRate: displayRate,
+            } as unknown as Record<string, unknown>,
+            position: { x: 0, y: 0 },
+        };
+    });
 
     // Create Edges
     const rfEdges: Edge[] = [];
