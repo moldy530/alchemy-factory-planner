@@ -441,8 +441,10 @@ function transformCrafting(
   });
 
   return remoteCrafting.map(craft => {
-    // fractionNum represents batch scaling - multiply output quantity by this value
-    // E.g., fractionNum: 200 means 1 Wood → 1 WoodBoard × 200 = 200 Planks
+    // fractionNum represents the number of times a recipe cycles per unit of input
+    // E.g., fractionNum: 200 means 1 Wood can be processed through 200 cycles
+    // - Each cycle: craftTime seconds, produces productInfo.qty output
+    // - Total: 200 cycles × 2 seconds = 400 seconds to process 1 Wood → 200 Planks
     const fractionMultiplier = craft.fractionNum || 1;
 
     const recipe: LocalRecipe = {
@@ -461,7 +463,7 @@ function transformCrafting(
         name: itemDisplayNames.get(craft.productInfo.name.toLowerCase()) || craft.productInfo.name,
         count: craft.productInfo.qty * fractionMultiplier,
       }],
-      time: craft.craftTime,
+      time: craft.craftTime * fractionMultiplier,
     };
 
     // Add side product to outputs if it exists

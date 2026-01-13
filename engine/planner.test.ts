@@ -56,16 +56,18 @@ planners.forEach(({ name, fn: calculateFn }) => {
     expect(plankNode?.rate).toBe(10);
     expect(plankNode?.isRaw).toBe(false);
 
-    // Plank recipe: 1 Wood → 200 Planks in 2 seconds (fractionNum: 200)
-    // Rate per machine = (200/2) * 60 = 6000 planks/min
-    // For 10/min: 10/6000 = 0.00167 machines
-    expect(plankNode?.deviceCount).toBeCloseTo(0.00167, 4);
+    // Plank recipe: 1 Wood → 200 Planks in 400 seconds (2 seconds × fractionNum 200)
+    // fractionNum means the recipe cycles 200 times: 200 cycles × 2 sec = 400 sec total
+    // Rate per machine = (200 planks / 400 sec) * 60 = 30 planks/min
+    // For 10/min: 10/30 = 0.333 machines
+    expect(plankNode?.deviceCount).toBeCloseTo(0.333, 2);
 
     // Plank should have 1 input: Wood (Logs)
     expect(plankNode?.inputs).toHaveLength(1);
     const woodInput = plankNode?.inputs[0];
     expect(woodInput?.itemName).toBe("Logs");
-    expect(woodInput?.rate).toBeCloseTo(0.05, 2); // 1:200 ratio, so 10 planks needs 10/200 = 0.05 logs
+    // Input calculation: 10 planks/min ÷ 200 planks/log = 0.05 logs/min
+    expect(woodInput?.rate).toBeCloseTo(0.05, 2);
     expect(woodInput?.isRaw).toBe(true);
 
     // Basic Fertilizer should have 2 inputs: Plant Ash and Quicklime Powder
@@ -415,10 +417,10 @@ planners.forEach(({ name, fn: calculateFn }) => {
     expect(plankNode.itemName).toBe("Plank");
     expect(plankNode.rate).toBe(200);
 
-    // Recipe: 1 Wood → 200 Planks in 2 seconds (fractionNum: 200)
-    // Rate per machine = (200/2) * 60 = 6000 planks/min
-    // For 200 planks/min: 200/6000 = 0.0333 machines
-    expect(plankNode.deviceCount).toBeCloseTo(0.0333, 3);
+    // Recipe: 1 Wood → 200 Planks in 400 seconds (2 seconds × fractionNum 200)
+    // Rate per machine = (200/400) * 60 = 30 planks/min
+    // For 200 planks/min: 200/30 = 6.67 machines
+    expect(plankNode.deviceCount).toBeCloseTo(6.67, 1);
 
     // Should consume exactly 1 log/min to produce 200 planks/min
     expect(plankNode.inputs).toHaveLength(1);
@@ -429,7 +431,7 @@ planners.forEach(({ name, fn: calculateFn }) => {
 
     console.log("\n=== Raw Material Processing Test (Logs → Planks) ===");
     console.log(`✓ 1 log/min → 200 planks/min`);
-    console.log(`✓ Machine usage: ${plankNode.deviceCount.toFixed(4)} table-saws`);
+    console.log(`✓ Machine usage: ${plankNode.deviceCount.toFixed(2)} table-saws`);
     console.log(`✓ Ratio verified: ${(plankNode.rate / logsInput.rate).toFixed(0)}:1`);
   });
 
@@ -458,10 +460,10 @@ planners.forEach(({ name, fn: calculateFn }) => {
     expect(stoneNode.itemName).toBe("Stone");
     expect(stoneNode.rate).toBe(150);
 
-    // Recipe: 1 Limestone → 150 Stone in 3 seconds (fractionNum: 150)
-    // Rate per machine = (150/3) * 60 = 3000 stone/min
-    // For 150 stone/min: 150/3000 = 0.05 machines
-    expect(stoneNode.deviceCount).toBeCloseTo(0.05, 3);
+    // Recipe: 1 Limestone → 150 Stone in 450 seconds (3 seconds × fractionNum 150)
+    // Rate per machine = (150/450) * 60 = 20 stone/min
+    // For 150 stone/min: 150/20 = 7.5 machines
+    expect(stoneNode.deviceCount).toBeCloseTo(7.5, 1);
 
     // Should consume exactly 1 limestone/min to produce 150 stone/min
     expect(stoneNode.inputs).toHaveLength(1);
@@ -472,7 +474,7 @@ planners.forEach(({ name, fn: calculateFn }) => {
 
     console.log("\n=== Raw Material Processing Test (Limestone → Stone) ===");
     console.log(`✓ 1 limestone/min → 150 stone/min`);
-    console.log(`✓ Machine usage: ${stoneNode.deviceCount.toFixed(4)} stone-crushers`);
+    console.log(`✓ Machine usage: ${stoneNode.deviceCount.toFixed(2)} stone-crushers`);
     console.log(`✓ Ratio verified: ${(stoneNode.rate / limestoneInput.rate).toFixed(0)}:1`);
   });
 

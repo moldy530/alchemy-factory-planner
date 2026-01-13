@@ -140,7 +140,7 @@
         "count": 200
       }
     ],
-    "time": 2,
+    "time": 400,
     "crafted_in": "table-saw",
     "category": "fuel"
   },
@@ -180,7 +180,7 @@
         "count": 150
       }
     ],
-    "time": 3,
+    "time": 450,
     "crafted_in": "stone-crusher",
     "category": "solid"
   },
@@ -320,7 +320,7 @@
         "count": 100
       }
     ],
-    "time": 6,
+    "time": 600,
     "crafted_in": "iron-smelter",
     "category": "solid"
   },
@@ -870,7 +870,7 @@
         "count": 300
       }
     ],
-    "time": 2,
+    "time": 600,
     "crafted_in": "shaper"
   },
   {
@@ -1027,7 +1027,7 @@
         "count": 160
       }
     ],
-    "time": 10,
+    "time": 400,
     "crafted_in": "table-saw",
     "category": "fuel"
   },
@@ -1122,7 +1122,7 @@
         "count": 120
       }
     ],
-    "time": 24,
+    "time": 960,
     "crafted_in": "iron-smelter",
     "category": "solid"
   },
@@ -1162,7 +1162,7 @@
         "count": 120
       }
     ],
-    "time": 3,
+    "time": 360,
     "crafted_in": "stone-crusher",
     "category": "solid"
   },
@@ -1526,7 +1526,7 @@
         "count": 100
       }
     ],
-    "time": 3,
+    "time": 300,
     "crafted_in": "shaper"
   },
   {
@@ -1560,7 +1560,7 @@
         "count": 75
       }
     ],
-    "time": 4,
+    "time": 300,
     "crafted_in": "shaper"
   },
   {
@@ -2128,7 +2128,7 @@
         "count": 200
       }
     ],
-    "time": 6,
+    "time": 1200,
     "crafted_in": "advanced-shaper"
   },
   {
@@ -2498,7 +2498,7 @@
         "count": 100
       }
     ],
-    "time": 6,
+    "time": 600,
     "crafted_in": "advanced-shaper"
   },
   {
@@ -2788,7 +2788,7 @@
         "count": 50
       }
     ],
-    "time": 12,
+    "time": 300,
     "crafted_in": "arcane-processor"
   },
   {
@@ -2931,7 +2931,7 @@
         "count": 75
       }
     ],
-    "time": 8,
+    "time": 600,
     "crafted_in": "advanced-shaper"
   },
   {
@@ -2990,7 +2990,7 @@
         "count": 5
       }
     ],
-    "time": 60,
+    "time": 300,
     "crafted_in": "aether-shaper"
   },
   {
@@ -3014,7 +3014,7 @@
         "count": 100
       }
     ],
-    "time": 6,
+    "time": 600,
     "crafted_in": "stone-crusher",
     "category": "solid"
   },
@@ -3034,7 +3034,7 @@
         "count": 1000
       }
     ],
-    "time": 3,
+    "time": 3000,
     "crafted_in": "stone-crusher",
     "category": "solid"
   },
@@ -3274,7 +3274,7 @@
         "count": 80
       }
     ],
-    "time": 6,
+    "time": 480,
     "crafted_in": "stone-crusher",
     "category": "solid"
   },
