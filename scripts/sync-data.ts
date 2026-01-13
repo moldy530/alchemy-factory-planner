@@ -78,6 +78,7 @@ interface RemoteCrafting {
   productInfo: { name: string; qty: number };
   craftType: number;
   craftTime: number;
+  fractionNum?: number;
   sideProduct?: { name: string; qty: number };
   [key: string]: any;
 }
@@ -440,6 +441,12 @@ function transformCrafting(
   });
 
   return remoteCrafting.map(craft => {
+    // fractionNum represents the number of times a recipe cycles per unit of input
+    // E.g., fractionNum: 200 means 1 Wood can be processed through 200 cycles
+    // - Each cycle: craftTime seconds, produces productInfo.qty output
+    // - Total: 200 cycles × 2 seconds = 400 seconds to process 1 Wood → 200 Planks
+    const fractionMultiplier = craft.fractionNum || 1;
+
     const recipe: LocalRecipe = {
       id: nameToKebab(craft.craftIdName),
       inputs: craft.ingredientList.map(ing => {
@@ -454,9 +461,9 @@ function transformCrafting(
       outputs: [{
         id: craft.productInfo.name.toLowerCase(),
         name: itemDisplayNames.get(craft.productInfo.name.toLowerCase()) || craft.productInfo.name,
-        count: craft.productInfo.qty,
+        count: craft.productInfo.qty * fractionMultiplier,
       }],
-      time: craft.craftTime,
+      time: craft.craftTime * fractionMultiplier,
     };
 
     // Add side product to outputs if it exists
@@ -465,7 +472,7 @@ function transformCrafting(
       recipe.outputs.push({
         id: sideId,
         name: itemDisplayNames.get(sideId) || craft.sideProduct.name,
-        count: craft.sideProduct.qty,
+        count: craft.sideProduct.qty * fractionMultiplier,
       });
     }
 

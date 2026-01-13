@@ -36,6 +36,18 @@ export function generateGraph(
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
+        // DEBUG: Log when processing plank nodes
+        if (node.itemName === "Plank" || node.itemName.toLowerCase().includes("plank")) {
+            console.log("[GraphMapper] Processing Plank node:", {
+                key,
+                rate: node.rate,
+                deviceCount: node.deviceCount,
+                isConsumptionReference: node.isConsumptionReference,
+                parentName,
+                hasInputs: node.inputs.length,
+            });
+        }
+
         // For consumption references: record edge with consumption rate, then traverse inputs
         // Check BEFORE cycle detection - consumption refs should always record edges
         if (node.isConsumptionReference) {
@@ -84,6 +96,11 @@ export function generateGraph(
             existing.suppliedRate = (existing.suppliedRate || 0) + (node.suppliedRate || 0);
             // Recalculate saturation based on total rate
             existing.isBeltSaturated = existing.rate > (existing.beltLimit || 60);
+
+            // DEBUG: Log accumulation
+            if (key.toLowerCase().includes("plank") || key.toLowerCase().includes("woodboard")) {
+                console.log("[GraphMapper] Accumulating node:", key, "old:", existing.rate - node.rate, "adding:", node.rate, "new total:", existing.rate);
+            }
         } else {
             mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
         }
@@ -96,13 +113,63 @@ export function generateGraph(
 
     rootNodes.forEach((root) => traverse(root));
 
+    // Calculate consumption for each item (how much is being consumed internally)
+    // Skip consumption references - they're just edges showing fuel/fertilizer flow
+    const consumption = new Map<string, number>();
+    mergedNodes.forEach((node, key) => {
+        node.inputs?.forEach((input) => {
+            // Skip consumption references - they don't represent actual production nodes
+            if (input.isConsumptionReference) return;
+
+            // Key by ITEM NAME, not node ID (input.id can be node ID like "woodboard-prod-wood-board")
+            const inputItemName = input.itemName;
+            const current = consumption.get(inputItemName) || 0;
+            consumption.set(inputItemName, current + (input.rate || 0));
+        });
+    });
+
+    // DEBUG: Log consumption
+    consumption.forEach((rate, key) => {
+        if (key.toLowerCase().includes("plank") || key.toLowerCase().includes("woodboard")) {
+            console.log("[GraphMapper] Internal consumption of", key, ":", rate, "/m");
+        }
+    });
+
     // Create React Flow Nodes (Production Network)
-    const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => ({
-        id: n.id || n.itemName, // Use ID if distinct
-        type: "custom",
-        data: n as unknown as Record<string, unknown>,
-        position: { x: 0, y: 0 },
-    }));
+    const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => {
+        const nodeKey = n.id || n.itemName;
+
+        // Only calculate displayRate if LP planner didn't already set netOutputRate
+        // LP planner's netOutputRate is more accurate for self-consumption scenarios
+        let displayRate: number | undefined;
+
+        if (!n.netOutputRate) {
+            // Look up consumption by ITEM name, not node ID
+            const itemKey = n.itemName;
+            const internalConsumption = consumption.get(itemKey) || 0;
+
+            // If this item is being consumed internally, show net output
+            if (internalConsumption > 0) {
+                displayRate = n.rate - internalConsumption;
+            }
+
+            // DEBUG
+            if (nodeKey.toLowerCase().includes("plank") || nodeKey.toLowerCase().includes("woodboard")) {
+                console.log("[GraphMapper] Node display:", nodeKey, "itemKey:", itemKey, "gross:", n.rate, "consumption:", internalConsumption, "displayRate:", displayRate, "netOutputRate:", n.netOutputRate);
+            }
+        }
+
+        return {
+            id: nodeKey, // Use ID if distinct
+            type: "custom",
+            data: {
+                ...n,
+                // Only set displayRate if we calculated it (and LP didn't provide netOutputRate)
+                ...(displayRate !== undefined && { displayRate }),
+            } as unknown as Record<string, unknown>,
+            position: { x: 0, y: 0 },
+        };
+    });
 
     // Create Edges
     const rfEdges: Edge[] = [];
@@ -121,7 +188,8 @@ export function generateGraph(
 
             // --- Label Logic ---
             label: `${rate.toLocaleString(undefined, {
-                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 2,
             })}/m`,
             labelStyle: { fill: "#fbbf24", fontWeight: 700, fontSize: 11 },
             labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
@@ -167,7 +235,8 @@ export function generateGraph(
 
             // --- Label Logic (Target) ---
             label: `${outputRate.toLocaleString(undefined, {
-                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 2,
             })}/m`,
             labelStyle: { fill: "#4ade80", fontWeight: 700, fontSize: 11 },
             labelBgStyle: { fill: "#052e16", fillOpacity: 0.8 },

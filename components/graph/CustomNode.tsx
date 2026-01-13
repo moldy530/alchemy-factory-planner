@@ -3,13 +3,17 @@ import { AlertTriangle, Flame, Settings } from "lucide-react";
 import { ProductionNode } from "../../engine/types";
 import { cn } from "../../lib/utils";
 
-export function CustomNode({ data }: { data: ProductionNode }) {
+export function CustomNode({ data }: { data: ProductionNode & { displayRate?: number } }) {
     // Cast to access properties safely if TS complains
-    const nodeData = data as ProductionNode;
+    const nodeData = data as ProductionNode & { displayRate?: number };
 
     const isMachine = nodeData.deviceCount > 0;
     const isSaturated = nodeData.isBeltSaturated;
     const isTarget = nodeData.isTarget;
+
+    // Use netOutputRate if available (LP planner sets this for self-consuming items),
+    // then displayRate (graphMapper calculated), otherwise use rate (gross production)
+    const rateToShow = nodeData.netOutputRate ?? nodeData.displayRate ?? nodeData.rate;
 
     return (
         <div
@@ -56,7 +60,7 @@ export function CustomNode({ data }: { data: ProductionNode }) {
                                     : "text-[var(--accent-gold)]",
                         )}
                     >
-                        {nodeData.rate.toLocaleString(undefined, {
+                        {rateToShow.toLocaleString(undefined, {
                             maximumFractionDigits: 1,
                         })}
                         /m
