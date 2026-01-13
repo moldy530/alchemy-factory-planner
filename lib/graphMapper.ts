@@ -188,7 +188,8 @@ export function generateGraph(
 
             // --- Label Logic ---
             label: `${rate.toLocaleString(undefined, {
-                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 2,
             })}/m`,
             labelStyle: { fill: "#fbbf24", fontWeight: 700, fontSize: 11 },
             labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
@@ -234,7 +235,8 @@ export function generateGraph(
 
             // --- Label Logic (Target) ---
             label: `${outputRate.toLocaleString(undefined, {
-                maximumFractionDigits: 1,
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 2,
             })}/m`,
             labelStyle: { fill: "#4ade80", fontWeight: 700, fontSize: 11 },
             labelBgStyle: { fill: "#052e16", fillOpacity: 0.8 },
