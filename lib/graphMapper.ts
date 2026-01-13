@@ -117,9 +117,10 @@ export function generateGraph(
     const consumption = new Map<string, number>();
     mergedNodes.forEach((node, key) => {
         node.inputs?.forEach((input) => {
-            const inputKey = input.id || input.itemName;
-            const current = consumption.get(inputKey) || 0;
-            consumption.set(inputKey, current + (input.rate || 0));
+            // Key by ITEM NAME, not node ID (input.id can be node ID like "woodboard-prod-wood-board")
+            const inputItemName = input.itemName;
+            const current = consumption.get(inputItemName) || 0;
+            consumption.set(inputItemName, current + (input.rate || 0));
         });
     });
 
@@ -133,14 +134,19 @@ export function generateGraph(
     // Create React Flow Nodes (Production Network)
     const rfNodes: Node[] = Array.from(mergedNodes.values()).map((n) => {
         const nodeKey = n.id || n.itemName;
-        const internalConsumption = consumption.get(nodeKey) || 0;
+
+        // Look up consumption by ITEM name, not node ID
+        // Consumption map is keyed by item ID/name (e.g., "woodboard"),
+        // but nodeKey might be node ID (e.g., "woodboard-prod-wood-board")
+        const itemKey = n.itemName;
+        const internalConsumption = consumption.get(itemKey) || 0;
 
         // If this item is being consumed internally, show net output
         const displayRate = internalConsumption > 0 ? n.rate - internalConsumption : n.rate;
 
         // DEBUG
         if (nodeKey.toLowerCase().includes("plank") || nodeKey.toLowerCase().includes("woodboard")) {
-            console.log("[GraphMapper] Node display:", nodeKey, "gross:", n.rate, "consumption:", internalConsumption, "net:", displayRate);
+            console.log("[GraphMapper] Node display:", nodeKey, "itemKey:", itemKey, "gross:", n.rate, "consumption:", internalConsumption, "net:", displayRate);
         }
 
         return {
