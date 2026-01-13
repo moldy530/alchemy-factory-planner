@@ -11,8 +11,9 @@ export function CustomNode({ data }: { data: ProductionNode & { displayRate?: nu
     const isSaturated = nodeData.isBeltSaturated;
     const isTarget = nodeData.isTarget;
 
-    // Use displayRate if available (for nodes with internal consumption), otherwise use rate
-    const rateToShow = nodeData.displayRate ?? nodeData.rate;
+    // Use netOutputRate if available (LP planner sets this for self-consuming items),
+    // then displayRate (graphMapper calculated), otherwise use rate (gross production)
+    const rateToShow = nodeData.netOutputRate ?? nodeData.displayRate ?? nodeData.rate;
 
     return (
         <div
