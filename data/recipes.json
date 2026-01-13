@@ -137,7 +137,7 @@
       {
         "id": "woodboard",
         "name": "Plank",
-        "count": 1
+        "count": 200
       }
     ],
     "time": 2,
@@ -177,7 +177,7 @@
       {
         "id": "stone",
         "name": "Stone",
-        "count": 1
+        "count": 150
       }
     ],
     "time": 3,
@@ -317,7 +317,7 @@
       {
         "id": "ironingot",
         "name": "Iron Ingot",
-        "count": 1
+        "count": 100
       }
     ],
     "time": 6,
@@ -867,7 +867,7 @@
       {
         "id": "jupiter",
         "name": "Jupiter",
-        "count": 1
+        "count": 300
       }
     ],
     "time": 2,
@@ -1019,12 +1019,12 @@
       {
         "id": "gloomfungus",
         "name": "Gloom Fungus",
-        "count": 1
+        "count": 40
       },
       {
         "id": "woodboard",
         "name": "Plank",
-        "count": 4
+        "count": 160
       }
     ],
     "time": 10,
@@ -1114,12 +1114,12 @@
       {
         "id": "sulfur",
         "name": "Sulfur",
-        "count": 1
+        "count": 40
       },
       {
         "id": "ironingot",
         "name": "Iron Ingot",
-        "count": 3
+        "count": 120
       }
     ],
     "time": 24,
@@ -1159,7 +1159,7 @@
       {
         "id": "coal",
         "name": "Coal",
-        "count": 1
+        "count": 120
       }
     ],
     "time": 3,
@@ -1523,7 +1523,7 @@
       {
         "id": "saturn",
         "name": "Saturn",
-        "count": 1
+        "count": 100
       }
     ],
     "time": 3,
@@ -1557,7 +1557,7 @@
       {
         "id": "mars",
         "name": "Mars",
-        "count": 1
+        "count": 75
       }
     ],
     "time": 4,
@@ -2125,7 +2125,7 @@
       {
         "id": "venus",
         "name": "Venus",
-        "count": 1
+        "count": 200
       }
     ],
     "time": 6,
@@ -2495,7 +2495,7 @@
       {
         "id": "mercuryp",
         "name": "Mercury",
-        "count": 1
+        "count": 100
       }
     ],
     "time": 6,
@@ -2785,7 +2785,7 @@
       {
         "id": "stardust",
         "name": "Star Dust",
-        "count": 2
+        "count": 50
       }
     ],
     "time": 12,
@@ -2928,7 +2928,7 @@
       {
         "id": "luna",
         "name": "Luna",
-        "count": 1
+        "count": 75
       }
     ],
     "time": 8,
@@ -2987,7 +2987,7 @@
       {
         "id": "sol",
         "name": "Sol",
-        "count": 1
+        "count": 5
       }
     ],
     "time": 60,
@@ -3006,12 +3006,12 @@
       {
         "id": "salt",
         "name": "Salt",
-        "count": 1
+        "count": 100
       },
       {
         "id": "sand",
         "name": "Sand",
-        "count": 1
+        "count": 100
       }
     ],
     "time": 6,
@@ -3031,7 +3031,7 @@
       {
         "id": "stone",
         "name": "Stone",
-        "count": 1
+        "count": 1000
       }
     ],
     "time": 3,
@@ -3271,7 +3271,7 @@
       {
         "id": "shard1",
         "name": "Crude Shard",
-        "count": 1
+        "count": 80
       }
     ],
     "time": 6,
