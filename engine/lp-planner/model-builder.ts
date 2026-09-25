@@ -4,7 +4,7 @@ import recipesData from "../../data/recipes.json";
 import { Device, Item, PlannerConfig, Recipe } from "../types";
 import { EfficiencyContext, EPSILON } from "./types";
 import { isAlchemyMachine } from "./efficiency";
-import { normalizeItemId, getItem as getItemById, getAllItems } from "../item-utils";
+import { normalizeItemId, getItem as getItemById, getAllItems, getEffectiveRecipeTime } from "../item-utils";
 
 // Pre-index data
 const itemsMap = new Map<string, Item>();
@@ -78,11 +78,8 @@ export function buildLPModel(
     const recipeCoeffs = new Map<string, number>();
 
     const machineName = recipe.crafted_in?.toLowerCase() || "";
-    let recipeTime = recipe.time;
-
-    // For nursery recipes, use base growth time (fertilizer doesn't speed up growth)
-    // Fertilizer only provides the nutrients needed for growth
-    // Growth time remains the same: recipe.time (growthSeconds from plantseeds.json)
+    // Nursery cycle time depends on the selected fertilizer (see getEffectiveRecipeTime)
+    const recipeTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, ctx.fertilizerMultiplier);
     const isNurseryRecipe = machineName === "nursery";
 
     // Process outputs (positive flow)

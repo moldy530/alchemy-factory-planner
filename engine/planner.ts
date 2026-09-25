@@ -1,7 +1,7 @@
 import devicesData from "../data/devices.json";
 import recipesData from "../data/recipes.json";
 import { Device, Item, PlannerConfig, ProductionNode, Recipe } from "./types";
-import { normalizeItemId, getItem, getAllItems } from "./item-utils";
+import { normalizeItemId, getItem, getAllItems, getEffectiveRecipeTime } from "./item-utils";
 
 // Index data for fast lookups
 const itemsMap = new Map<string, Item>();
@@ -239,25 +239,10 @@ function solveNode(
         const fertilizerItem = itemsMap.get(fertilizerId);
 
         if (fertilizerItem && item.required_nutrients) {
-            const fertEffMult = 1 + ctx.fertilizerEfficiency * 0.1;
-            // Fertilizer efficiency affects delivery rate (nutrients_per_seconds), not total value
             const nutrientValue = fertilizerItem.nutrient_value || 0;
-            const nutrientsPerSec =
-                (fertilizerItem.nutrients_per_seconds || 0) * fertEffMult;
-
-            // Nursery growth math:
-            // - Growth time = required_nutrients / nutrients_per_seconds
-            // - Items per cycle = outputCount (e.g., 200 Flax per cycle)
-            // - Items per second = outputCount / growth_time
-            // - Items per minute = items_per_second * 60
-            // Simplified: (outputCount * nutrients_per_sec * 60) / required_nutrients
-            // Nursery growth math:
-            // - Fertilizer provides nutrients but doesn't speed up growth
-            // - Growth time = base recipe time (growthSeconds from plantseeds.json)
-            // - For Flax: 400 seconds
-            // - Output per cycle = 200 Flax
-            // - Rate = (200 / 400) * 60 = 30 Flax/min per nursery
-            itemsPerMinPerMachine = (outputCount / baseTime) * 60 * ctx.speedMultiplier;
+            // Growth is nutrient-driven: cycle time = nutrients per cycle / fertilizer delivery rate
+            const growthTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, 1 + ctx.fertilizerEfficiency * 0.1);
+            itemsPerMinPerMachine = (outputCount / growthTime) * 60 * ctx.speedMultiplier;
 
             // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
             // - Each Flax needs 24 nutrients

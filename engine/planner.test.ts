@@ -232,6 +232,24 @@ planners.forEach(({ name, fn: calculateFn }) => {
     console.log(`✓ Seed consumption: ${seedInput?.rate.toFixed(2)}/min`);
   });
 
+  test("Fertilizer tier changes nursery growth speed (issue #19)", () => {
+    const base: PlannerConfig = {
+      targets: [{ item: "Flax", rate: 60 }],
+      availableResources: [],
+      fuelEfficiency: 0, alchemySkill: 0, factoryEfficiency: 0, logisticsEfficiency: 0,
+      throwingEfficiency: 0, fertilizerEfficiency: 0, salesAbility: 0, negotiationSkill: 0,
+      customerMgmt: 0, relicKnowledge: 0, selfFertilizer: false,
+    };
+    const nurseries = (fert: string) =>
+      calculateFn({ ...base, selectedFertilizer: fert }).find((n) => n.itemName === "Flax")!.deviceCount;
+
+    // Cycle time = nutrients per cycle / nutrients_per_seconds
+    // Basic (12/s): 200 * 24 / 12 = 400s -> 30 Flax/min/nursery -> 2 nurseries
+    expect(nurseries("Basic Fertilizer")).toBeCloseTo(2, 3);
+    // Advanced (144/s): 12x faster -> 1/6 nursery
+    expect(nurseries("Advanced Fertilizer")).toBeCloseTo(2 / 12, 3);
+  });
+
   test("Complex production chain with multiple nursery recipes (Bandage)", () => {
     const config: PlannerConfig = {
       targets: [{ item: "Bandage", rate: 6 }],

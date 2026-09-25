@@ -3,15 +3,11 @@ import { PlannerConfig, ProductionNode, Recipe } from "../types";
 import { EfficiencyContext, EPSILON } from "./types";
 import { getItem, getDevice, getRecipeById, getAllRecipes } from "./model-builder";
 import { isAlchemyMachine } from "./efficiency";
-import { normalizeItemId } from "../item-utils";
+import { normalizeItemId, getEffectiveRecipeTime as effectiveRecipeTime } from "../item-utils";
 
-/**
- * Calculate effective recipe time.
- * For nursery recipes, fertilizer provides nutrients but doesn't speed up growth.
- * Growth time remains the same: recipe.time (growthSeconds from plantseeds.json)
- */
+/** Nursery cycle time depends on the selected fertilizer (see item-utils). */
 function getEffectiveRecipeTime(recipe: Recipe, ctx: EfficiencyContext): number {
-  return recipe.time;
+  return effectiveRecipeTime(recipe, ctx.selectedFertilizer, ctx.fertilizerMultiplier);
 }
 
 interface ItemFlow {
