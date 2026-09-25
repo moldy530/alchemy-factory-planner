@@ -1,5 +1,16 @@
 [
   {
+    "id": "adportalsigil",
+    "name": "Grand Portal Sigil",
+    "category": "raw materials",
+    "cost": 16000,
+    "base_cost": 16000,
+    "cauldron_cost": 5000,
+    "cauldron_target": 16000,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 0.3125
+  },
+  {
     "id": "advancedfertilizer",
     "name": "Advanced Fertilizer",
     "nutrient_value": 720,
@@ -8,12 +19,64 @@
       "fertilizer",
       "crafted"
     ],
-    "cost": 60,
-    "base_cost": 60,
-    "cauldron_cost": 62,
-    "cauldron_target": 60,
+    "cost": 56,
+    "base_cost": 56,
+    "cauldron_cost": 58,
+    "cauldron_target": 56,
     "cauldron_coef": 0,
-    "cauldron_efficiency": 1.0333333333333334
+    "cauldron_efficiency": 1.0357142857142858
+  },
+  {
+    "id": "alchemistsigh",
+    "name": "Alchemist's Sigh",
+    "category": "liquid",
+    "cost": 400000,
+    "base_cost": 106014.8,
+    "cauldron_cost": 106014.8,
+    "cauldron_target": 106014.8,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "aloe",
+    "name": "Aloe",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
+  },
+  {
+    "id": "aloepaste",
+    "name": "Aloe Paste",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
+  },
+  {
+    "id": "aloeseed",
+    "name": "Aloe Seeds",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
+  },
+  {
+    "id": "amethyst",
+    "name": "Amethyst",
+    "category": "crafted",
+    "cost": 4112,
+    "base_cost": 4112,
+    "cauldron_cost": 4112,
+    "cauldron_target": 4112,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
   },
   {
     "id": "aquavitae",
@@ -46,27 +109,27 @@
       "fertilizer",
       "crafted"
     ],
-    "cost": 14,
-    "base_cost": 14,
-    "cauldron_cost": 14,
-    "cauldron_target": 14,
+    "cost": 10,
+    "base_cost": 10,
+    "cauldron_cost": 10,
+    "cauldron_target": 10,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
   {
     "id": "blackpowder",
     "name": "Black Powder",
-    "heat_value": 3000,
+    "heat_value": 6000,
     "category": [
       "fuel",
       "potions"
     ],
-    "cost": 330,
-    "base_cost": 150,
-    "cauldron_cost": 145,
-    "cauldron_target": 150,
+    "cost": 660,
+    "base_cost": 300,
+    "cauldron_cost": 300,
+    "cauldron_target": 300,
     "cauldron_coef": 1,
-    "cauldron_efficiency": 0.9666666666666667
+    "cauldron_efficiency": 1
   },
   {
     "id": "blastpotion",
@@ -128,6 +191,17 @@
     "cauldron_efficiency": 1
   },
   {
+    "id": "cart",
+    "name": "Wagon",
+    "category": "solid",
+    "cost": 75,
+    "base_cost": 75,
+    "cauldron_cost": 75,
+    "cauldron_target": 75,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
     "id": "cashregister",
     "name": "Automatic Cashier",
     "category": "misc",
@@ -142,11 +216,11 @@
     "id": "catalyst1",
     "name": "Unstable Catalyst",
     "category": "crafted",
-    "cost": 566,
-    "base_cost": 486,
-    "cauldron_cost": 746,
-    "cauldron_target": 746,
-    "cauldron_coef": 0.7,
+    "cost": 640,
+    "base_cost": 480,
+    "cauldron_cost": 740,
+    "cauldron_target": 740,
+    "cauldron_coef": 1,
     "cauldron_efficiency": 1
   },
   {
@@ -158,34 +232,44 @@
       "fertilizer",
       "potions"
     ],
-    "cost": 2147,
-    "base_cost": 2067.84,
-    "cauldron_cost": 4067.84,
-    "cauldron_target": 3567.84,
-    "cauldron_coef": 0.5,
-    "cauldron_efficiency": 1.1401408134893942
+    "cost": 2221,
+    "base_cost": 2061.84,
+    "cauldron_cost": 4061.84,
+    "cauldron_target": 3561.84,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 1.1403768838577815
   },
   {
     "id": "catalyst3",
     "name": "Resonant Catalyst",
     "category": "potions",
-    "cost": 12000,
-    "base_cost": 12869.44,
-    "cauldron_cost": 23869.44,
-    "cauldron_target": 22869.44,
-    "cauldron_coef": 0.3,
-    "cauldron_efficiency": 1.043726475156366
+    "cost": 18000,
+    "base_cost": 12977.44,
+    "cauldron_cost": 23977.44,
+    "cauldron_target": 27977.44,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.8570276622879005
   },
   {
     "id": "catalyst4",
     "name": "Eternal Catalyst",
     "category": "crafted",
-    "cost": 1100000,
-    "base_cost": 1193041.6,
-    "cauldron_cost": 1193041.6,
-    "cauldron_target": 1193041.6,
+    "cost": 1200000,
+    "base_cost": 1194661.6,
+    "cauldron_cost": 1194661.6,
+    "cauldron_target": 1194661.6,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
+  },
+  {
+    "id": "ceramics",
+    "name": "Ceramics",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
   },
   {
     "id": "chamomile",
@@ -252,6 +336,17 @@
     "cauldron_efficiency": 1.25
   },
   {
+    "id": "charismapotion",
+    "name": "Charisma Potion",
+    "category": "potions",
+    "cost": 8000,
+    "base_cost": 4246.2,
+    "cauldron_cost": 4246.2,
+    "cauldron_target": 4246.2,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
     "id": "clay",
     "name": "Clay",
     "category": "crafted",
@@ -272,6 +367,17 @@
     "cauldron_target": 20,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1.1
+  },
+  {
+    "id": "clockworkbird",
+    "name": "Clockwork Bird",
+    "category": "crafted",
+    "cost": 5000,
+    "base_cost": 2022,
+    "cauldron_cost": 2022,
+    "cauldron_target": 2022,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
   },
   {
     "id": "coal",
@@ -334,6 +440,17 @@
     "cauldron_efficiency": 1.0333333333333334
   },
   {
+    "id": "copperamulet",
+    "name": "Copper Amulet",
+    "category": "crafted",
+    "cost": 928,
+    "base_cost": 401,
+    "cauldron_cost": 401,
+    "cauldron_target": 401,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
     "id": "copperbearing",
     "name": "Copper Bearing",
     "category": "solid",
@@ -361,10 +478,10 @@
     "category": "solid",
     "cost": 613,
     "base_cost": 293,
-    "cauldron_cost": 300,
+    "cauldron_cost": 293,
     "cauldron_target": 293,
     "cauldron_coef": 0,
-    "cauldron_efficiency": 1.023890784982935
+    "cauldron_efficiency": 1
   },
   {
     "id": "copperpowder",
@@ -392,10 +509,10 @@
     "id": "crown",
     "name": "Crown",
     "category": "crafted",
-    "cost": 1600000,
-    "base_cost": 854167.8,
-    "cauldron_cost": 854167.8,
-    "cauldron_target": 854167.8,
+    "cost": 1700000,
+    "base_cost": 857044.8,
+    "cauldron_cost": 857044.8,
+    "cauldron_target": 857044.8,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -466,6 +583,16 @@
     "cauldron_efficiency": 1
   },
   {
+    "id": "driedclay",
+    "name": "Dry Clay",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
+  },
+  {
     "id": "emerald",
     "name": "Emerald",
     "category": "crafted",
@@ -497,6 +624,27 @@
     "cauldron_target": 3060,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
+  },
+  {
+    "id": "finebandage",
+    "name": "Advanced Bandage",
+    "category": "crafted",
+    "cost": 168,
+    "base_cost": 60,
+    "cauldron_cost": 60,
+    "cauldron_target": 60,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "firebrick",
+    "name": "Fire Brick",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
   },
   {
     "id": "flax",
@@ -629,74 +777,95 @@
     "base_cost": 180,
     "cauldron_cost": 220,
     "cauldron_target": 280,
-    "cauldron_coef": 0.9,
+    "cauldron_coef": 1,
     "cauldron_efficiency": 0.7857142857142857
   },
   {
     "id": "goldcoin",
     "name": "Gold Coin",
     "category": "solid",
-    "cost": 106000,
-    "base_cost": 84722.6,
-    "cauldron_cost": 89722.6,
-    "cauldron_target": 84722.6,
+    "cost": 153000,
+    "base_cost": 85681.6,
+    "cauldron_cost": 90681.6,
+    "cauldron_target": 85681.6,
     "cauldron_coef": 0,
-    "cauldron_efficiency": 1.0590161302887304
+    "cauldron_efficiency": 1.0583555862635619
   },
   {
     "id": "golddust",
     "name": "Crude Gold Dust",
     "category": "crafted",
-    "cost": 13000,
-    "base_cost": 10805.325,
-    "cauldron_cost": 10805.325,
-    "cauldron_target": 13805.325,
-    "cauldron_coef": 0.5,
-    "cauldron_efficiency": 0.7826925479842017
+    "cost": 19000,
+    "base_cost": 10925.2,
+    "cauldron_cost": 10925.2,
+    "cauldron_target": 12925.2,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.8452635162318571
   },
   {
     "id": "golddust2",
     "name": "Impure Gold Dust",
     "category": "misc",
-    "cost": 27000,
-    "base_cost": 21610.65,
-    "cauldron_cost": 21610.65,
-    "cauldron_target": 27610.65,
-    "cauldron_coef": 0.5,
-    "cauldron_efficiency": 0.7826925479842017
+    "cost": 38000,
+    "base_cost": 21850.4,
+    "cauldron_cost": 21850.4,
+    "cauldron_target": 22850.4,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.9562370899415328
   },
   {
     "id": "golddust3",
     "name": "Gold Dust",
     "category": "misc",
-    "cost": 53000,
-    "base_cost": 42357.3,
-    "cauldron_cost": 42357.3,
-    "cauldron_target": 52357.3,
-    "cauldron_coef": 0.5,
-    "cauldron_efficiency": 0.8090046660160093
+    "cost": 76000,
+    "base_cost": 42836.8,
+    "cauldron_cost": 42836.8,
+    "cauldron_target": 52836.8,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.8107379705054053
+  },
+  {
+    "id": "golddust4",
+    "name": "Refined Gold Dust",
+    "category": "solid",
+    "cost": 153000,
+    "base_cost": 85673.6,
+    "cauldron_cost": 85673.6,
+    "cauldron_target": 85673.6,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
   },
   {
     "id": "golddust5",
     "name": "Pure Gold Dust",
     "category": "powder",
-    "cost": 106000,
-    "base_cost": 84714.6,
-    "cauldron_cost": 84714.6,
-    "cauldron_target": 99714.6,
-    "cauldron_coef": 0.5,
-    "cauldron_efficiency": 0.8495706747056099
+    "cost": 153000,
+    "base_cost": 85673.6,
+    "cauldron_cost": 85673.6,
+    "cauldron_target": 100673.6,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.8510036394844329
   },
   {
     "id": "goldingot",
     "name": "Gold Ingot",
     "category": "solid",
-    "cost": 106000,
-    "base_cost": 84722.6,
-    "cauldron_cost": 87222.6,
-    "cauldron_target": 84722.6,
+    "cost": 153000,
+    "base_cost": 85681.6,
+    "cauldron_cost": 88181.6,
+    "cauldron_target": 85681.6,
     "cauldron_coef": 0,
-    "cauldron_efficiency": 1.0295080651443653
+    "cauldron_efficiency": 1.029177793131781
+  },
+  {
+    "id": "granite",
+    "name": "Granite",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
   },
   {
     "id": "growthpotion",
@@ -726,6 +895,28 @@
     "cauldron_efficiency": 1
   },
   {
+    "id": "invisbilitypotion",
+    "name": "Floating Potion",
+    "category": "potions",
+    "cost": 22000,
+    "base_cost": 14015.6,
+    "cauldron_cost": 14015.6,
+    "cauldron_target": 14015.6,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "ironamulet",
+    "name": "Iron Amulet",
+    "category": "crafted",
+    "cost": 63,
+    "base_cost": 27,
+    "cauldron_cost": 27,
+    "cauldron_target": 27,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
     "id": "ironingot",
     "name": "Iron Ingot",
     "category": "solid",
@@ -742,10 +933,10 @@
     "category": "raw materials",
     "cost": 1200,
     "base_cost": 12,
-    "cauldron_cost": 10,
+    "cauldron_cost": 11,
     "cauldron_target": 12,
     "cauldron_coef": 0,
-    "cauldron_efficiency": 0.8333333333333334
+    "cauldron_efficiency": 0.9166666666666666
   },
   {
     "id": "ironsand",
@@ -774,11 +965,11 @@
     "name": "Lapis Lazuli",
     "category": "crafted",
     "cost": 32000,
-    "base_cost": 15825,
-    "cauldron_cost": 15825,
-    "cauldron_target": 18825,
+    "base_cost": 15624,
+    "cauldron_cost": 15624,
+    "cauldron_target": 40624,
     "cauldron_coef": 1,
-    "cauldron_efficiency": 0.8406374501992032
+    "cauldron_efficiency": 0.38460023631350926
   },
   {
     "id": "largewoodgear",
@@ -800,6 +991,17 @@
     "base_cost": 180,
     "cauldron_cost": 180,
     "cauldron_target": 180,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "lavenderdream",
+    "name": "Lavender Dream",
+    "category": "liquid",
+    "cost": 8000,
+    "base_cost": 2027.4,
+    "cauldron_cost": 2027.4,
+    "cauldron_target": 2027.4,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -885,9 +1087,9 @@
     "name": "Linseed Oil",
     "category": "oil",
     "cost": 0,
-    "base_cost": 0.04,
-    "cauldron_cost": 0.04,
-    "cauldron_target": 0.04,
+    "base_cost": 0.1,
+    "cauldron_cost": 0.1,
+    "cauldron_target": 0.1,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -895,10 +1097,10 @@
     "id": "luna",
     "name": "Luna",
     "category": "crafted",
-    "cost": 18500000,
-    "base_cost": 187167.6,
-    "cauldron_cost": 187167.6,
-    "cauldron_target": 187167.6,
+    "cost": 20600000,
+    "base_cost": 187482.6,
+    "cauldron_cost": 187482.6,
+    "cauldron_target": 187482.6,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -925,6 +1127,17 @@
     "cauldron_efficiency": 1
   },
   {
+    "id": "marble",
+    "name": "Marble",
+    "category": "misc",
+    "cost": 5000,
+    "base_cost": 5404,
+    "cauldron_cost": 5404,
+    "cauldron_target": 6404,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 0.8438475952529669
+  },
+  {
     "id": "mars",
     "name": "Mars",
     "category": "crafted",
@@ -939,10 +1152,10 @@
     "id": "mercury",
     "name": "Quicksilver",
     "category": "liquid",
-    "cost": 527,
-    "base_cost": 413.19,
-    "cauldron_cost": 413.19,
-    "cauldron_target": 413.19,
+    "cost": 574,
+    "base_cost": 407.44,
+    "cauldron_cost": 407.44,
+    "cauldron_target": 407.44,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -951,9 +1164,9 @@
     "name": "Mercury",
     "category": "crafted",
     "cost": 5200000,
-    "base_cost": 26927.8,
-    "cauldron_cost": 26927.8,
-    "cauldron_target": 26927.8,
+    "base_cost": 26783.3,
+    "cauldron_cost": 26783.3,
+    "cauldron_target": 26783.3,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -973,9 +1186,9 @@
     "name": "Moonlit Soap",
     "category": "potions",
     "cost": 900000,
-    "base_cost": 487892.8,
-    "cauldron_cost": 487892.8,
-    "cauldron_target": 487892.8,
+    "base_cost": 485822.8,
+    "cauldron_cost": 485822.8,
+    "cauldron_target": 485822.8,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -983,10 +1196,10 @@
     "id": "moontear",
     "name": "Moon Tear",
     "category": "liquid",
-    "cost": 178000,
-    "base_cost": 97092,
-    "cauldron_cost": 97092,
-    "cauldron_target": 97092,
+    "cost": 147000,
+    "base_cost": 96678,
+    "cauldron_cost": 96678,
+    "cauldron_target": 96678,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1028,11 +1241,11 @@
     "name": "Obsidian",
     "category": "crafted",
     "cost": 11000,
-    "base_cost": 5290,
-    "cauldron_cost": 5290,
-    "cauldron_target": 5290,
+    "base_cost": 5404,
+    "cauldron_cost": 5404,
+    "cauldron_target": 6404,
     "cauldron_coef": 1,
-    "cauldron_efficiency": 1
+    "cauldron_efficiency": 0.8438475952529669
   },
   {
     "id": "panaceaelixir",
@@ -1046,9 +1259,9 @@
       "potions"
     ],
     "cost": 30000,
-    "base_cost": 15306.12,
-    "cauldron_cost": 15306.12,
-    "cauldron_target": 15306.12,
+    "base_cost": 15288.12,
+    "cauldron_cost": 15288.12,
+    "cauldron_target": 15288.12,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1100,7 +1313,7 @@
     "id": "pocketwatch",
     "name": "Pocket Watch",
     "category": "crafted",
-    "cost": 1950,
+    "cost": 2000,
     "base_cost": 789,
     "cauldron_cost": 789,
     "cauldron_target": 789,
@@ -1117,6 +1330,16 @@
     "cauldron_target": 1500,
     "cauldron_coef": 0,
     "cauldron_efficiency": 0.5
+  },
+  {
+    "id": "pottery",
+    "name": "Pottery",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
   },
   {
     "id": "pyrite",
@@ -1275,6 +1498,16 @@
     "cauldron_efficiency": 1
   },
   {
+    "id": "salve",
+    "name": "Styptic Salve",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
+  },
+  {
     "id": "sand",
     "name": "Sand",
     "category": "powder",
@@ -1284,6 +1517,83 @@
     "cauldron_target": 4,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1.125
+  },
+  {
+    "id": "sand2",
+    "name": "Refined Sand",
+    "category": "misc",
+    "cost": 8,
+    "base_cost": 8,
+    "cauldron_cost": 8,
+    "cauldron_target": 8,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "sand3",
+    "name": "Refined Sand",
+    "category": "misc",
+    "cost": 16,
+    "base_cost": 16,
+    "cauldron_cost": 16,
+    "cauldron_target": 16,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "sand4",
+    "name": "Refined Sand",
+    "category": "misc",
+    "cost": 32,
+    "base_cost": 32,
+    "cauldron_cost": 32,
+    "cauldron_target": 32,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "sand5",
+    "name": "Refined Sand",
+    "category": "misc",
+    "cost": 64,
+    "base_cost": 64,
+    "cauldron_cost": 64,
+    "cauldron_target": 64,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "sand6",
+    "name": "Refined Sand",
+    "category": "misc",
+    "cost": 128,
+    "base_cost": 128,
+    "cauldron_cost": 128,
+    "cauldron_target": 128,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "sand7",
+    "name": "Refined Sand",
+    "category": "solid",
+    "cost": 256,
+    "base_cost": 256,
+    "cauldron_cost": 256,
+    "cauldron_target": 256,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "sand8",
+    "name": "Fully Refined Sand",
+    "category": "misc",
+    "cost": 256,
+    "base_cost": 256,
+    "cauldron_cost": 256,
+    "cauldron_target": 256,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
   },
   {
     "id": "sapphire",
@@ -1344,10 +1654,10 @@
     "id": "silveramulet",
     "name": "Silver Amulet",
     "category": "crafted",
-    "cost": 48000,
-    "base_cost": 25317,
-    "cauldron_cost": 25317,
-    "cauldron_target": 25317,
+    "cost": 51000,
+    "base_cost": 24656,
+    "cauldron_cost": 24656,
+    "cauldron_target": 24656,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1355,10 +1665,10 @@
     "id": "silvercoin",
     "name": "Silver Coin",
     "category": "solid",
-    "cost": 1529,
-    "base_cost": 949.2,
-    "cauldron_cost": 949.2,
-    "cauldron_target": 949.2,
+    "cost": 1903,
+    "base_cost": 903.2,
+    "cauldron_cost": 903.2,
+    "cauldron_target": 903.2,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1366,10 +1676,10 @@
     "id": "silveringot",
     "name": "Silver Ingot",
     "category": "solid",
-    "cost": 7000,
-    "base_cost": 4746,
-    "cauldron_cost": 4746,
-    "cauldron_target": 4746,
+    "cost": 9000,
+    "base_cost": 4516,
+    "cauldron_cost": 4516,
+    "cauldron_target": 4516,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1377,33 +1687,33 @@
     "id": "silverpowder",
     "name": "Crude Silver Powder",
     "category": "crafted",
-    "cost": 1998,
-    "base_cost": 1273.5,
-    "cauldron_cost": 1273.5,
-    "cauldron_target": 1673.5,
-    "cauldron_coef": 0.7,
-    "cauldron_efficiency": 0.7609799820734987
+    "cost": 2466,
+    "base_cost": 1216,
+    "cauldron_cost": 1216,
+    "cauldron_target": 1416,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.8587570621468926
   },
   {
     "id": "silverpowder2",
     "name": "Impure Silver Powder",
     "category": "misc",
-    "cost": 3997,
-    "base_cost": 2547,
-    "cauldron_cost": 2547,
-    "cauldron_target": 3347,
-    "cauldron_coef": 0.7,
-    "cauldron_efficiency": 0.7609799820734987
+    "cost": 4932,
+    "base_cost": 2432,
+    "cauldron_cost": 2432,
+    "cauldron_target": 3232,
+    "cauldron_coef": 1,
+    "cauldron_efficiency": 0.7524752475247525
   },
   {
     "id": "silverpowder3",
     "name": "Silver Powder",
     "category": "powder",
-    "cost": 7000,
-    "base_cost": 4742,
-    "cauldron_cost": 4742,
-    "cauldron_target": 4742,
-    "cauldron_coef": 0.7,
+    "cost": 9000,
+    "base_cost": 4512,
+    "cauldron_cost": 4512,
+    "cauldron_target": 4512,
+    "cauldron_coef": 1,
     "cauldron_efficiency": 1
   },
   {
@@ -1432,10 +1742,10 @@
     "id": "sol",
     "name": "Sol",
     "category": "crafted",
-    "cost": 42000000,
-    "base_cost": 5587945.6,
-    "cauldron_cost": 5587945.6,
-    "cauldron_target": 5587945.6,
+    "cost": 44500000,
+    "base_cost": 5591400.6,
+    "cauldron_cost": 5591400.6,
+    "cauldron_target": 5591400.6,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1443,12 +1753,24 @@
     "id": "stardust",
     "name": "Star Dust",
     "category": "crafted",
-    "cost": 9000,
-    "base_cost": 4149,
-    "cauldron_cost": 4149,
-    "cauldron_target": 6149,
+    "cost": 92000,
+    "base_cost": 41490,
+    "cauldron_cost": 41490,
+    "cauldron_target": 81490,
     "cauldron_coef": 1,
-    "cauldron_efficiency": 0.6747438607903724
+    "cauldron_efficiency": 0.5091422260400049
+  },
+  {
+    "id": "steam",
+    "name": "Steam",
+    "heat_value": 20,
+    "category": "fuel",
+    "cost": 1,
+    "base_cost": 1,
+    "cauldron_cost": 1,
+    "cauldron_target": 1,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
   },
   {
     "id": "steelgear",
@@ -1481,6 +1803,17 @@
     "cauldron_cost": 4,
     "cauldron_target": 4,
     "cauldron_coef": 1,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "strangetide",
+    "name": "Strange Tide",
+    "category": "liquid",
+    "cost": 1806,
+    "base_cost": 429,
+    "cauldron_cost": 429,
+    "cauldron_target": 429,
+    "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
   {
@@ -1523,9 +1856,9 @@
     "cost": 2800,
     "base_cost": 1205.9,
     "cauldron_cost": 1205.9,
-    "cauldron_target": 1405.9,
+    "cauldron_target": 1705.9,
     "cauldron_coef": 1,
-    "cauldron_efficiency": 0.8577423714346681
+    "cauldron_efficiency": 0.706899583797409
   },
   {
     "id": "turquoise",
@@ -1575,10 +1908,21 @@
     "id": "volcanicash",
     "name": "Volcanic Ash",
     "category": "powder",
-    "cost": 5000,
-    "base_cost": 5290,
-    "cauldron_cost": 5290,
-    "cauldron_target": 5290,
+    "cost": 11000,
+    "base_cost": 5404,
+    "cauldron_cost": 5404,
+    "cauldron_target": 5404,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "whisperingfields",
+    "name": "Whispering Fields",
+    "category": "liquid",
+    "cost": 420,
+    "base_cost": 100,
+    "cauldron_cost": 100,
+    "cauldron_target": 100,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },
@@ -1596,6 +1940,16 @@
     "cauldron_target": 1,
     "cauldron_coef": 0,
     "cauldron_efficiency": 0.8
+  },
+  {
+    "id": "woodacid",
+    "name": "Wood Acid",
+    "category": "misc",
+    "cost": 0,
+    "base_cost": 0,
+    "cauldron_cost": 0,
+    "cauldron_target": 0,
+    "cauldron_coef": 0
   },
   {
     "id": "woodboard",
@@ -1662,6 +2016,17 @@
     "base_cost": 5000000,
     "cauldron_cost": 5000000,
     "cauldron_target": 5000000,
+    "cauldron_coef": 0,
+    "cauldron_efficiency": 1
+  },
+  {
+    "id": "worldtreevintage",
+    "name": "World Tree Vintage",
+    "category": "liquid",
+    "cost": 36000,
+    "base_cost": 9642,
+    "cauldron_cost": 9642,
+    "cauldron_target": 9642,
     "cauldron_coef": 0,
     "cauldron_efficiency": 1
   },

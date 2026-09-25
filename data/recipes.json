@@ -657,7 +657,7 @@
       {
         "id": "linseedoil",
         "name": "Linseed Oil",
-        "count": 50
+        "count": 20
       }
     ],
     "time": 2,
@@ -735,7 +735,7 @@
       {
         "id": "linseedoil",
         "name": "Linseed Oil",
-        "count": 200
+        "count": 80
       }
     ],
     "outputs": [
@@ -818,6 +818,31 @@
     "time": 4,
     "crafted_in": "assembler",
     "category": "crafted"
+  },
+  {
+    "id": "whispering-fields",
+    "inputs": [
+      {
+        "id": "linseedoil",
+        "name": "Linseed Oil",
+        "count": 40
+      },
+      {
+        "id": "fruitwine",
+        "name": "Fruit Wine",
+        "count": 80
+      }
+    ],
+    "outputs": [
+      {
+        "id": "whisperingfields",
+        "name": "Whispering Fields",
+        "count": 1
+      }
+    ],
+    "time": 10,
+    "crafted_in": "brew-barrel",
+    "category": "liquid"
   },
   {
     "id": "turquoise",
@@ -1381,7 +1406,7 @@
       {
         "id": "blackpowder",
         "name": "Black Powder",
-        "count": 2
+        "count": 1
       }
     ],
     "time": 12,
@@ -1424,17 +1449,12 @@
       {
         "id": "chamomilepowder",
         "name": "Chamomile Powder",
-        "count": 1
+        "count": 2
       },
       {
         "id": "gloomspores",
         "name": "Gloom Spores",
-        "count": 1
-      },
-      {
-        "id": "sulfurpowder",
-        "name": "Sulfur Powder",
-        "count": 1
+        "count": 2
       }
     ],
     "outputs": [
@@ -1445,7 +1465,8 @@
       }
     ],
     "time": 4,
-    "crafted_in": "omni-machine"
+    "crafted_in": "assembler",
+    "category": "crafted"
   },
   {
     "id": "pocket-watch",
@@ -1499,6 +1520,35 @@
     ],
     "time": 12,
     "crafted_in": "athanor"
+  },
+  {
+    "id": "clockwork-bird",
+    "inputs": [
+      {
+        "id": "steelingot",
+        "name": "Steel Ingot",
+        "count": 6
+      },
+      {
+        "id": "steelgear",
+        "name": "Steel Gear",
+        "count": 2
+      },
+      {
+        "id": "malachite",
+        "name": "Malachite",
+        "count": 2
+      }
+    ],
+    "outputs": [
+      {
+        "id": "clockworkbird",
+        "name": "Clockwork Bird",
+        "count": 1
+      }
+    ],
+    "time": 12,
+    "crafted_in": "omni-machine"
   },
   {
     "id": "saturn",
@@ -1575,7 +1625,7 @@
     "outputs": [
       {
         "id": "sand2",
-        "name": "Sand2",
+        "name": "Refined Sand",
         "count": 1
       }
     ],
@@ -1588,14 +1638,14 @@
     "inputs": [
       {
         "id": "sand2",
-        "name": "Sand2",
+        "name": "Refined Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
         "id": "sand3",
-        "name": "Sand3",
+        "name": "Refined Sand",
         "count": 1
       }
     ],
@@ -1608,14 +1658,14 @@
     "inputs": [
       {
         "id": "sand3",
-        "name": "Sand3",
+        "name": "Refined Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
         "id": "sand4",
-        "name": "Sand4",
+        "name": "Refined Sand",
         "count": 1
       }
     ],
@@ -1628,14 +1678,14 @@
     "inputs": [
       {
         "id": "sand4",
-        "name": "Sand4",
+        "name": "Refined Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
         "id": "sand5",
-        "name": "Sand5",
+        "name": "Refined Sand",
         "count": 1
       }
     ],
@@ -1648,14 +1698,14 @@
     "inputs": [
       {
         "id": "sand5",
-        "name": "Sand5",
+        "name": "Refined Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
         "id": "sand6",
-        "name": "Sand6",
+        "name": "Refined Sand",
         "count": 1
       }
     ],
@@ -1668,14 +1718,14 @@
     "inputs": [
       {
         "id": "sand6",
-        "name": "Sand6",
+        "name": "Refined Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
         "id": "sand8",
-        "name": "Sand8",
+        "name": "Fully Refined Sand",
         "count": 1
       }
     ],
@@ -1688,7 +1738,7 @@
     "inputs": [
       {
         "id": "sand8",
-        "name": "Sand8",
+        "name": "Fully Refined Sand",
         "count": 2
       }
     ],
@@ -1864,6 +1914,36 @@
     "category": "misc"
   },
   {
+    "id": "strange-tide",
+    "inputs": [
+      {
+        "id": "saltwater",
+        "name": "Brine",
+        "count": 60
+      },
+      {
+        "id": "limewater",
+        "name": "Limewater",
+        "count": 90
+      },
+      {
+        "id": "fruitwine",
+        "name": "Fruit Wine",
+        "count": 180
+      }
+    ],
+    "outputs": [
+      {
+        "id": "strangetide",
+        "name": "Strange Tide",
+        "count": 1
+      }
+    ],
+    "time": 15,
+    "crafted_in": "brew-barrel",
+    "category": "liquid"
+  },
+  {
     "id": "lavender-essential-oil",
     "inputs": [
       {
@@ -1874,7 +1954,7 @@
       {
         "id": "linseedoil",
         "name": "Linseed Oil",
-        "count": 300
+        "count": 120
       }
     ],
     "outputs": [
@@ -1974,7 +2054,7 @@
       {
         "id": "blackpowder",
         "name": "Black Powder",
-        "count": 2
+        "count": 1
       },
       {
         "id": "brandy",
@@ -2132,6 +2212,31 @@
     "crafted_in": "advanced-shaper"
   },
   {
+    "id": "lavender-dream",
+    "inputs": [
+      {
+        "id": "lavenderessentialoil",
+        "name": "Lavender Essential Oil",
+        "count": 30
+      },
+      {
+        "id": "brandy",
+        "name": "Brandy",
+        "count": 120
+      }
+    ],
+    "outputs": [
+      {
+        "id": "lavenderdream",
+        "name": "Lavender Dream",
+        "count": 1
+      }
+    ],
+    "time": 18,
+    "crafted_in": "brew-barrel",
+    "category": "liquid"
+  },
+  {
     "id": "gentian-powder",
     "inputs": [
       {
@@ -2182,12 +2287,7 @@
       {
         "id": "copperpowder2",
         "name": "Copper Powder",
-        "count": 1
-      },
-      {
-        "id": "catalyst1",
-        "name": "Unstable Catalyst",
-        "count": 1
+        "count": 2
       },
       {
         "id": "blackpowder",
@@ -2231,12 +2331,7 @@
       {
         "id": "copperpowder2",
         "name": "Copper Powder",
-        "count": 2
-      },
-      {
-        "id": "catalyst1",
-        "name": "Unstable Catalyst",
-        "count": 2
+        "count": 4
       },
       {
         "id": "blackpowder",
@@ -2255,7 +2350,7 @@
     "crafted_in": "advanced-athanor"
   },
   {
-    "id": "volcanic-ash_alt",
+    "id": "volcanic-ash",
     "inputs": [
       {
         "id": "obsidian",
@@ -2280,16 +2375,11 @@
       {
         "id": "mors",
         "name": "Oblivion Essence",
-        "count": 1
+        "count": 2
       },
       {
         "id": "crystal1",
         "name": "Shattered Crystal",
-        "count": 1
-      },
-      {
-        "id": "catalyst1",
-        "name": "Unstable Catalyst",
         "count": 1
       }
     ],
@@ -2437,14 +2527,9 @@
         "count": 1
       },
       {
-        "id": "shard1",
-        "name": "Crude Shard",
-        "count": 4
-      },
-      {
-        "id": "gentianpowder",
-        "name": "Gentian Powder",
-        "count": 4
+        "id": "crystal1",
+        "name": "Shattered Crystal",
+        "count": 1
       }
     ],
     "outputs": [
@@ -2562,6 +2647,31 @@
     "category": "potions"
   },
   {
+    "id": "world-tree-vintage",
+    "inputs": [
+      {
+        "id": "aquavitae",
+        "name": "Aqua Vitae",
+        "count": 20
+      },
+      {
+        "id": "fruitwine",
+        "name": "Fruit Wine",
+        "count": 380
+      }
+    ],
+    "outputs": [
+      {
+        "id": "worldtreevintage",
+        "name": "World Tree Vintage",
+        "count": 1
+      }
+    ],
+    "time": 24,
+    "crafted_in": "brew-barrel",
+    "category": "liquid"
+  },
+  {
     "id": "gold-dust",
     "inputs": [
       {
@@ -2575,14 +2685,9 @@
         "count": 0
       },
       {
-        "id": "catalyst2",
-        "name": "Fertile Catalyst",
-        "count": 0
-      },
-      {
         "id": "mercury",
         "name": "Quicksilver",
-        "count": 7
+        "count": 11
       }
     ],
     "outputs": [
@@ -2629,14 +2734,9 @@
         "count": 1
       },
       {
-        "id": "catalyst2",
-        "name": "Fertile Catalyst",
-        "count": 1
-      },
-      {
         "id": "mercury",
         "name": "Quicksilver",
-        "count": 12
+        "count": 18
       }
     ],
     "outputs": [
@@ -2768,24 +2868,24 @@
       {
         "id": "jupiter",
         "name": "Jupiter",
-        "count": 12
+        "count": 60
       },
       {
         "id": "saturn",
         "name": "Saturn",
-        "count": 4
+        "count": 20
       },
       {
         "id": "mars",
         "name": "Mars",
-        "count": 3
+        "count": 15
       }
     ],
     "outputs": [
       {
         "id": "stardust",
         "name": "Star Dust",
-        "count": 50
+        "count": 5
       }
     ],
     "time": 300,
@@ -2846,12 +2946,12 @@
       {
         "id": "stardust",
         "name": "Star Dust",
-        "count": 16
+        "count": 1
       },
       {
         "id": "fairytear",
         "name": "Fairy Tear",
-        "count": 10
+        "count": 18
       }
     ],
     "outputs": [
@@ -2933,6 +3033,36 @@
     ],
     "time": 600,
     "crafted_in": "advanced-shaper"
+  },
+  {
+    "id": "alchemist-sigh",
+    "inputs": [
+      {
+        "id": "moontear",
+        "name": "Moon Tear",
+        "count": 1
+      },
+      {
+        "id": "mercury",
+        "name": "Quicksilver",
+        "count": 20
+      },
+      {
+        "id": "brandy",
+        "name": "Brandy",
+        "count": 160
+      }
+    ],
+    "outputs": [
+      {
+        "id": "alchemistsigh",
+        "name": "Alchemist's Sigh",
+        "count": 1
+      }
+    ],
+    "time": 32,
+    "crafted_in": "brew-barrel",
+    "category": "liquid"
   },
   {
     "id": "sol",
@@ -3430,7 +3560,7 @@
     "outputs": [
       {
         "id": "ironamulet",
-        "name": "IronAmulet",
+        "name": "Iron Amulet",
         "count": 1
       }
     ],
@@ -3455,7 +3585,7 @@
     "outputs": [
       {
         "id": "finebandage",
-        "name": "FineBandage",
+        "name": "Advanced Bandage",
         "count": 2
       }
     ],
@@ -3480,7 +3610,7 @@
     "outputs": [
       {
         "id": "copperamulet",
-        "name": "CopperAmulet",
+        "name": "Copper Amulet",
         "count": 1
       }
     ],
@@ -3492,30 +3622,21 @@
     "id": "cart",
     "inputs": [
       {
-        "id": "woodboard",
-        "name": "Plank",
-        "count": 10
-      },
-      {
         "id": "ironingot",
         "name": "Iron Ingot",
-        "count": 8
-      },
-      {
-        "id": "copperbearing",
-        "name": "Copper Bearing",
-        "count": 4
+        "count": 5
       }
     ],
     "outputs": [
       {
         "id": "cart",
-        "name": "Cart",
+        "name": "Wagon",
         "count": 1
       }
     ],
-    "time": 40,
-    "crafted_in": "omni-machine"
+    "time": 30,
+    "crafted_in": "processor",
+    "category": "solid"
   },
   {
     "id": "amethyst",
@@ -3568,7 +3689,7 @@
     "outputs": [
       {
         "id": "charismapotion",
-        "name": "CharismaPotion",
+        "name": "Charisma Potion",
         "count": 1
       }
     ],
@@ -3611,14 +3732,14 @@
     "inputs": [
       {
         "id": "sand6",
-        "name": "Sand6",
+        "name": "Refined Sand",
         "count": 2
       }
     ],
     "outputs": [
       {
         "id": "sand7",
-        "name": "Sand7",
+        "name": "Refined Sand",
         "count": 1
       }
     ],
@@ -3648,7 +3769,7 @@
     "outputs": [
       {
         "id": "invisbilitypotion",
-        "name": "InvisbilityPotion",
+        "name": "Floating Potion",
         "count": 1
       }
     ],
@@ -3668,7 +3789,7 @@
     "outputs": [
       {
         "id": "golddust4",
-        "name": "GoldDust4",
+        "name": "Refined Gold Dust",
         "count": 1
       }
     ],

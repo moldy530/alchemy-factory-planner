@@ -21,6 +21,11 @@
     "category": "production"
   },
   {
+    "id": "advanced-cauldron",
+    "name": "Advanced Cauldron",
+    "category": "production"
+  },
+  {
     "id": "advanced-shaper",
     "name": "Advanced Shaper",
     "category": "production"
@@ -67,6 +72,11 @@
     "category": "production"
   },
   {
+    "id": "brew-barrel",
+    "name": "Brew Barrel",
+    "category": "production"
+  },
+  {
     "id": "cauldron",
     "name": "Cauldron",
     "category": "production"
@@ -93,6 +103,11 @@
     "id": "extractor",
     "name": "Extractor",
     "category": "production"
+  },
+  {
+    "id": "grand-portal",
+    "name": "Grand Portal",
+    "category": "raw material production"
   },
   {
     "id": "grinder",
@@ -134,6 +149,16 @@
     "slots_required": 9
   },
   {
+    "id": "portal-input",
+    "name": "Portal (Input)",
+    "category": "raw material production"
+  },
+  {
+    "id": "portal-output",
+    "name": "Portal (Output)",
+    "category": "raw material production"
+  },
+  {
     "id": "processor",
     "name": "Processor",
     "category": "production"
@@ -162,6 +187,11 @@
     "slots_required": 3
   },
   {
+    "id": "steam-heater",
+    "name": "Steam Heating Pad",
+    "category": "production"
+  },
+  {
     "id": "stone-crusher",
     "name": "Stone Crusher",
     "category": "raw material production"
@@ -170,7 +200,6 @@
     "id": "stone-furnace",
     "name": "Blast Furnace",
     "category": "production",
-    "heat_consuming_speed": 4,
     "heat_self": 4,
     "slots": 42
   },
@@ -178,7 +207,6 @@
     "id": "stone-stove",
     "name": "Stone Furnace",
     "category": "production",
-    "heat_consuming_speed": 1,
     "heat_self": 1,
     "slots": 9
   },

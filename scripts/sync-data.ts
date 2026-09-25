@@ -5,7 +5,7 @@
  * Transforms data to be backwards compatible with existing calculation engines
  */
 
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 const REMOTE_BASE_URL = 'https://raw.githubusercontent.com/faultyd3v/AlchemyFactoryData/main';
 const DATA_DIR = './data';
@@ -154,6 +154,7 @@ const CRAFT_TYPE_TO_DEVICE: Record<number, string> = {
   21: 'paradox-crucible',
   22: 'cauldron',
   23: 'arcane-processor',    // Arcane Processor
+  24: 'brew-barrel',         // Beverages (v1.0)
 };
 
 const CRAFT_TYPE_CATEGORIES: Record<number, string> = {
@@ -172,6 +173,7 @@ const CRAFT_TYPE_CATEGORIES: Record<number, string> = {
   12: 'potions',       // athanor - advanced potions
   13: 'essence',       // alembic - essential oils, acids
   14: 'liquid',        // refiner - refined liquids
+  24: 'liquid',        // brew barrel - beverages
 };
 
 function transformItems(
@@ -529,15 +531,15 @@ async function main() {
 
     // Write transformed data
     console.log('💾 Writing data files...');
-    await Bun.write(
+    await writeFile(
       `${DATA_DIR}/items.json`,
       JSON.stringify(localItems, null, 2)
     );
-    await Bun.write(
+    await writeFile(
       `${DATA_DIR}/devices.json`,
       JSON.stringify(localDevices, null, 2)
     );
-    await Bun.write(
+    await writeFile(
       `${DATA_DIR}/recipes.json`,
       JSON.stringify(localRecipes, null, 2)
     );
