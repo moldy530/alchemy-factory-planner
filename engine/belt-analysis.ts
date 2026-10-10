@@ -27,6 +27,8 @@ export type LineMode = LineOverride | "inherit";
 export interface BeltPlanOptions {
   planParallelLines: boolean;
   lineOverrides?: Record<string, LineOverride>;
+  /** Allow spare input ports to feed one ingredient from several belts (default true) */
+  multiBeltInputs?: boolean;
 }
 
 export interface MachineFlowInfo {
@@ -57,6 +59,8 @@ export interface NodeBeltInfo {
   perMachineInputs: MachineFlowInfo[];
   perMachineOutputs: MachineFlowInfo[];
   machineWarnings: MachineFlowCheck[];
+  /** Whether spare input ports were allowed to double up ingredients */
+  multiBeltInputs: boolean;
 }
 
 export interface MachineWarning extends MachineFlowCheck {
@@ -67,6 +71,7 @@ export interface MachineWarning extends MachineFlowCheck {
 
 export interface BeltReport {
   beltSpeed: number;
+  multiBeltInputs: boolean;
   nodes: Record<string, NodeBeltInfo>;
   devices: { deviceId: string; exact: number; built: number }[];
   lines: { itemName: string; rate: number; lines: number }[];
@@ -220,7 +225,8 @@ export function analyzeNode(
         totalRate: f.perMachineRate * node.deviceCount,
       })),
       beltSpeed,
-      inputPortsFor(node.deviceId, beltInputs.length),
+      // Single-belt mode: one port per ingredient, so nothing can double up
+      options.multiBeltInputs === false ? beltInputs.length : inputPortsFor(node.deviceId, beltInputs.length),
     );
     beltInputs.forEach((f) => (f.beltsPerMachine = inputCheck.beltsPerInput[f.itemName] ?? 1));
     machineWarnings.push(...inputCheck.warnings);
@@ -252,6 +258,7 @@ export function analyzeNode(
     perMachineInputs,
     perMachineOutputs,
     machineWarnings,
+    multiBeltInputs: options.multiBeltInputs !== false,
   };
 }
 
@@ -291,6 +298,7 @@ export function analyzeBelts(
 
   return {
     beltSpeed: ctx.beltLimit,
+    multiBeltInputs: options.multiBeltInputs !== false,
     nodes,
     devices: Array.from(devices.entries())
       .map(([deviceId, d]) => ({ deviceId, ...d }))

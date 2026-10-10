@@ -80,6 +80,29 @@ planners.forEach(({ name, fn }) => {
   });
 });
 
+describe("Single-belt feeding (multiBeltInputs off)", () => {
+  const cfg = config({ targets: [{ item: "Bandage", rate: 30 }] });
+  const report = analyzeBelts(calculateProductionLP(cfg), cfg, { planParallelLines: true, multiBeltInputs: false });
+
+  test("linen assembler flagged for 330 thread/min on one belt", () => {
+    const linen = nodeFor(report, "Linen");
+    expect(linen.machineWarnings).toHaveLength(1);
+    const w = linen.machineWarnings[0];
+    expect(w.itemName).toBe("Linen Thread");
+    expect(w.direction).toBe("input");
+    expect(w.perMachineRate).toBeCloseTo(330, 3);
+    expect(w.beltsPerMachine).toBe(2);
+    // 300 thread/min total ÷ 165 per belt → 2 assemblers at 150/330 ≈ 45% load
+    expect(w.machinesAtPartialLoad).toBe(2);
+    expect(report.multiBeltInputs).toBe(false);
+    expect(report.warnings.map((x) => x.producedItem)).toEqual(["Linen"]);
+  });
+
+  test("healing potion (exactly one belt per input) still passes", () => {
+    expect(nodeFor(report, "Healing Potion").machineWarnings).toHaveLength(0);
+  });
+});
+
 describe("Healing potion assembler at level 7", () => {
   const cfg = config({ targets: [{ item: "Healing Potion", rate: 27.5 }] });
   const report = analyzeBelts(calculateProductionLP(cfg), cfg, { planParallelLines: true });

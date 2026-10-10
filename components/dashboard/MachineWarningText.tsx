@@ -2,14 +2,24 @@ import { MachineFlowCheck } from "../../engine/belt";
 import { formatPercent, formatRate } from "../../lib/beltDisplay";
 
 /** Explains a per-machine belt limit and the ways around it. */
-export function MachineWarningText({ warning: w, device }: { warning: MachineFlowCheck; device: string }) {
+export function MachineWarningText({
+    warning: w,
+    device,
+    multiBeltInputs,
+}: {
+    warning: MachineFlowCheck;
+    device: string;
+    multiBeltInputs: boolean;
+}) {
     const partial = `run ${w.machinesAtPartialLoad} ${device} at ${formatPercent(w.partialLoad)} load`;
 
-    if (w.direction === "output") {
+    if (w.direction === "output" || !multiBeltInputs) {
+        const verb = w.direction === "output" ? "outputs" : "needs";
+        const fix = w.direction === "output" ? "Drain it with" : "Feed it from";
         return (
             <>
-                One {device} outputs {formatRate(w.perMachineRate)} {w.itemName}/m, over one {formatRate(w.beltSpeed, 0)}/m
-                belt. Drain it with {w.beltsPerMachine} belts, or {partial}.
+                One {device} {verb} {formatRate(w.perMachineRate)} {w.itemName}/m, over one {formatRate(w.beltSpeed, 0)}/m
+                belt. {fix} {w.beltsPerMachine} belts, or {partial}.
             </>
         );
     }

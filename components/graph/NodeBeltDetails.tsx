@@ -79,7 +79,7 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                 >
                     <AlertTriangle size={11} className="shrink-0 mt-px" />
                     <span>
-                        <MachineWarningText warning={w} device={device} />
+                        <MachineWarningText warning={w} device={device} multiBeltInputs={belt.multiBeltInputs} />
                     </span>
                 </div>
             ))}
