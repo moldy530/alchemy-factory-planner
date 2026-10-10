@@ -79,7 +79,10 @@ export function buildLPModel(
 
     const machineName = recipe.crafted_in?.toLowerCase() || "";
     // Nursery cycle time depends on the selected fertilizer (see getEffectiveRecipeTime)
-    const recipeTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, ctx.fertilizerMultiplier);
+    const recipeTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, ctx.fertilizerMultiplier, {
+      beltSpeed: ctx.beltLimit,
+      speedMultiplier: ctx.speedMultiplier,
+    });
     const isNurseryRecipe = machineName === "nursery";
 
     // Process outputs (positive flow)

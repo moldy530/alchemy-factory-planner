@@ -5,9 +5,12 @@ import { getItem, getDevice, getRecipeById, getAllRecipes } from "./model-builde
 import { isAlchemyMachine } from "./efficiency";
 import { normalizeItemId, getEffectiveRecipeTime as effectiveRecipeTime } from "../item-utils";
 
-/** Nursery cycle time depends on the selected fertilizer (see item-utils). */
+/** Nursery cycle time depends on the selected fertilizer and is capped at one belt (see item-utils). */
 function getEffectiveRecipeTime(recipe: Recipe, ctx: EfficiencyContext): number {
-  return effectiveRecipeTime(recipe, ctx.selectedFertilizer, ctx.fertilizerMultiplier);
+  return effectiveRecipeTime(recipe, ctx.selectedFertilizer, ctx.fertilizerMultiplier, {
+    beltSpeed: ctx.beltLimit,
+    speedMultiplier: ctx.speedMultiplier,
+  });
 }
 
 interface ItemFlow {

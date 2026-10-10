@@ -242,7 +242,10 @@ function solveNode(
         if (fertilizerItem && item.required_nutrients) {
             const nutrientValue = fertilizerItem.nutrient_value || 0;
             // Growth is nutrient-driven: cycle time = nutrients per cycle / fertilizer delivery rate
-            const growthTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, 1 + ctx.fertilizerEfficiency * 0.1);
+            const growthTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, 1 + ctx.fertilizerEfficiency * 0.1, {
+                beltSpeed: ctx.beltLimit,
+                speedMultiplier: ctx.speedMultiplier,
+            });
             itemsPerMinPerMachine = (outputCount / growthTime) * 60 * ctx.speedMultiplier;
 
             // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
