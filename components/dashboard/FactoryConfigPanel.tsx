@@ -112,12 +112,13 @@ export function FactorySettingsPanel({
         selectedFuel: activeFactory.config.selectedFuel || "",
         selfFuel: activeFactory.config.selfFuel ?? true,
         selfFertilizer: activeFactory.config.selfFertilizer ?? true,
+        planParallelLines: activeFactory.config.planParallelLines ?? true,
     };
 
     const sortedFertilizers = [...fertilizers].sort((a, b) => (a.nutrient_value || 0) - (b.nutrient_value || 0));
     const sortedFuels = [...fuels].sort((a, b) => (a.heat_value || 0) - (b.heat_value || 0));
 
-    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer", value: string | boolean) => {
+    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer" | "planParallelLines", value: string | boolean) => {
         updateFactoryConfig(activeFactory.id, { [field]: value });
     };
 
@@ -196,6 +197,22 @@ export function FactorySettingsPanel({
                             <span>Produce fuel internally</span>
                         </label>
                     )}
+                </div>
+
+                <div>
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 flex items-center tracking-wide">
+                        Belts
+                        <InfoTooltip text="Flows over one belt are split into parallel lines, each with its own producers. Override per item in the graph." />
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors">
+                        <input
+                            type="checkbox"
+                            checked={config.planParallelLines}
+                            onChange={(e) => updateConfig("planParallelLines", e.target.checked)}
+                            className="accent-[var(--accent-gold)] cursor-pointer"
+                        />
+                        <span>Plan parallel lines for flows over the belt limit</span>
+                    </label>
                 </div>
 
                 <div>

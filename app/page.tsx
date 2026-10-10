@@ -12,6 +12,7 @@ import {
 import { FactoryTabs } from "../components/dashboard/FactoryTabs";
 import { GlobalResearchPanel } from "../components/dashboard/GlobalResearchPanel";
 import { IOSummaryPanel } from "../components/dashboard/IOSummaryPanel";
+import { BeltSummaryPanel } from "../components/dashboard/BeltSummaryPanel";
 import { NodeView } from "../components/dashboard/NodeView";
 import { ProductionNode, Item } from "../engine/types";
 import { useFactoryStore } from "../store/useFactoryStore";
@@ -173,6 +174,10 @@ export default function PlannerPage() {
         <IOSummaryPanel stats={stats} ioSummary={ioSummary} />
       </div>
 
+      {activeFactory.beltReport && productionTrees.length > 0 && (
+        <BeltSummaryPanel report={activeFactory.beltReport} />
+      )}
+
       <main className="flex-1 flex flex-col gap-6 min-h-0">
         {/* View Area */}
         <section className="flex-1 panel-ornate rounded-xl shadow-xl overflow-hidden min-h-[600px] flex flex-col relative">
@@ -198,7 +203,7 @@ export default function PlannerPage() {
                           <span className="w-2 h-2 bg-[var(--accent-gold)] rounded-full"></span>
                           Target: {root.itemName}
                         </h3>
-                        <NodeView node={root} depth={0} />
+                        <NodeView node={root} depth={0} beltReport={activeFactory.beltReport} />
                       </div>
                     ))}
                   </div>
