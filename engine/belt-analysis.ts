@@ -77,6 +77,8 @@ export interface NodeBeltInfo {
   realizedRate: number;
   /** Output held back because inputs don't deliver enough */
   inputLimited: boolean;
+  /** Made but not taken by any consumer or target: the real overproduction */
+  leftoverRate: number;
 }
 
 export interface MachineWarning extends MachineFlowCheck {
@@ -91,10 +93,10 @@ export interface BeltReport {
   devices: { deviceId: string; exact: number; built: number }[];
   lines: { itemName: string; rate: number; lines: number }[];
   warnings: MachineWarning[];
-  /** Nodes whose actual output differs from the demand (realized - demand) */
+  /** Per node: leftover output nobody uses (positive) or output below demand (negative) */
   surpluses: { nodeKey: string; itemName: string; surplus: number; mode: RoundingMode }[];
-  /** Demand vs. actual rate per edge, keyed like plan-graph edge keys */
-  edges: Record<string, { demand: number; actual: number }>;
+  /** Per edge (plan-graph keys): demand, actual flow, and whether the producer under-supplied it */
+  edges: Record<string, { demand: number; actual: number; short: boolean }>;
   /** What each production target actually receives, in target order */
   targets: { nodeKey: string; itemName: string; demand: number; delivered: number }[];
 }
@@ -284,6 +286,7 @@ export function analyzeNode(
     demandRate: node.rate,
     realizedRate: build ? build.actualRate : node.rate,
     inputLimited: false,
+    leftoverRate: 0,
   };
 }
 
@@ -337,13 +340,21 @@ export function analyzeBelts(
   const warnings: MachineWarning[] = [];
   const surpluses: BeltReport["surpluses"] = [];
 
+  // What consumers and targets actually take from each node
+  const taken = new Map<string, number>();
+  flowEdges.forEach((fe) => taken.set(fe.source, (taken.get(fe.source) || 0) + (flow.edgeActual.get(fe.key) ?? 0)));
+  targetList.forEach((t, i) => taken.set(t.nodeKey, (taken.get(t.nodeKey) || 0) + flow.delivered[i]));
+
   Object.entries(nodes).forEach(([key, info]) => {
     applyRealized(info, flow.realized.get(key) ?? info.demandRate, flow.inputLimited.has(key), ctx.beltLimit);
 
     const node = graph.nodes.get(key)!;
-    const surplus = info.realizedRate - info.demandRate;
-    if (!node.isRaw && Math.abs(surplus) > 0.05) {
-      surpluses.push({ nodeKey: key, itemName: info.itemName, surplus, mode: info.roundingMode });
+    info.leftoverRate = node.isRaw ? 0 : Math.max(0, info.realizedRate - (taken.get(key) || 0));
+    const shortfall = info.realizedRate - info.demandRate;
+    if (!node.isRaw && shortfall < -0.05) {
+      surpluses.push({ nodeKey: key, itemName: info.itemName, surplus: shortfall, mode: info.roundingMode });
+    } else if (info.leftoverRate > 0.05) {
+      surpluses.push({ nodeKey: key, itemName: info.itemName, surplus: info.leftoverRate, mode: info.roundingMode });
     }
 
     if (info.deviceId && info.machinesExact > RATE_EPSILON) {
@@ -366,7 +377,15 @@ export function analyzeBelts(
   });
 
   const edges: BeltReport["edges"] = {};
-  flowEdges.forEach((fe) => (edges[fe.key] = { demand: fe.demand, actual: flow.edgeActual.get(fe.key) ?? fe.demand }));
+  flowEdges.forEach((fe) => {
+    const offered = flow.edgeOffered.get(fe.key) ?? Infinity;
+    edges[fe.key] = {
+      demand: fe.demand,
+      actual: flow.edgeActual.get(fe.key) ?? fe.demand,
+      // Short only when the producer can't supply it; a consumer taking less leaves producer surplus
+      short: offered < fe.demand - 0.05,
+    };
+  });
 
   return {
     beltSpeed: ctx.beltLimit,

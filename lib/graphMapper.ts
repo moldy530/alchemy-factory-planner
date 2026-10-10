@@ -90,7 +90,7 @@ function createFlowEdge(
     const consumerOverLimit = beltReport.nodes[target]?.machineWarnings.some(
         (w) => w.direction === "input" && w.itemName === itemName,
     );
-    const isShort = actual < demand - 0.05;
+    const isShort = beltReport.edges[key]?.short ?? false;
     const state: BeltEdgeState = consumerOverLimit ? "error" : isShort ? "short" : util.status;
     const data: BeltEdgeData = {
         rate: actual,

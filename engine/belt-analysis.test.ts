@@ -60,10 +60,10 @@ planners.forEach(({ name, fn }) => {
       const flax = nodeFor(report, "Flax");
       expect(flax.machinesExact).toBeCloseTo(1260 / 165, 3);
       expect(flax.machinesBuilt).toBe(8);
-      // Each nursery runs at the full 165/min: 1,320/min, 60 surplus
+      // Each nursery runs at the full 165/min: 1,320/min, all taken by the rounded-up grinders
       expect(flax.build?.actualRate).toBeCloseTo(1320, 3);
       expect(flax.linePlan?.ratePerLine).toBeCloseTo(165, 3);
-      expect(report.surpluses.find((x) => x.itemName === "Flax")?.surplus).toBeCloseTo(60, 3);
+      expect(flax.leftoverRate).toBeCloseTo(0, 3);
     });
 
     test("linen assembler needs 330 thread/min, fed from two belts (the Linen exception, no error)", () => {
@@ -161,7 +161,26 @@ describe("Actual flow through the built factory", () => {
     expect(bandage(report).delivered).toBeCloseTo(b.realizedRate, 6);
     // Edges into Bandage carry less than it needs
     const into = Object.entries(report.edges).filter(([k]) => k.endsWith(key));
-    expect(into.some(([, e]) => e.actual < e.demand - 0.05)).toBe(true);
+    expect(into.some(([, e]) => e.short)).toBe(true);
+  });
+
+  test("Flax up, Flax Fiber down: the edge is not short, Flax has surplus", () => {
+    const base = analyzeBelts(roots, cfg, { planParallelLines: true });
+    const fiberKey = nodeFor(base, "Flax Fiber").nodeKey;
+    const flaxKey = nodeFor(base, "Flax").nodeKey;
+    const report = analyzeBelts(roots, cfg, {
+      planParallelLines: true,
+      machineRounding: "up",
+      roundingOverrides: { [fiberKey]: "down" },
+    });
+    const e = report.edges[`${flaxKey}___${fiberKey}`];
+    expect(e.actual).toBeCloseTo(1210, 3); // 22 grinders × 55
+    expect(e.short).toBe(false);
+    expect(nodeFor(report, "Flax Fiber").inputLimited).toBe(false);
+    // Fiber makes 50 less than planned; Flax overproduces 1,320 - 1,210 = 110
+    expect(report.surpluses.find((x) => x.itemName === "Flax Fiber")!.surplus).toBeCloseTo(-50, 3);
+    expect(nodeFor(report, "Flax").leftoverRate).toBeCloseTo(110, 3);
+    expect(report.surpluses.find((x) => x.itemName === "Flax")!.surplus).toBeCloseTo(110, 3);
   });
 });
 

@@ -6,7 +6,7 @@ import { BELT_STATE_COLOR, beltDisplayState, beltStateLabel } from "../../lib/be
 import { cn } from "../../lib/utils";
 import { NodeBeltDetails } from "./NodeBeltDetails";
 
-type NodeData = ProductionNode & { displayRate?: number; belt?: NodeBeltInfo };
+type NodeData = ProductionNode & { displayRate?: number; belt?: NodeBeltInfo; targetDemand?: number };
 
 export function CustomNode({ data }: { data: NodeData }) {
     // Cast to access properties safely if TS complains
@@ -26,14 +26,24 @@ export function CustomNode({ data }: { data: NodeData }) {
 
     // Use netOutputRate if available (LP planner sets this for self-consuming items),
     // then displayRate (graphMapper calculated), otherwise use rate (gross production)
-    const rateToShow = nodeData.netOutputRate ?? nodeData.displayRate ?? nodeData.rate;
+    const plannedRate = nodeData.netOutputRate ?? nodeData.displayRate ?? nodeData.rate;
+    // When rounding changes what actually flows, headline the actual output
+    const realizedDiffers = !!belt && Math.abs(belt.realizedRate - belt.demandRate) > 0.05;
+    const rateToShow = realizedDiffers ? belt!.realizedRate : plannedRate;
+
+    // Targets: delivered vs. requested
+    const targetDemand = nodeData.targetDemand;
+    const targetGap = isTarget && targetDemand !== undefined ? nodeData.rate - targetDemand : 0;
+    const targetShort = targetGap < -0.05;
 
     return (
         <div
             className={cn(
                 "p-3 rounded-lg border shadow-lg min-w-[220px] max-w-[300px] bg-[var(--surface)] transition-all relative",
                 isTarget
-                    ? "border-[var(--success)] bg-[var(--success-dim)]/30 glow-gold-subtle"
+                    ? targetShort
+                        ? "border-[var(--warning)] bg-[var(--surface)]"
+                        : "border-[var(--success)] bg-[var(--success-dim)]/30 glow-gold-subtle"
                     : isMachine
                         ? "border-[var(--accent-gold-dim)] hover:border-[var(--accent-gold)]"
                         : "border-[var(--border)] hover:border-[var(--accent-purple-dim)]",
@@ -67,7 +77,9 @@ export function CustomNode({ data }: { data: NodeData }) {
                         className={cn(
                             "text-xs font-mono font-bold px-1.5 py-0.5 rounded",
                             isTarget
-                                ? "text-[var(--success)] bg-[var(--success-dim)]/30"
+                                ? targetShort
+                                    ? "text-[var(--warning)] bg-[var(--background-deep)]/50"
+                                    : "text-[var(--success)] bg-[var(--success-dim)]/30"
                                 : isError
                                     ? "bg-[var(--error-dim)]/30"
                                     : "",
@@ -77,8 +89,29 @@ export function CustomNode({ data }: { data: NodeData }) {
                         {rateToShow.toLocaleString(undefined, {
                             maximumFractionDigits: 1,
                         })}
+                        {targetShort && ` / ${targetDemand!.toLocaleString(undefined, { maximumFractionDigits: 1 })}`}
                         /m
                     </div>
+                    {realizedDiffers && !isTarget && (
+                        <div className="text-[8px] text-[var(--text-muted)] mt-0.5">
+                            of {belt!.demandRate.toLocaleString(undefined, { maximumFractionDigits: 1 })}/m planned
+                        </div>
+                    )}
+                    {isTarget && Math.abs(targetGap) > 0.05 && (
+                        <div
+                            className="text-[8px] flex items-center justify-end gap-0.5 mt-0.5"
+                            style={{ color: targetShort ? "var(--warning)" : "var(--success)" }}
+                        >
+                            {targetShort ? (
+                                <>
+                                    <AlertTriangle size={8} /> Target missed by{" "}
+                                    {(-targetGap).toLocaleString(undefined, { maximumFractionDigits: 1 })}/m
+                                </>
+                            ) : (
+                                `+${targetGap.toLocaleString(undefined, { maximumFractionDigits: 1 })}/m over target`
+                            )}
+                        </div>
+                    )}
                     {stateLabel && !isTarget && (
                         <div
                             className="text-[8px] flex items-center justify-end gap-0.5 mt-0.5"

@@ -37,8 +37,10 @@ export interface FlowResult {
     realized: Map<string, number>;
     /** Nodes whose output is held back by an input (realized < capacity because of supply) */
     inputLimited: Set<string>;
-    /** Actual rate moving along each edge */
+    /** Actual rate moving along each edge (what the consumer draws) */
     edgeActual: Map<string, number>;
+    /** Rate the producer offered each edge (Infinity for raw supply); below demand = under-supplied */
+    edgeOffered: Map<string, number>;
     /** Delivered to each target, in the order given */
     delivered: number[];
 }
@@ -96,6 +98,8 @@ export function simulateFlow(nodes: FlowNode[], edges: FlowEdge[], targets: Flow
 
     nodes.forEach((n) => resolve(n.key));
 
+    const edgeOffered = new Map<string, number>(edges.map((e) => [e.key, allocated(e)]));
+
     // Consumers draw their inputs in proportion to what they actually make
     const edgeActual = new Map<string, number>();
     edges.forEach((e) => {
@@ -125,5 +129,5 @@ export function simulateFlow(nodes: FlowNode[], edges: FlowEdge[], targets: Flow
         return share > RATE_EPSILON ? remaining.get(t.source)! * (t.demand / share) : 0;
     });
 
-    return { realized, inputLimited, edgeActual, delivered };
+    return { realized, inputLimited, edgeActual, edgeOffered, delivered };
 }

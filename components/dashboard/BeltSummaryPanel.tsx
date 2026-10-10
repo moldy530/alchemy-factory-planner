@@ -93,6 +93,24 @@ export function BeltSummaryPanel({ report }: { report: BeltReport }) {
                 <div className="flex flex-col gap-2">
                     <SectionHeader icon={<Scale size={10} />} title="Surplus / shortfall" />
                     <div className="flex flex-col gap-1.5">
+                        {report.targets.map((t, i) => {
+                            const short = t.delivered < t.demand - 0.05;
+                            return (
+                                <div
+                                    key={`target-${i}`}
+                                    className="flex justify-between text-xs px-2 py-1 rounded border"
+                                    style={{
+                                        borderColor: short ? "var(--warning)" : "var(--success)",
+                                        color: short ? "var(--warning)" : "var(--success)",
+                                    }}
+                                >
+                                    <span className="font-bold">Target: {t.itemName}</span>
+                                    <span className="font-mono font-bold">
+                                        {formatRate(t.delivered)} / {formatRate(t.demand)}/m
+                                    </span>
+                                </div>
+                            );
+                        })}
                         {report.surpluses.map((x) => (
                             <div key={x.nodeKey} className="flex justify-between text-xs bg-[var(--background-deep)]/40 px-2 py-1 rounded">
                                 <span className="text-[var(--text-secondary)]">{x.itemName}</span>

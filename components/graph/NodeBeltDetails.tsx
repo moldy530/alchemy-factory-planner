@@ -9,6 +9,11 @@ import { MachineWarningText } from "../dashboard/MachineWarningText";
 /** Belt utilization, parallel-line breakdown and per-machine checks for one graph node. */
 export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
     const { output, linePlan, build } = belt;
+    // Shortfall: makes less than the plan needs. Leftover: makes more than anyone takes.
+    const shortfall = belt.demandRate - belt.realizedRate;
+    const isShort = shortfall > 0.05;
+    const hasLeftover = belt.leftoverRate > 0.05;
+    const hasSurplus = isShort || hasLeftover;
     const device = belt.deviceId ?? "machine";
     const showToggle = !belt.isFluid && (output.linesNeeded > 1 || belt.lineMode !== "inherit");
 
@@ -35,19 +40,28 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                 </div>
             )}
 
-            {build && (
+            {(build || hasSurplus || belt.inputLimited) && (
                 <div className="flex flex-col gap-0.5 text-[10px] text-[var(--text-secondary)]">
-                    <span className="font-mono">
-                        {build.machines} {device} × {formatRate(build.perMachineRate)}/m = {formatRate(build.actualRate)}/m
-                    </span>
-                    {Math.abs(build.surplus) > 0.05 && (
-                        <span
-                            className="font-bold"
-                            style={{ color: build.surplus > 0 ? "var(--info)" : "var(--warning)" }}
-                        >
-                            {build.surplus > 0
-                                ? `+${formatRate(build.surplus)}/m surplus`
-                                : `${formatRate(-build.surplus)}/m short of ${formatRate(build.demandRate)}/m`}
+                    {build && (
+                        <span className="font-mono">
+                            {build.machines} {device} × {formatRate(build.perMachineRate)}/m = {formatRate(build.actualRate)}/m
+                            max
+                        </span>
+                    )}
+                    {belt.inputLimited && (
+                        <span className="text-[var(--warning)]">
+                            Input-limited: makes {formatRate(belt.realizedRate)}/m (
+                            {formatPercent(belt.realizedRate / (build?.actualRate ?? belt.demandRate))} of capacity)
+                        </span>
+                    )}
+                    {isShort && (
+                        <span className="font-bold text-[var(--warning)]">
+                            {formatRate(shortfall)}/m short of {formatRate(belt.demandRate)}/m planned
+                        </span>
+                    )}
+                    {hasLeftover && (
+                        <span className="font-bold text-[var(--info)]">
+                            +{formatRate(belt.leftoverRate)}/m surplus (not used downstream)
                         </span>
                     )}
                 </div>

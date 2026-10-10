@@ -27,6 +27,7 @@ describe("simulateFlow", () => {
     expect(r.realized.get("gear")).toBeCloseTo(45, 6);
     expect(r.inputLimited.has("gear")).toBe(true);
     expect(r.edgeActual.get("plate>gear")).toBeCloseTo(90, 6);
+    expect(r.edgeOffered.get("plate>gear")).toBeCloseTo(90, 6); // under-supplied: 90 of 100
     expect(r.delivered[0]).toBeCloseTo(45, 6);
   });
 
@@ -41,6 +42,18 @@ describe("simulateFlow", () => {
     // Plate runs at its full 120 (raw is unlimited); gear uses 110 of it, 10 plates spare
     expect(r.realized.get("ore")).toBeCloseTo(120, 6);
     expect(r.edgeActual.get("plate>gear")).toBeCloseTo(110, 6);
+  });
+
+  test("a consumer taking less than offered is not short: the producer has surplus", () => {
+    // Flax rounded up (1,320), Flax Fiber rounded down (1,210 capacity)
+    const r = simulateFlow(
+      [node("flax", 1260, 1320), node("fiber", 1260, 1210)],
+      [edge("flax", "fiber", 1260)],
+      [{ source: "fiber", demand: 1260 }],
+    );
+    expect(r.edgeActual.get("flax>fiber")).toBeCloseTo(1210, 6);
+    expect(r.edgeOffered.get("flax>fiber")).toBeCloseTo(1320, 6);
+    expect(r.inputLimited.has("fiber")).toBe(false);
   });
 
   test("a shared producer splits its shortfall across consumers by demand", () => {

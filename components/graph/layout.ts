@@ -14,7 +14,12 @@ const WARNING = 64; // A wrapped per-machine warning box
 const estimateBeltHeight = (belt: NodeBeltInfo) => {
     const sections: number[] = [];
     if (!belt.isFluid && belt.output.linesNeeded > 0) sections.push(30); // Belt % row + bar
-    if (belt.build) sections.push(ROW + (Math.abs(belt.build.surplus) > 0.05 ? ROW : 0));
+    const statusRows =
+        (belt.build ? 1 : 0) +
+        (belt.inputLimited ? 1 : 0) +
+        (belt.demandRate - belt.realizedRate > 0.05 ? 1 : 0) +
+        (belt.leftoverRate > 0.05 ? 1 : 0);
+    if (statusRows > 0) sections.push(statusRows * ROW);
     if (belt.linePlan) {
         const rows = 1 + (belt.build ? 0 : 1) + (belt.linePlan.exactMachines > 0 ? 1 : 0);
         sections.push(12 + rows * ROW);
