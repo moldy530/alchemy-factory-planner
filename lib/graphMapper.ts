@@ -1,7 +1,124 @@
 
 import { Edge, MarkerType, Node } from "@xyflow/react";
 import { ProductionNode } from "../engine/types";
+import { BeltReport } from "../engine/belt-analysis";
+import { collectPlanGraph, splitEdgeKey } from "../engine/plan-graph";
+import { BeltStatus, beltUtilization } from "../engine/belt";
 import { getLayoutedElements } from "../components/graph/layout";
+
+/** Draw at most this many parallel strokes; larger counts get a "×N" label. */
+export const MAX_VISUAL_LINES = 6;
+
+export type BeltEdgeState = BeltStatus | "error" | "short";
+
+export interface BeltEdgeData extends Record<string, unknown> {
+    /** Actual rate moving along the edge */
+    rate: number;
+    /** Rate the consumer needs at full demand */
+    demand: number;
+    itemName: string;
+    utilization: number;
+    lines: number;
+    /** Parallel strokes to draw (1 unless split, capped at MAX_VISUAL_LINES) */
+    strokes: number;
+    state: BeltEdgeState;
+}
+
+const BELT_EDGE_COLORS: Record<BeltEdgeState, string> = {
+    ok: "#F59E0B",
+    split: "#6db8e8",
+    over: "#e8a840",
+    error: "#e05555",
+    fluid: "#9b6dff",
+    short: "#e8a840",
+};
+
+function formatRate(rate: number): string {
+    return rate.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+}
+
+/** Edge label like "1,260/m · 8 lines" or "120/m · 73%". */
+export function beltEdgeLabel(d: BeltEdgeData): string {
+    const pct = `${Math.round(d.utilization * 100)}%`;
+    let detail: string;
+    switch (d.state) {
+        case "fluid": detail = "pipe"; break;
+        case "split": detail = d.lines > MAX_VISUAL_LINES ? `×${d.lines} lines` : `${d.lines} lines`; break;
+        case "over": detail = `${pct} · needs ${d.lines} belts`; break;
+        case "error": detail = `${d.lines > 1 ? `${d.lines} lines` : pct} · ⚠ >1 belt per machine`; break;
+        case "short": detail = d.lines > 1 ? `${d.lines} lines · short` : `${pct} · short`; break;
+        default: detail = pct;
+    }
+    const rate = d.state === "short" ? `${formatRate(d.rate)}/${formatRate(d.demand)}` : formatRate(d.rate);
+    return `${rate}/m · ${detail}`;
+}
+
+/** Edge between two plan nodes, with belt styling when a report is available. */
+function createFlowEdge(
+    key: string,
+    source: string,
+    target: string,
+    rate: number,
+    sourceNode: ProductionNode | undefined,
+    beltReport?: BeltReport,
+): Edge {
+    const sourceInfo = beltReport?.nodes[source];
+    if (!beltReport || !sourceInfo) {
+        return {
+            id: key,
+            source,
+            target,
+            animated: true,
+            type: "smoothstep",
+            markerEnd: { type: MarkerType.ArrowClosed, color: "#F59E0B" },
+            style: { stroke: "#F59E0B", strokeWidth: 2 },
+            label: `${formatRate(rate)}/m`,
+            labelStyle: { fill: "#fbbf24", fontWeight: 700, fontSize: 11 },
+            labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
+            labelBgPadding: [4, 2],
+            labelBgBorderRadius: 4,
+        };
+    }
+
+    const itemName = sourceNode?.itemName ?? sourceInfo.itemName;
+    const demand = rate;
+    const actual = beltReport.edges[key]?.actual ?? rate;
+    const util = beltUtilization(actual, beltReport.beltSpeed, {
+        isFluid: sourceInfo.isFluid,
+        parallelLines: sourceInfo.parallelLines,
+    });
+    const consumerOverLimit = beltReport.nodes[target]?.machineWarnings.some(
+        (w) => w.direction === "input" && w.itemName === itemName,
+    );
+    const isShort = beltReport.edges[key]?.short ?? false;
+    const state: BeltEdgeState = consumerOverLimit ? "error" : isShort ? "short" : util.status;
+    const data: BeltEdgeData = {
+        rate: actual,
+        demand,
+        itemName,
+        utilization: util.utilization,
+        lines: util.linesNeeded,
+        strokes: util.status === "split" ? Math.min(util.linesNeeded, MAX_VISUAL_LINES) : 1,
+        state,
+    };
+    const color = BELT_EDGE_COLORS[state];
+
+    return {
+        id: key,
+        source,
+        target,
+        animated: true,
+        type: "belt",
+        data,
+        markerEnd: { type: MarkerType.ArrowClosed, color },
+        style: { stroke: color, strokeWidth: 2, ...(state === "fluid" && { strokeDasharray: "6 3" }) },
+        label: beltEdgeLabel(data),
+        labelStyle: { fill: color, fontWeight: 700, fontSize: 11 },
+        labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
+        labelBgPadding: [4, 2],
+        labelBgBorderRadius: 4,
+    };
+}
 
 /**
  * Transforms ProductionNode trees into ReactFlow Nodes and Edges,
@@ -9,109 +126,15 @@ import { getLayoutedElements } from "../components/graph/layout";
  */
 export function generateGraph(
     rootNodes: ProductionNode[],
-    savedPositions: Record<string, { x: number; y: number }> = {}
+    savedPositions: Record<string, { x: number; y: number }> = {},
+    beltReport?: BeltReport | null
 ): { nodes: Node[]; edges: Edge[] } {
     if (rootNodes.length === 0) return { nodes: [], edges: [] };
 
     // ----------------------------------------------------
     // Merging Algorithm (Consolidate duplicate items)
     // ----------------------------------------------------
-    // Map: NodeKey -> MergedNodeData
-    const mergedNodes = new Map<string, ProductionNode>();
-    // Map: EdgeKey -> Accumulated Rate
-    const edgeRates = new Map<string, number>();
-
-    // Track nodes currently being traversed to detect cycles
-    const visiting = new Set<string>();
-
-    // Track visited node objects globally to prevent double-counting
-    // Same object appearing in multiple paths should only be counted once
-    const visitedObjects = new WeakSet<ProductionNode>();
-
-    // Track which consumption reference keys have had their inputs traversed
-    // We accumulate rates but only traverse inputs once per key
-    const traversedConsumptionKeys = new Set<string>();
-
-    function traverse(node: ProductionNode, parentName?: string) {
-        // Use explicit ID if available to prevent merging of Source vs Production nodes
-        const key = node.id || node.itemName;
-
-        // DEBUG: Log when processing plank nodes
-        if (node.itemName === "Plank" || node.itemName.toLowerCase().includes("plank")) {
-            console.log("[GraphMapper] Processing Plank node:", {
-                key,
-                rate: node.rate,
-                deviceCount: node.deviceCount,
-                isConsumptionReference: node.isConsumptionReference,
-                parentName,
-                hasInputs: node.inputs.length,
-            });
-        }
-
-        // For consumption references: record edge with consumption rate, then traverse inputs
-        // Check BEFORE cycle detection - consumption refs should always record edges
-        if (node.isConsumptionReference) {
-            // Always record the edge for this consumption reference
-            if (parentName) {
-                const edgeKey = `${key}___${parentName}`;
-                const currentRate = edgeRates.get(edgeKey) || 0;
-                edgeRates.set(edgeKey, currentRate + node.rate);
-            }
-
-            // Traverse inputs to show production chain (including circular dependencies)
-            // Only traverse inputs once per key to avoid duplicate traversals
-            if (!traversedConsumptionKeys.has(key)) {
-                traversedConsumptionKeys.add(key);
-                node.inputs.forEach((input) => traverse(input, parentName));
-            }
-            return;
-        }
-
-        // Cycle detection: if we're already visiting this node in current path, stop
-        if (visiting.has(key)) {
-            return;
-        }
-
-        // Record Relationship & Rate for production nodes (skip if already traversed as consumption ref)
-        if (parentName && !traversedConsumptionKeys.has(key)) {
-            const edgeKey = `${key}___${parentName}`;
-            const currentRate = edgeRates.get(edgeKey) || 0;
-            edgeRates.set(edgeKey, currentRate + node.rate);
-        }
-
-        // Check if we've already processed this exact object
-        // If so, just record the edge but don't re-traverse or add to totals
-        if (visitedObjects.has(node)) {
-            // Already processed this node object, skip to avoid double-counting
-            return;
-        }
-        visitedObjects.add(node);
-
-        // Update or Create (for non-consumption references)
-        if (mergedNodes.has(key)) {
-            const existing = mergedNodes.get(key)!;
-            existing.rate += node.rate;
-            existing.deviceCount += node.deviceCount;
-            existing.heatConsumption += node.heatConsumption;
-            existing.suppliedRate = (existing.suppliedRate || 0) + (node.suppliedRate || 0);
-            // Recalculate saturation based on total rate
-            existing.isBeltSaturated = existing.rate > (existing.beltLimit || 60);
-
-            // DEBUG: Log accumulation
-            if (key.toLowerCase().includes("plank") || key.toLowerCase().includes("woodboard")) {
-                console.log("[GraphMapper] Accumulating node:", key, "old:", existing.rate - node.rate, "adding:", node.rate, "new total:", existing.rate);
-            }
-        } else {
-            mergedNodes.set(key, { ...node, inputs: [], byproducts: [] });
-        }
-
-        // Mark as visiting, recurse, then unmark
-        visiting.add(key);
-        node.inputs.forEach((input) => traverse(input, key));
-        visiting.delete(key);
-    }
-
-    rootNodes.forEach((root) => traverse(root));
+    const { nodes: mergedNodes, edgeRates } = collectPlanGraph(rootNodes);
 
     // Calculate consumption for each item (how much is being consumed internally)
     // Skip consumption references - they're just edges showing fuel/fertilizer flow
@@ -126,13 +149,6 @@ export function generateGraph(
             const current = consumption.get(inputItemName) || 0;
             consumption.set(inputItemName, current + (input.rate || 0));
         });
-    });
-
-    // DEBUG: Log consumption
-    consumption.forEach((rate, key) => {
-        if (key.toLowerCase().includes("plank") || key.toLowerCase().includes("woodboard")) {
-            console.log("[GraphMapper] Internal consumption of", key, ":", rate, "/m");
-        }
     });
 
     // Create React Flow Nodes (Production Network)
@@ -152,11 +168,6 @@ export function generateGraph(
             if (internalConsumption > 0) {
                 displayRate = n.rate - internalConsumption;
             }
-
-            // DEBUG
-            if (nodeKey.toLowerCase().includes("plank") || nodeKey.toLowerCase().includes("woodboard")) {
-                console.log("[GraphMapper] Node display:", nodeKey, "itemKey:", itemKey, "gross:", n.rate, "consumption:", internalConsumption, "displayRate:", displayRate, "netOutputRate:", n.netOutputRate);
-            }
         }
 
         return {
@@ -166,6 +177,7 @@ export function generateGraph(
                 ...n,
                 // Only set displayRate if we calculated it (and LP didn't provide netOutputRate)
                 ...(displayRate !== undefined && { displayRate }),
+                ...(beltReport?.nodes[nodeKey] && { belt: beltReport.nodes[nodeKey] }),
             } as unknown as Record<string, unknown>,
             position: { x: 0, y: 0 },
         };
@@ -175,27 +187,8 @@ export function generateGraph(
     const rfEdges: Edge[] = [];
 
     edgeRates.forEach((rate, key) => {
-        const [source, target] = key.split("___");
-
-        rfEdges.push({
-            id: key,
-            source,
-            target,
-            animated: true,
-            type: "smoothstep",
-            markerEnd: { type: MarkerType.ArrowClosed, color: "#F59E0B" },
-            style: { stroke: "#F59E0B", strokeWidth: 2 },
-
-            // --- Label Logic ---
-            label: `${rate.toLocaleString(undefined, {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 2,
-            })}/m`,
-            labelStyle: { fill: "#fbbf24", fontWeight: 700, fontSize: 11 },
-            labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
-            labelBgPadding: [4, 2],
-            labelBgBorderRadius: 4,
-        });
+        const [source, target] = splitEdgeKey(key);
+        rfEdges.push(createFlowEdge(key, source, target, rate, mergedNodes.get(source), beltReport ?? undefined));
     });
 
     // ----------------------------------------------------
@@ -204,7 +197,9 @@ export function generateGraph(
     rootNodes.forEach((root, idx) => {
         const targetId = `target-${root.itemName}-${idx}`;
         // Use netOutputRate if available (for LP planner with loops), otherwise use rate
-        const outputRate = root.netOutputRate ?? root.rate;
+        const targetDemand = root.netOutputRate ?? root.rate;
+        // With belt analysis, show what the built factory actually delivers
+        const outputRate = beltReport?.targets[idx]?.delivered ?? targetDemand;
 
         // Create Target Node
         rfNodes.push({
@@ -219,6 +214,7 @@ export function generateGraph(
                 inputs: [],
                 byproducts: [],
                 isTarget: true, // Special Flag
+                targetDemand,
             } as unknown as Record<string, unknown>,
             position: { x: 0, y: 0 },
         });

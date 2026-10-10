@@ -1,12 +1,16 @@
 import { Flame, Settings } from "lucide-react";
 import { ProductionNode } from "../../engine/types";
+import { BeltReport, nodeKeyOf } from "../../engine/belt-analysis";
+import { BELT_STATE_COLOR, beltDisplayState, beltStateLabel } from "../../lib/beltDisplay";
 
 export function NodeView({
     node,
     depth = 0,
+    beltReport,
 }: {
     node: ProductionNode;
     depth?: number;
+    beltReport?: BeltReport | null;
 }) {
     if (depth > 12)
         return (
@@ -14,7 +18,10 @@ export function NodeView({
         );
 
     const isMachine = node.deviceCount > 0;
-    const isSaturated = node.isBeltSaturated;
+    const belt = beltReport?.nodes[nodeKeyOf(node)];
+    const beltState = belt ? beltDisplayState(belt) : node.isBeltSaturated ? "error" : "ok";
+    const isSaturated = beltState === "error";
+    const stateLabel = belt ? beltStateLabel(belt) : node.isBeltSaturated ? "Belt Limit" : "";
 
     return (
         <div className="relative group">
@@ -39,9 +46,12 @@ export function NodeView({
                         >
                             {node.itemName}
                         </span>
-                        {isSaturated && (
-                            <span className="text-[var(--error)] text-[10px] uppercase font-bold tracking-wider border border-[var(--error)]/50 px-1.5 py-0.5 rounded bg-[var(--error-dim)]/30">
-                                Belt Limit
+                        {stateLabel && (
+                            <span
+                                className="text-[10px] uppercase font-bold tracking-wider border px-1.5 py-0.5 rounded bg-[var(--background-deep)]/40"
+                                style={{ color: BELT_STATE_COLOR[beltState], borderColor: BELT_STATE_COLOR[beltState] }}
+                            >
+                                {stateLabel}
                             </span>
                         )}
                         {node.isTarget && (
@@ -66,11 +76,16 @@ export function NodeView({
                             <span className="flex items-center gap-1">
                                 <Settings className="w-3 h-3 text-[var(--accent-purple)]" />
                                 <span className="text-[var(--accent-gold-bright)] font-bold">
-                                    {node.deviceCount.toLocaleString(undefined, {
+                                    {(belt?.build ? belt.machinesBuilt : node.deviceCount).toLocaleString(undefined, {
                                         maximumFractionDigits: 1,
                                     })}
                                 </span>
                                 <span className="opacity-75">x Device</span>
+                                {belt?.build && (
+                                    <span className="opacity-60">
+                                        ({node.deviceCount.toLocaleString(undefined, { maximumFractionDigits: 2 })} exact)
+                                    </span>
+                                )}
                             </span>
                             {node.heatConsumption > 0 && (
                                 <span className="flex items-center gap-1 border-l border-[var(--border)] pl-3">
@@ -106,7 +121,7 @@ export function NodeView({
                 {/* Gradient fade on connector */}
                 <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-[var(--accent-gold-dim)]/30 via-[var(--border)] to-transparent pointer-events-none"></div>
                 {node.inputs.map((input, idx) => (
-                    <NodeView key={idx} node={input} depth={depth + 1} />
+                    <NodeView key={idx} node={input} depth={depth + 1} beltReport={beltReport} />
                 ))}
             </div>
         </div>

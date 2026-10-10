@@ -1,5 +1,6 @@
 import { PlannerConfig } from "../types";
 import { EfficiencyContext, ALCHEMY_MACHINES } from "./types";
+import { beltSpeedForLevel, factorySpeedMultiplier } from "../game-constants";
 
 /**
  * Calculate alchemy skill bonus percentage
@@ -65,10 +66,7 @@ export function calculateCustomerMgmtBonus(level: number): number {
  */
 export function buildEfficiencyContext(config: PlannerConfig): EfficiencyContext {
   // Factory Efficiency: +25% per level up to 12, then +5% per level (capped at 92)
-  const factoryLevel = Math.min(92, config.factoryEfficiency);
-  const speedMultiplier = factoryLevel <= 12
-    ? 1 + factoryLevel * 0.25
-    : 1 + (12 * 0.25) + ((factoryLevel - 12) * 0.05);
+  const speedMultiplier = factorySpeedMultiplier(config.factoryEfficiency);
 
   // Alchemy Skill: Tiered progression
   const alchemyMultiplier = 1 + calculateAlchemyBonus(config.alchemySkill);
@@ -80,10 +78,7 @@ export function buildEfficiencyContext(config: PlannerConfig): EfficiencyContext
   const fertilizerMultiplier = 1 + config.fertilizerEfficiency * 0.1;
 
   // Logistics: +15/min per level up to 12, then +3/min per level (capped at 92)
-  const logisticsLevel = Math.min(92, config.logisticsEfficiency);
-  const beltLimit = logisticsLevel <= 12
-    ? 60 + logisticsLevel * 15
-    : 60 + (12 * 15) + ((logisticsLevel - 12) * 3);
+  const beltLimit = beltSpeedForLevel(config.logisticsEfficiency);
 
   return {
     speedMultiplier,

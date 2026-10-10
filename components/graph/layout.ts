@@ -1,15 +1,45 @@
 import dagre from "@dagrejs/dagre";
 import { Edge, Node, Position } from "@xyflow/react";
 import { ProductionNode } from "../../engine/types";
+import { NodeBeltInfo } from "../../engine/belt-analysis";
 
 const nodeWidth = 250;
 
-// Helper to estimate node height for centering
-export const estimateHeight = (data: ProductionNode) => {
+const ROW = 15; // One 10px text row
+const GAP = 6; // gap-1.5 between sections
+const TOGGLE_ROW = 22;
+const WARNING = 64; // A wrapped per-machine warning box
+
+/** Height of the NodeBeltDetails block, mirroring what it renders. */
+const estimateBeltHeight = (belt: NodeBeltInfo) => {
+    const sections: number[] = [];
+    if (!belt.isFluid && belt.output.linesNeeded > 0) sections.push(30); // Belt % row + bar
+    const statusRows =
+        (belt.build ? 1 : 0) +
+        (belt.inputLimited ? 1 : 0) +
+        (belt.demandRate - belt.realizedRate > 0.05 ? 1 : 0) +
+        (belt.leftoverRate > 0.05 ? 1 : 0);
+    if (statusRows > 0) sections.push(statusRows * ROW);
+    if (belt.linePlan) {
+        const rows = 1 + (belt.build ? 0 : 1) + (belt.linePlan.exactMachines > 0 ? 1 : 0);
+        sections.push(12 + rows * ROW);
+    }
+    const inputs = belt.perMachineInputs.filter((i) => !i.isFluid).length;
+    if (inputs > 0) sections.push(inputs * ROW);
+    belt.machineWarnings.forEach(() => sections.push(WARNING));
+    if (belt.machinesExact > 0) sections.push(TOGGLE_ROW); // Rounding toggle
+    if (!belt.isFluid && (belt.output.linesNeeded > 1 || belt.lineMode !== "inherit")) sections.push(TOGGLE_ROW);
+    if (belt.output.status === "over") sections.push(ROW);
+    return sections.reduce((sum, h) => sum + h + GAP, 0);
+};
+
+// Helper to estimate node height for centering and spacing
+export const estimateHeight = (data: ProductionNode & { belt?: NodeBeltInfo }) => {
     let h = 66; // Base padding + header
     if (data.isTarget) h += 24;
     if (data.deviceCount > 0) h += 24;
     if (data.heatConsumption > 0) h += 24;
+    if (data.belt && !data.isTarget) h += estimateBeltHeight(data.belt);
     return h;
 };
 
@@ -36,7 +66,7 @@ export const getLayoutedElements = (
 
     nodes.forEach((node) => {
         // Safely cast data
-        const data = node.data as unknown as ProductionNode;
+        const data = node.data as unknown as ProductionNode & { belt?: NodeBeltInfo };
         const height = estimateHeight(data);
         nodeHeights.set(node.id, height);
 

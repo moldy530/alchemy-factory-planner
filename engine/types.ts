@@ -84,6 +84,9 @@ export interface ProductionNode {
   parentFurnaceId?: string; // Parent furnace device ID (e.g., "stone-stove")
   parentFurnaceCount?: number; // Number of parent furnaces needed
   inputs: ProductionNode[];
+  // Rate this node consumes from each input, keyed by input node id. Set when the
+  // input reference is the shared producer node (whose rate is its gross output).
+  inputRates?: Record<string, number>;
   byproducts: { itemName: string; rate: number }[];
   isBeltSaturated?: boolean;
   beltLimit?: number;
@@ -111,6 +114,8 @@ export interface PlannerConfig {
   selectedFuel?: string;
   selfFuel?: boolean; // If true, fuel is produced internally; if false, treated as external input
   selfFertilizer?: boolean; // If true, fertilizer is produced internally; if false, treated as external input
+  planParallelLines?: boolean; // Plan parallel belt lines for flows over the belt limit (default true)
+  machineRounding?: RoundingMode; // Whole machines at full speed: round up/down, or exact fractions (default "up")
 }
 
 export interface ResearchState {
@@ -128,6 +133,12 @@ export interface ResearchState {
 
 export type PlannerMode = "recursive" | "lp";
 
+/** Per-node override for parallel-line planning. Absent = inherit the factory setting. */
+export type LineOverride = "on" | "off";
+
+/** Machine count rounding. "exact" keeps the solver's fractions (machines throttled to demand). */
+export type RoundingMode = "exact" | "up" | "down";
+
 export interface FactoryState {
   id: string;
   name: string;
@@ -136,4 +147,6 @@ export interface FactoryState {
   config: Omit<PlannerConfig, "targets" | "targetItem" | "targetRate" | "availableResources">;
   viewMode: "graph" | "list";
   plannerMode: PlannerMode;
+  lineOverrides?: Record<string, LineOverride>; // Keyed by production node key
+  roundingOverrides?: Record<string, RoundingMode>; // Keyed by production node key
 }
