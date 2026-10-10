@@ -139,7 +139,7 @@ export function generateGraph(
     // We accumulate rates but only traverse inputs once per key
     const traversedConsumptionKeys = new Set<string>();
 
-    function traverse(node: ProductionNode, parentName?: string) {
+    function traverse(node: ProductionNode, parentName?: string, parent?: ProductionNode) {
         // Use explicit ID if available to prevent merging of Source vs Production nodes
         const key = node.id || node.itemName;
 
@@ -183,7 +183,8 @@ export function generateGraph(
         if (parentName && !traversedConsumptionKeys.has(key)) {
             const edgeKey = `${key}___${parentName}`;
             const currentRate = edgeRates.get(edgeKey) || 0;
-            edgeRates.set(edgeKey, currentRate + node.rate);
+            // Prefer the consumer's recorded share over the producer's gross rate
+            edgeRates.set(edgeKey, currentRate + (parent?.inputRates?.[key] ?? node.rate));
         }
 
         // Check if we've already processed this exact object
@@ -214,7 +215,7 @@ export function generateGraph(
 
         // Mark as visiting, recurse, then unmark
         visiting.add(key);
-        node.inputs.forEach((input) => traverse(input, key));
+        node.inputs.forEach((input) => traverse(input, key, node));
         visiting.delete(key);
     }
 

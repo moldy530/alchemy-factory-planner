@@ -490,6 +490,9 @@ function linkProductionNodes(
 
           nodeInputs.add(sourceNodeId);
           node.inputs.push(createInputReference(sourceNode, inputRate, inputId));
+          // The reference is the shared producer node, so record this consumer's share separately
+          const share = flow.produced > EPSILON ? source.rate / flow.produced : 1;
+          node.inputRates = { ...node.inputRates, [sourceNodeId]: inputRate * share };
           addDependency(nodeId, sourceNodeId);
         });
       } else {

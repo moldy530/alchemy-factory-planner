@@ -84,6 +84,9 @@ export interface ProductionNode {
   parentFurnaceId?: string; // Parent furnace device ID (e.g., "stone-stove")
   parentFurnaceCount?: number; // Number of parent furnaces needed
   inputs: ProductionNode[];
+  // Rate this node consumes from each input, keyed by input node id. Set when the
+  // input reference is the shared producer node (whose rate is its gross output).
+  inputRates?: Record<string, number>;
   byproducts: { itemName: string; rate: number }[];
   isBeltSaturated?: boolean;
   beltLimit?: number;
