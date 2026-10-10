@@ -9,13 +9,14 @@ import { LineOverride, PlannerConfig, ProductionNode, Recipe } from "./types";
 import { buildEfficiencyContext, isAlchemyMachine } from "./lp-planner/efficiency";
 import { EfficiencyContext } from "./lp-planner/types";
 import { getEffectiveRecipeTime, getItem, normalizeItemId } from "./item-utils";
-import { FLUID_CATEGORIES, RATE_EPSILON } from "./game-constants";
+import { FLUID_CATEGORIES, RATE_EPSILON, inputPortsFor } from "./game-constants";
 import {
   BeltUtilization,
   MachineFlowCheck,
   ParallelLinePlan,
   beltUtilization,
   checkMachineFlow,
+  checkMachineInputs,
   consumersPerBelt,
   planParallelLines,
 } from "./belt";
@@ -35,6 +36,8 @@ export interface MachineFlowInfo {
   utilization: number;
   /** For inputs: how many of these machines one belt can feed */
   consumersPerBelt: number;
+  /** Belts feeding one machine (more than 1 when spare input ports double up) */
+  beltsPerMachine: number;
   isFluid: boolean;
 }
 
@@ -176,6 +179,7 @@ function toFlowInfo(flow: { itemName: string; rate: number }, beltSpeed: number)
     perMachineRate: flow.rate,
     utilization: beltSpeed > 0 ? flow.rate / beltSpeed : 0,
     consumersPerBelt: consumersPerBelt(beltSpeed, flow.rate),
+    beltsPerMachine: 1,
     isFluid: isFluidItem(flow.itemName),
   };
 }
@@ -208,20 +212,30 @@ export function analyzeNode(
 
   const machineWarnings: MachineFlowCheck[] = [];
   if (node.deviceCount > RATE_EPSILON) {
-    const check = (list: MachineFlowInfo[], direction: "input" | "output") =>
-      list.forEach((f) => {
-        if (f.isFluid) return;
-        const warning = checkMachineFlow(
-          f.itemName,
-          direction,
-          f.perMachineRate,
-          beltSpeed,
-          f.perMachineRate * node.deviceCount,
-        );
-        if (warning) machineWarnings.push(warning);
-      });
-    check(perMachineInputs, "input");
-    check(perMachineOutputs, "output");
+    const beltInputs = perMachineInputs.filter((f) => !f.isFluid);
+    const inputCheck = checkMachineInputs(
+      beltInputs.map((f) => ({
+        itemName: f.itemName,
+        perMachineRate: f.perMachineRate,
+        totalRate: f.perMachineRate * node.deviceCount,
+      })),
+      beltSpeed,
+      inputPortsFor(node.deviceId, beltInputs.length),
+    );
+    beltInputs.forEach((f) => (f.beltsPerMachine = inputCheck.beltsPerInput[f.itemName] ?? 1));
+    machineWarnings.push(...inputCheck.warnings);
+
+    perMachineOutputs.forEach((f) => {
+      if (f.isFluid) return;
+      const warning = checkMachineFlow(
+        f.itemName,
+        "output",
+        f.perMachineRate,
+        beltSpeed,
+        f.perMachineRate * node.deviceCount,
+      );
+      if (warning) machineWarnings.push(warning);
+    });
   }
 
   return {

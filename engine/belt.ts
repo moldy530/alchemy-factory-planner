@@ -47,6 +47,25 @@ export interface MachineFlowCheck {
   machinesAtPartialLoad: number;
   /** Fraction of full speed each of those machines runs at */
   partialLoad: number;
+  /** Inputs only: belts the machine needs across all ingredients vs. ports it has */
+  portsNeeded?: number;
+  portsAvailable?: number;
+}
+
+export interface MachineInputFlow {
+  itemName: string;
+  perMachineRate: number;
+  /** Total flow of this item across all machines of the node */
+  totalRate: number;
+}
+
+export interface MachineInputCheck {
+  /** Belts each ingredient needs into one machine at full speed */
+  beltsPerInput: Record<string, number>;
+  portsNeeded: number;
+  portsAvailable: number;
+  /** Ingredients that need more than one belt when ports run out */
+  warnings: MachineFlowCheck[];
 }
 
 /** Belts needed for a flow. A non-zero flow needs at least one line. */
@@ -120,6 +139,35 @@ export function checkMachineFlow(
     machinesAtPartialLoad,
     partialLoad: machinesAtPartialLoad > 0 ? totalRate / (machinesAtPartialLoad * perMachineRate) : 0,
   };
+}
+
+/**
+ * Check a machine's belt inputs against its input ports. Each ingredient
+ * takes ceil(rate / belt) ports; spare ports can double up an ingredient.
+ * Only flags ingredients over one belt when the machine runs out of ports.
+ */
+export function checkMachineInputs(
+  inputs: MachineInputFlow[],
+  beltSpeed: number,
+  portsAvailable: number,
+): MachineInputCheck {
+  const beltsPerInput: Record<string, number> = {};
+  let portsNeeded = 0;
+  inputs.forEach((i) => {
+    const belts = Math.max(1, linesNeeded(i.perMachineRate, beltSpeed));
+    beltsPerInput[i.itemName] = belts;
+    portsNeeded += belts;
+  });
+
+  const warnings =
+    portsNeeded <= portsAvailable
+      ? []
+      : inputs
+          .map((i) => checkMachineFlow(i.itemName, "input", i.perMachineRate, beltSpeed, i.totalRate))
+          .filter((w): w is MachineFlowCheck => w !== null)
+          .map((w) => ({ ...w, portsNeeded, portsAvailable }));
+
+  return { beltsPerInput, portsNeeded, portsAvailable, warnings };
 }
 
 /**

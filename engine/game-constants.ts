@@ -27,6 +27,15 @@ export const FACTORY = {
  */
 export const FLUID_CATEGORIES = ["liquid", "oil", "essence"] as const;
 
+/**
+ * Input ports per device. A recipe with fewer ingredients than ports can feed
+ * one ingredient from several belts (e.g. Linen: Linen Thread into both
+ * assembler ports). Devices not listed get one port per ingredient.
+ */
+export const MACHINE_INPUT_PORTS: Record<string, number> = {
+  assembler: 2,
+};
+
 /** Tolerance for "exactly at the limit" comparisons (e.g. 165.0000001 vs 165). */
 export const RATE_EPSILON = 1e-6;
 
@@ -46,4 +55,10 @@ export function factorySpeedMultiplier(level: number): number {
   return l <= FACTORY.tierBreak
     ? 1 + l * FACTORY.perLevel
     : 1 + FACTORY.tierBreak * FACTORY.perLevel + (l - FACTORY.tierBreak) * FACTORY.perLevelAfterBreak;
+}
+
+/** Input ports available on a device for a recipe with `ingredientCount` belt inputs. */
+export function inputPortsFor(deviceId: string | undefined, ingredientCount: number): number {
+  const ports = deviceId ? MACHINE_INPUT_PORTS[deviceId.toLowerCase()] : undefined;
+  return Math.max(ingredientCount, ports ?? ingredientCount);
 }

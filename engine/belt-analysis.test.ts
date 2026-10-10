@@ -60,17 +60,14 @@ planners.forEach(({ name, fn }) => {
       expect(flax.machinesBuilt).toBe(8);
     });
 
-    test("linen assembler flagged for 330 thread/min per machine", () => {
+    test("linen assembler needs 330 thread/min, fed through both input ports (no error)", () => {
       const linen = nodeFor(report, "Linen");
-      expect(linen.machineWarnings).toHaveLength(1);
-      const w = linen.machineWarnings[0];
-      expect(w.itemName).toBe("Linen Thread");
-      expect(w.direction).toBe("input");
-      expect(w.perMachineRate).toBeCloseTo(330, 3);
-      expect(w.beltsPerMachine).toBe(2);
-      // 300 thread/min total ÷ 165 per belt → 2 machines, each at 150/330 ≈ 45% load
-      expect(w.machinesAtPartialLoad).toBe(2);
-      expect(report.warnings.some((x) => x.producedItem === "Linen")).toBe(true);
+      const thread = linen.perMachineInputs.find((i) => i.itemName === "Linen Thread")!;
+      expect(thread.perMachineRate).toBeCloseTo(330, 3);
+      // One ingredient, two assembler ports: Linen Thread on two belts = 330/min
+      expect(thread.beltsPerMachine).toBe(2);
+      expect(linen.machineWarnings).toHaveLength(0);
+      expect(report.warnings).toHaveLength(0);
     });
 
     test("summary totals per device and lines per item", () => {

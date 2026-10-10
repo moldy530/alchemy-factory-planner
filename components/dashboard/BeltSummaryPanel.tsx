@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { AlertTriangle, Factory, GitFork } from "lucide-react";
 import { BeltReport } from "../../engine/belt-analysis";
 import { getDevice } from "../../engine/lp-planner/model-builder";
-import { formatPercent, formatRate } from "../../lib/beltDisplay";
+import { formatRate } from "../../lib/beltDisplay";
+import { MachineWarningText } from "./MachineWarningText";
 import { OrnatePanel } from "../ui/OrnatePanel";
 
 const deviceName = (id?: string) => (id ? getDevice(id)?.name ?? id : "Machine");
@@ -77,14 +78,12 @@ export function BeltSummaryPanel({ report }: { report: BeltReport }) {
                                 key={`${w.nodeKey}-${w.direction}-${w.itemName}`}
                                 className="text-[11px] leading-snug text-[var(--error)] bg-[var(--error-dim)]/30 border border-[var(--error)]/40 px-2 py-1 rounded"
                             >
-                                <span className="font-bold">{w.producedItem}</span> ({deviceName(w.deviceId)}):{" "}
-                                {w.direction === "input" ? "needs" : "outputs"} {formatRate(w.perMachineRate)} {w.itemName}/m per
-                                machine. Use {w.beltsPerMachine} belts per machine, or {w.machinesAtPartialLoad} machines at{" "}
-                                {formatPercent(w.partialLoad)} load.
+                                <span className="font-bold">{w.producedItem}</span>:{" "}
+                                <MachineWarningText warning={w} device={deviceName(w.deviceId)} />
                             </div>
                         ))}
                         {report.warnings.length === 0 && (
-                            <span className="text-xs text-[var(--success)]">Every machine fits on one belt per item.</span>
+                            <span className="text-xs text-[var(--success)]">Every machine can be fed and drained at full speed.</span>
                         )}
                     </div>
                 </div>

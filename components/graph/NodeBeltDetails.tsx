@@ -3,6 +3,7 @@ import { NodeBeltInfo } from "../../engine/belt-analysis";
 import { BELT_STATE_COLOR, formatPercent, formatRate } from "../../lib/beltDisplay";
 import { BeltBar } from "../ui/BeltBar";
 import { LineModeToggle } from "../dashboard/LineModeToggle";
+import { MachineWarningText } from "../dashboard/MachineWarningText";
 
 /** Belt utilization, parallel-line breakdown and per-machine checks for one graph node. */
 export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
@@ -57,8 +58,13 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                                 <span className="truncate">{input.itemName}</span>
                                 <span className="font-mono whitespace-nowrap">
                                     {formatRate(input.perMachineRate)}/m per {device}
-                                    {input.consumersPerBelt >= 1 && Number.isFinite(input.consumersPerBelt) && (
-                                        <span className="text-[var(--text-secondary)]"> · 1 belt feeds {input.consumersPerBelt}</span>
+                                    {input.beltsPerMachine > 1 ? (
+                                        <span className="text-[var(--info)]"> · fed by {input.beltsPerMachine} belts</span>
+                                    ) : (
+                                        input.consumersPerBelt >= 1 &&
+                                        Number.isFinite(input.consumersPerBelt) && (
+                                            <span className="text-[var(--text-secondary)]"> · 1 belt feeds {input.consumersPerBelt}</span>
+                                        )
                                     )}
                                 </span>
                             </div>
@@ -73,10 +79,7 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                 >
                     <AlertTriangle size={11} className="shrink-0 mt-px" />
                     <span>
-                        One {device} {w.direction === "input" ? "needs" : "outputs"} {formatRate(w.perMachineRate)}{" "}
-                        {w.itemName}/m, over one {formatRate(w.beltSpeed, 0)}/m belt. {w.direction === "input" ? "Feed" : "Drain"}{" "}
-                        each from {w.beltsPerMachine} belts, or run {w.machinesAtPartialLoad} {device} at{" "}
-                        {formatPercent(w.partialLoad)} load.
+                        <MachineWarningText warning={w} device={device} />
                     </span>
                 </div>
             ))}

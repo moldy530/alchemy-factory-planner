@@ -2,12 +2,13 @@ import { describe, expect, test } from "bun:test";
 import {
   beltUtilization,
   checkMachineFlow,
+  checkMachineInputs,
   consumersPerBelt,
   linesNeeded,
   nurseryOutputPerMachine,
   planParallelLines,
 } from "./belt";
-import { beltSpeedForLevel, factorySpeedMultiplier } from "./game-constants";
+import { beltSpeedForLevel, factorySpeedMultiplier, inputPortsFor } from "./game-constants";
 
 describe("game constants", () => {
   test("belt speed = 60 + 15 × Logistics level", () => {
@@ -97,6 +98,54 @@ describe("checkMachineFlow", () => {
     expect(check!.maxLoadOnOneBelt).toBeCloseTo(0.5, 5);
     expect(check!.machinesAtPartialLoad).toBe(2);
     expect(check!.partialLoad).toBeCloseTo(150 / 330, 5);
+  });
+});
+
+describe("checkMachineInputs", () => {
+  test("assembler has 2 input ports; others default to one per ingredient", () => {
+    expect(inputPortsFor("assembler", 1)).toBe(2);
+    expect(inputPortsFor("assembler", 2)).toBe(2);
+    expect(inputPortsFor("processor", 1)).toBe(1);
+    expect(inputPortsFor(undefined, 3)).toBe(3);
+  });
+
+  test("single ingredient doubled up across both ports is fine (Linen)", () => {
+    const check = checkMachineInputs([{ itemName: "Linen Thread", perMachineRate: 330, totalRate: 300 }], 165, 2);
+    expect(check.beltsPerInput["Linen Thread"]).toBe(2);
+    expect(check.portsNeeded).toBe(2);
+    expect(check.warnings).toHaveLength(0);
+  });
+
+  test("two ingredients at exactly one belt each fit two ports (Healing Potion)", () => {
+    const check = checkMachineInputs(
+      [
+        { itemName: "Flax Fiber", perMachineRate: 165, totalRate: 165 },
+        { itemName: "Sage Powder", perMachineRate: 165, totalRate: 165 },
+      ],
+      165,
+      2,
+    );
+    expect(check.warnings).toHaveLength(0);
+  });
+
+  test("flags the over-belt ingredient when ports run out", () => {
+    const check = checkMachineInputs(
+      [
+        { itemName: "A", perMachineRate: 200, totalRate: 400 },
+        { itemName: "B", perMachineRate: 50, totalRate: 100 },
+      ],
+      165,
+      2,
+    );
+    expect(check.portsNeeded).toBe(3);
+    expect(check.warnings).toHaveLength(1);
+    expect(check.warnings[0].itemName).toBe("A");
+    expect(check.warnings[0].portsAvailable).toBe(2);
+    expect(check.warnings[0].machinesAtPartialLoad).toBe(3);
+  });
+
+  test("a single-port machine over one belt is flagged", () => {
+    expect(checkMachineInputs([{ itemName: "X", perMachineRate: 330, totalRate: 330 }], 165, 1).warnings).toHaveLength(1);
   });
 });
 

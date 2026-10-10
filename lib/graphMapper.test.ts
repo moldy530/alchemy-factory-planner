@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import { Edge } from "@xyflow/react";
 import { generateGraph, BeltEdgeData, MAX_VISUAL_LINES } from "./graphMapper";
 import { calculateProductionLP } from "../engine/lp-planner/index";
-import { analyzeBelts } from "../engine/belt-analysis";
+import { analyzeBelts, NodeBeltInfo } from "../engine/belt-analysis";
 import { PlannerConfig } from "../engine/types";
 
 describe("Graph Mapper", () => {
@@ -259,15 +260,15 @@ describe("Graph Mapper belt edges", () => {
   };
   const trees = calculateProductionLP(config);
 
-  const edgeBetween = (edges: any[], from: string, to: string) =>
-    edges.find((e) => e.source.startsWith(from) && e.target.startsWith(to));
+  const edgeBetween = (edges: Edge[], from: string, to: string) =>
+    edges.find((e) => e.source.startsWith(from) && e.target.startsWith(to))!;
 
   test("without a report, edges keep the original smoothstep style", () => {
     const { edges } = generateGraph(trees);
-    expect(edges.every((e: any) => e.type === "smoothstep")).toBe(true);
+    expect(edges.every((e) => e.type === "smoothstep")).toBe(true);
   });
 
-  test("split flows draw parallel strokes and per-machine limits turn red", () => {
+  test("split flows draw parallel strokes; doubled-up inputs are not errors", () => {
     const report = analyzeBelts(trees, config, { planParallelLines: true });
     const { nodes, edges } = generateGraph(trees, {}, report);
 
@@ -283,12 +284,14 @@ describe("Graph Mapper belt edges", () => {
     expect((flaxToFiber.data as BeltEdgeData).strokes).toBe(MAX_VISUAL_LINES);
     expect(flaxToFiber.label).toContain("×8 lines");
 
-    // Linen Thread → Linen: one assembler needs 330/min on a 165 belt
+    // Linen Thread → Linen: 330/min per assembler, fed through both input ports
     const threadToLinen = edgeBetween(edges, "linenthread-prod", "linen-prod");
-    expect((threadToLinen.data as BeltEdgeData).state).toBe("error");
+    expect((threadToLinen.data as BeltEdgeData).state).toBe("split");
 
     // Nodes carry their belt info
-    const linen = nodes.find((n: any) => n.id.startsWith("linen-prod"));
-    expect((linen!.data as any).belt.machineWarnings).toHaveLength(1);
+    const linen = nodes.find((n) => n.id.startsWith("linen-prod"));
+    const linenBelt = (linen!.data as { belt: NodeBeltInfo }).belt;
+    expect(linenBelt.machineWarnings).toHaveLength(0);
+    expect(linenBelt.perMachineInputs[0].beltsPerMachine).toBe(2);
   });
 });
