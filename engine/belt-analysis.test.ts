@@ -121,6 +121,50 @@ describe("Machine rounding", () => {
   });
 });
 
+describe("Actual flow through the built factory", () => {
+  const cfg = config({ targets: [{ item: "Bandage", rate: 30 }] });
+  const roots = calculateProductionLP(cfg);
+  const bandage = (report: BeltReport) => report.targets[0];
+
+  test("exact: target delivered exactly", () => {
+    const report = analyzeBelts(roots, cfg, { planParallelLines: true, machineRounding: "exact" });
+    expect(bandage(report).delivered).toBeCloseTo(30, 6);
+    expect(Object.values(report.edges).every((e) => Math.abs(e.actual - e.demand) < 1e-6)).toBe(true);
+  });
+
+  test("round up everywhere: target met (with surplus)", () => {
+    const report = analyzeBelts(roots, cfg, { planParallelLines: true, machineRounding: "up" });
+    expect(bandage(report).delivered).toBeGreaterThanOrEqual(30 - 1e-6);
+  });
+
+  test("round down everywhere: target missed, shown as delivered < demand", () => {
+    const report = analyzeBelts(roots, cfg, { planParallelLines: true, machineRounding: "down" });
+    expect(bandage(report).demand).toBeCloseTo(30, 6);
+    expect(bandage(report).delivered).toBeLessThan(30);
+    // Flax 7 nurseries × 165 = 1,155 of 1,260; Flax Fiber can only grind what arrives
+    const fiber = nodeFor(report, "Flax Fiber");
+    expect(fiber.realizedRate).toBeLessThanOrEqual(1155 + 1e-6);
+  });
+
+  test("Bandage rounded up but inputs rounded down: limited by inputs, not 33/min", () => {
+    const keyOf = (r: BeltReport) => nodeFor(r, "Bandage").nodeKey;
+    const key = keyOf(analyzeBelts(roots, cfg, { planParallelLines: true }));
+    const report = analyzeBelts(roots, cfg, {
+      planParallelLines: true,
+      machineRounding: "down",
+      roundingOverrides: { [key]: "up" },
+    });
+    const b = nodeFor(report, "Bandage");
+    expect(b.build?.actualRate).toBeCloseTo(33, 6); // capacity of 2 assemblers
+    expect(b.inputLimited).toBe(true);
+    expect(b.realizedRate).toBeLessThan(30);
+    expect(bandage(report).delivered).toBeCloseTo(b.realizedRate, 6);
+    // Edges into Bandage carry less than it needs
+    const into = Object.entries(report.edges).filter(([k]) => k.endsWith(key));
+    expect(into.some(([, e]) => e.actual < e.demand - 0.05)).toBe(true);
+  });
+});
+
 describe("Healing potion assembler at level 7", () => {
   const cfg = config({ targets: [{ item: "Healing Potion", rate: 27.5 }] });
   const report = analyzeBelts(calculateProductionLP(cfg), cfg, { planParallelLines: true });

@@ -10,6 +10,8 @@ import { buildEfficiencyContext, isAlchemyMachine } from "./lp-planner/efficienc
 import { EfficiencyContext } from "./lp-planner/types";
 import { getEffectiveRecipeTime, getItem, normalizeItemId } from "./item-utils";
 import { FLUID_CATEGORIES, RATE_EPSILON, inputBeltsAllowed } from "./game-constants";
+import { collectPlanGraph, nodeKeyOf, splitEdgeKey } from "./plan-graph";
+import { FlowEdge, FlowNode, simulateFlow } from "./flow";
 import {
   BeltUtilization,
   MachineFlowCheck,
@@ -23,6 +25,7 @@ import {
 } from "./belt";
 
 export type { LineOverride, RoundingMode };
+export { nodeKeyOf };
 export type LineMode = LineOverride | "inherit";
 export type RoundingChoice = RoundingMode | "inherit";
 
@@ -69,6 +72,11 @@ export interface NodeBeltInfo {
   roundingChoice: RoundingChoice;
   /** Whole machines at full speed; absent in exact mode or for nodes without machines */
   build?: RoundedBuild;
+  /** What the plan asks for vs. what the built factory actually makes (see engine/flow) */
+  demandRate: number;
+  realizedRate: number;
+  /** Output held back because inputs don't deliver enough */
+  inputLimited: boolean;
 }
 
 export interface MachineWarning extends MachineFlowCheck {
@@ -83,17 +91,17 @@ export interface BeltReport {
   devices: { deviceId: string; exact: number; built: number }[];
   lines: { itemName: string; rate: number; lines: number }[];
   warnings: MachineWarning[];
-  /** Nodes whose rounded build over- or under-produces the demand */
-  surpluses: { nodeKey: string; itemName: string; surplus: number; mode: "up" | "down" }[];
+  /** Nodes whose actual output differs from the demand (realized - demand) */
+  surpluses: { nodeKey: string; itemName: string; surplus: number; mode: RoundingMode }[];
+  /** Demand vs. actual rate per edge, keyed like plan-graph edge keys */
+  edges: Record<string, { demand: number; actual: number }>;
+  /** What each production target actually receives, in target order */
+  targets: { nodeKey: string; itemName: string; demand: number; delivered: number }[];
 }
 
 const recipesById = new Map<string, Recipe>(
   (recipesData as unknown as Recipe[]).map((r) => [r.id, r]),
 );
-
-export function nodeKeyOf(node: ProductionNode): string {
-  return node.id || node.itemName;
-}
 
 /** Items that travel through pipes, based on item category. */
 export function isFluidItem(itemRef: string): boolean {
@@ -116,37 +124,6 @@ export function resolveRounding(
   const override = options.roundingOverrides?.[nodeKey];
   if (override) return { choice: override, mode: override };
   return { choice: "inherit", mode: options.machineRounding ?? DEFAULT_ROUNDING };
-}
-
-/**
- * Collect the distinct nodes of a plan, summing rate and machines for nodes that
- * share a key. Mirrors the merging in lib/graphMapper so numbers match the graph.
- */
-export function collectPlanNodes(roots: ProductionNode[]): Map<string, ProductionNode> {
-  const merged = new Map<string, ProductionNode>();
-  const seen = new WeakSet<ProductionNode>();
-
-  const visit = (node: ProductionNode) => {
-    if (node.isConsumptionReference) {
-      node.inputs.forEach(visit);
-      return;
-    }
-    if (seen.has(node)) return;
-    seen.add(node);
-
-    const key = nodeKeyOf(node);
-    const existing = merged.get(key);
-    if (existing) {
-      existing.rate += node.rate;
-      existing.deviceCount += node.deviceCount;
-    } else {
-      merged.set(key, { ...node, inputs: [], byproducts: [] });
-    }
-    node.inputs.forEach(visit);
-  };
-
-  roots.forEach(visit);
-  return merged;
 }
 
 function parseNumber(v: number | string | undefined, fallback: number): number {
@@ -304,7 +281,27 @@ export function analyzeNode(
     roundingMode: rounding.mode,
     roundingChoice: rounding.choice,
     build,
+    demandRate: node.rate,
+    realizedRate: build ? build.actualRate : node.rate,
+    inputLimited: false,
   };
+}
+
+/**
+ * Replace capacity-based numbers with what the node actually makes once
+ * upstream rounding is taken into account.
+ */
+function applyRealized(info: NodeBeltInfo, realized: number, inputLimited: boolean, beltSpeed: number) {
+  info.realizedRate = realized;
+  info.inputLimited = inputLimited;
+  const output = beltUtilization(realized, beltSpeed, { isFluid: info.isFluid, parallelLines: info.parallelLines });
+  if (info.linePlan) {
+    // Lines are physical: keep the built line count, show how full each one actually runs
+    info.linePlan = { ...info.linePlan, ratePerLine: realized / info.linePlan.lines };
+    info.output = { ...output, linesNeeded: info.linePlan.lines, status: info.linePlan.lines > 1 ? "split" : output.status };
+  } else {
+    info.output = output;
+  }
 }
 
 export function analyzeBelts(
@@ -313,18 +310,40 @@ export function analyzeBelts(
   options: BeltPlanOptions,
 ): BeltReport {
   const ctx = buildEfficiencyContext(config);
+  const graph = collectPlanGraph(roots);
   const nodes: Record<string, NodeBeltInfo> = {};
+  graph.nodes.forEach((node, key) => (nodes[key] = analyzeNode(node, ctx, options)));
+
+  // Simulate the built factory: rounded machines limit what flows downstream
+  const flowNodes: FlowNode[] = Array.from(graph.nodes.entries()).map(([key, node]) => ({
+    key,
+    demand: node.rate,
+    capacity: node.isRaw ? Infinity : nodes[key].build?.actualRate ?? node.rate,
+    isRaw: node.isRaw,
+  }));
+  const flowEdges: FlowEdge[] = Array.from(graph.edgeRates.entries()).map(([key, demand]) => {
+    const [source, target] = splitEdgeKey(key);
+    return { key, source, target, demand };
+  });
+  const targetList = roots.map((r) => ({ nodeKey: nodeKeyOf(r), itemName: r.itemName, demand: r.netOutputRate ?? r.rate }));
+  const flow = simulateFlow(
+    flowNodes,
+    flowEdges,
+    targetList.map((t) => ({ source: t.nodeKey, demand: t.demand })),
+  );
+
   const devices = new Map<string, { exact: number; built: number }>();
   const lines = new Map<string, { rate: number; lines: number }>();
   const warnings: MachineWarning[] = [];
   const surpluses: BeltReport["surpluses"] = [];
 
-  collectPlanNodes(roots).forEach((node, key) => {
-    const info = analyzeNode(node, ctx, options);
-    nodes[key] = info;
+  Object.entries(nodes).forEach(([key, info]) => {
+    applyRealized(info, flow.realized.get(key) ?? info.demandRate, flow.inputLimited.has(key), ctx.beltLimit);
 
-    if (info.build && Math.abs(info.build.surplus) > 0.05) {
-      surpluses.push({ nodeKey: key, itemName: info.itemName, surplus: info.build.surplus, mode: info.build.mode });
+    const node = graph.nodes.get(key)!;
+    const surplus = info.realizedRate - info.demandRate;
+    if (!node.isRaw && Math.abs(surplus) > 0.05) {
+      surpluses.push({ nodeKey: key, itemName: info.itemName, surplus, mode: info.roundingMode });
     }
 
     if (info.deviceId && info.machinesExact > RATE_EPSILON) {
@@ -346,6 +365,9 @@ export function analyzeBelts(
     );
   });
 
+  const edges: BeltReport["edges"] = {};
+  flowEdges.forEach((fe) => (edges[fe.key] = { demand: fe.demand, actual: flow.edgeActual.get(fe.key) ?? fe.demand }));
+
   return {
     beltSpeed: ctx.beltLimit,
     nodes,
@@ -357,5 +379,7 @@ export function analyzeBelts(
       .sort((a, b) => b.lines - a.lines || a.itemName.localeCompare(b.itemName)),
     warnings,
     surpluses: surpluses.sort((a, b) => a.surplus - b.surplus),
+    edges,
+    targets: targetList.map((t, i) => ({ ...t, delivered: flow.delivered[i] })),
   };
 }
