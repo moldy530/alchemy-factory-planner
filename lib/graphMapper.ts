@@ -1,7 +1,113 @@
 
 import { Edge, MarkerType, Node } from "@xyflow/react";
 import { ProductionNode } from "../engine/types";
+import { BeltReport } from "../engine/belt-analysis";
+import { BeltStatus, beltUtilization } from "../engine/belt";
 import { getLayoutedElements } from "../components/graph/layout";
+
+/** Draw at most this many parallel strokes; larger counts get a "×N" label. */
+export const MAX_VISUAL_LINES = 6;
+
+export type BeltEdgeState = BeltStatus | "error";
+
+export interface BeltEdgeData extends Record<string, unknown> {
+    rate: number;
+    itemName: string;
+    utilization: number;
+    lines: number;
+    /** Parallel strokes to draw (1 unless split, capped at MAX_VISUAL_LINES) */
+    strokes: number;
+    state: BeltEdgeState;
+}
+
+const BELT_EDGE_COLORS: Record<BeltEdgeState, string> = {
+    ok: "#F59E0B",
+    split: "#6db8e8",
+    over: "#e8a840",
+    error: "#e05555",
+    fluid: "#9b6dff",
+};
+
+function formatRate(rate: number): string {
+    return rate.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+}
+
+/** Edge label like "1,260/m · 8 lines" or "120/m · 73%". */
+export function beltEdgeLabel(d: BeltEdgeData): string {
+    const pct = `${Math.round(d.utilization * 100)}%`;
+    let detail: string;
+    switch (d.state) {
+        case "fluid": detail = "pipe"; break;
+        case "split": detail = d.lines > MAX_VISUAL_LINES ? `×${d.lines} lines` : `${d.lines} lines`; break;
+        case "over": detail = `${pct} · needs ${d.lines} belts`; break;
+        case "error": detail = `${d.lines > 1 ? `${d.lines} lines` : pct} · ⚠ >1 belt per machine`; break;
+        default: detail = pct;
+    }
+    return `${formatRate(d.rate)}/m · ${detail}`;
+}
+
+/** Edge between two plan nodes, with belt styling when a report is available. */
+function createFlowEdge(
+    key: string,
+    source: string,
+    target: string,
+    rate: number,
+    sourceNode: ProductionNode | undefined,
+    beltReport?: BeltReport,
+): Edge {
+    const sourceInfo = beltReport?.nodes[source];
+    if (!beltReport || !sourceInfo) {
+        return {
+            id: key,
+            source,
+            target,
+            animated: true,
+            type: "smoothstep",
+            markerEnd: { type: MarkerType.ArrowClosed, color: "#F59E0B" },
+            style: { stroke: "#F59E0B", strokeWidth: 2 },
+            label: `${formatRate(rate)}/m`,
+            labelStyle: { fill: "#fbbf24", fontWeight: 700, fontSize: 11 },
+            labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
+            labelBgPadding: [4, 2],
+            labelBgBorderRadius: 4,
+        };
+    }
+
+    const itemName = sourceNode?.itemName ?? sourceInfo.itemName;
+    const util = beltUtilization(rate, beltReport.beltSpeed, {
+        isFluid: sourceInfo.isFluid,
+        parallelLines: sourceInfo.parallelLines,
+    });
+    const consumerOverLimit = beltReport.nodes[target]?.machineWarnings.some(
+        (w) => w.direction === "input" && w.itemName === itemName,
+    );
+    const state: BeltEdgeState = consumerOverLimit ? "error" : util.status;
+    const data: BeltEdgeData = {
+        rate,
+        itemName,
+        utilization: util.utilization,
+        lines: util.linesNeeded,
+        strokes: util.status === "split" ? Math.min(util.linesNeeded, MAX_VISUAL_LINES) : 1,
+        state,
+    };
+    const color = BELT_EDGE_COLORS[state];
+
+    return {
+        id: key,
+        source,
+        target,
+        animated: true,
+        type: "belt",
+        data,
+        markerEnd: { type: MarkerType.ArrowClosed, color },
+        style: { stroke: color, strokeWidth: 2, ...(state === "fluid" && { strokeDasharray: "6 3" }) },
+        label: beltEdgeLabel(data),
+        labelStyle: { fill: color, fontWeight: 700, fontSize: 11 },
+        labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
+        labelBgPadding: [4, 2],
+        labelBgBorderRadius: 4,
+    };
+}
 
 /**
  * Transforms ProductionNode trees into ReactFlow Nodes and Edges,
@@ -9,7 +115,8 @@ import { getLayoutedElements } from "../components/graph/layout";
  */
 export function generateGraph(
     rootNodes: ProductionNode[],
-    savedPositions: Record<string, { x: number; y: number }> = {}
+    savedPositions: Record<string, { x: number; y: number }> = {},
+    beltReport?: BeltReport | null
 ): { nodes: Node[]; edges: Edge[] } {
     if (rootNodes.length === 0) return { nodes: [], edges: [] };
 
@@ -166,6 +273,7 @@ export function generateGraph(
                 ...n,
                 // Only set displayRate if we calculated it (and LP didn't provide netOutputRate)
                 ...(displayRate !== undefined && { displayRate }),
+                ...(beltReport?.nodes[nodeKey] && { belt: beltReport.nodes[nodeKey] }),
             } as unknown as Record<string, unknown>,
             position: { x: 0, y: 0 },
         };
@@ -176,26 +284,7 @@ export function generateGraph(
 
     edgeRates.forEach((rate, key) => {
         const [source, target] = key.split("___");
-
-        rfEdges.push({
-            id: key,
-            source,
-            target,
-            animated: true,
-            type: "smoothstep",
-            markerEnd: { type: MarkerType.ArrowClosed, color: "#F59E0B" },
-            style: { stroke: "#F59E0B", strokeWidth: 2 },
-
-            // --- Label Logic ---
-            label: `${rate.toLocaleString(undefined, {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 2,
-            })}/m`,
-            labelStyle: { fill: "#fbbf24", fontWeight: 700, fontSize: 11 },
-            labelBgStyle: { fill: "#1c1917", fillOpacity: 0.8 },
-            labelBgPadding: [4, 2],
-            labelBgBorderRadius: 4,
-        });
+        rfEdges.push(createFlowEdge(key, source, target, rate, mergedNodes.get(source), beltReport ?? undefined));
     });
 
     // ----------------------------------------------------
