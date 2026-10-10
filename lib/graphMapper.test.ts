@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { generateGraph } from "./graphMapper";
+import { generateGraph, BeltEdgeData, MAX_VISUAL_LINES } from "./graphMapper";
 import { calculateProductionLP } from "../engine/lp-planner/index";
+import { analyzeBelts } from "../engine/belt-analysis";
 import { PlannerConfig } from "../engine/types";
 
 describe("Graph Mapper", () => {
@@ -41,7 +42,8 @@ describe("Graph Mapper", () => {
     const rawNodes = nodes.filter((n: any) => n.data.isRaw);
     const logsNode = rawNodes.find((n: any) => n.data.itemName === "Logs");
     expect(logsNode).toBeDefined();
-    expect(logsNode.data.rate).toBe(10);
+    // 1 Logs → 200 Planks, so 10 planks/min needs 0.05 logs/min (matches planner.test.ts)
+    expect(logsNode.data.rate).toBeCloseTo(0.05, 4);
   });
 
   test("should handle circular dependencies with correct net output rates", () => {
@@ -235,5 +237,58 @@ describe("Graph Mapper", () => {
     expect(quicklimeNode.data.deviceId).toBe("crucible");
     expect(quicklimeNode.data.parentFurnaceId).toBeDefined();
     expect(quicklimeNode.data.parentFurnaceCount).toBeGreaterThan(0);
+  });
+});
+
+describe("Graph Mapper belt edges", () => {
+  const config: PlannerConfig = {
+    targets: [{ item: "Bandage", rate: 30 }],
+    availableResources: [],
+    fuelEfficiency: 0,
+    alchemySkill: 0,
+    factoryEfficiency: 7,
+    logisticsEfficiency: 7,
+    throwingEfficiency: 0,
+    fertilizerEfficiency: 0,
+    salesAbility: 0,
+    negotiationSkill: 0,
+    customerMgmt: 0,
+    relicKnowledge: 0,
+    selectedFertilizer: "Growth Potion",
+    selfFertilizer: false,
+  };
+  const trees = calculateProductionLP(config);
+
+  const edgeBetween = (edges: any[], from: string, to: string) =>
+    edges.find((e) => e.source.startsWith(from) && e.target.startsWith(to));
+
+  test("without a report, edges keep the original smoothstep style", () => {
+    const { edges } = generateGraph(trees);
+    expect(edges.every((e: any) => e.type === "smoothstep")).toBe(true);
+  });
+
+  test("split flows draw parallel strokes and per-machine limits turn red", () => {
+    const report = analyzeBelts(trees, config, { planParallelLines: true });
+    const { nodes, edges } = generateGraph(trees, {}, report);
+
+    // Flax Fiber → Linen Thread: 900/min → 6 lines
+    const fiberToThread = edgeBetween(edges, "flaxfiber-prod", "linenthread-prod");
+    expect(fiberToThread.type).toBe("belt");
+    expect((fiberToThread.data as BeltEdgeData).state).toBe("split");
+    expect((fiberToThread.data as BeltEdgeData).lines).toBe(6);
+    expect((fiberToThread.data as BeltEdgeData).strokes).toBe(6);
+
+    // Flax → Flax Fiber: 1,260/min → 8 lines, drawn as 6 and labelled ×8
+    const flaxToFiber = edgeBetween(edges, "flax-prod", "flaxfiber-prod");
+    expect((flaxToFiber.data as BeltEdgeData).strokes).toBe(MAX_VISUAL_LINES);
+    expect(flaxToFiber.label).toContain("×8 lines");
+
+    // Linen Thread → Linen: one assembler needs 330/min on a 165 belt
+    const threadToLinen = edgeBetween(edges, "linenthread-prod", "linen-prod");
+    expect((threadToLinen.data as BeltEdgeData).state).toBe("error");
+
+    // Nodes carry their belt info
+    const linen = nodes.find((n: any) => n.id.startsWith("linen-prod"));
+    expect((linen!.data as any).belt.machineWarnings).toHaveLength(1);
   });
 });
