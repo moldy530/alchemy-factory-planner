@@ -9,14 +9,13 @@ import { LineOverride, PlannerConfig, ProductionNode, Recipe } from "./types";
 import { buildEfficiencyContext, isAlchemyMachine } from "./lp-planner/efficiency";
 import { EfficiencyContext } from "./lp-planner/types";
 import { getEffectiveRecipeTime, getItem, normalizeItemId } from "./item-utils";
-import { FLUID_CATEGORIES, RATE_EPSILON, inputPortsFor } from "./game-constants";
+import { FLUID_CATEGORIES, RATE_EPSILON, inputBeltsAllowed } from "./game-constants";
 import {
   BeltUtilization,
   MachineFlowCheck,
   ParallelLinePlan,
   beltUtilization,
   checkMachineFlow,
-  checkMachineInputs,
   consumersPerBelt,
   planParallelLines,
 } from "./belt";
@@ -27,8 +26,8 @@ export type LineMode = LineOverride | "inherit";
 export interface BeltPlanOptions {
   planParallelLines: boolean;
   lineOverrides?: Record<string, LineOverride>;
-  /** Allow spare input ports to feed one ingredient from several belts (default true) */
-  multiBeltInputs?: boolean;
+  /** Let double-fed recipes (Linen) take their ingredient from several belts (default true) */
+  allowDoubleFeed?: boolean;
 }
 
 export interface MachineFlowInfo {
@@ -38,7 +37,7 @@ export interface MachineFlowInfo {
   utilization: number;
   /** For inputs: how many of these machines one belt can feed */
   consumersPerBelt: number;
-  /** Belts feeding one machine (more than 1 when spare input ports double up) */
+  /** Belts feeding one machine (more than 1 only for double-fed recipes like Linen) */
   beltsPerMachine: number;
   isFluid: boolean;
 }
@@ -59,8 +58,8 @@ export interface NodeBeltInfo {
   perMachineInputs: MachineFlowInfo[];
   perMachineOutputs: MachineFlowInfo[];
   machineWarnings: MachineFlowCheck[];
-  /** Whether spare input ports were allowed to double up ingredients */
-  multiBeltInputs: boolean;
+  /** Whether double-fed recipes (Linen) were allowed several input belts */
+  allowDoubleFeed: boolean;
 }
 
 export interface MachineWarning extends MachineFlowCheck {
@@ -71,7 +70,7 @@ export interface MachineWarning extends MachineFlowCheck {
 
 export interface BeltReport {
   beltSpeed: number;
-  multiBeltInputs: boolean;
+  allowDoubleFeed: boolean;
   nodes: Record<string, NodeBeltInfo>;
   devices: { deviceId: string; exact: number; built: number }[];
   lines: { itemName: string; rate: number; lines: number }[];
@@ -217,19 +216,21 @@ export function analyzeNode(
 
   const machineWarnings: MachineFlowCheck[] = [];
   if (node.deviceCount > RATE_EPSILON) {
-    const beltInputs = perMachineInputs.filter((f) => !f.isFluid);
-    const inputCheck = checkMachineInputs(
-      beltInputs.map((f) => ({
-        itemName: f.itemName,
-        perMachineRate: f.perMachineRate,
-        totalRate: f.perMachineRate * node.deviceCount,
-      })),
-      beltSpeed,
-      // Single-belt mode: one port per ingredient, so nothing can double up
-      options.multiBeltInputs === false ? beltInputs.length : inputPortsFor(node.deviceId, beltInputs.length),
-    );
-    beltInputs.forEach((f) => (f.beltsPerMachine = inputCheck.beltsPerInput[f.itemName] ?? 1));
-    machineWarnings.push(...inputCheck.warnings);
+    // Each input is capped at one belt per machine, except double-fed recipes (Linen)
+    const beltsAllowed = options.allowDoubleFeed === false ? 1 : inputBeltsAllowed(node.recipeId);
+    perMachineInputs.forEach((f) => {
+      if (f.isFluid) return;
+      f.beltsPerMachine = Math.min(beltsAllowed, Math.max(1, Math.ceil(f.perMachineRate / beltSpeed - RATE_EPSILON)));
+      const warning = checkMachineFlow(
+        f.itemName,
+        "input",
+        f.perMachineRate,
+        beltSpeed,
+        f.perMachineRate * node.deviceCount,
+        beltsAllowed,
+      );
+      if (warning) machineWarnings.push(warning);
+    });
 
     perMachineOutputs.forEach((f) => {
       if (f.isFluid) return;
@@ -258,7 +259,7 @@ export function analyzeNode(
     perMachineInputs,
     perMachineOutputs,
     machineWarnings,
-    multiBeltInputs: options.multiBeltInputs !== false,
+    allowDoubleFeed: options.allowDoubleFeed !== false,
   };
 }
 
@@ -298,7 +299,7 @@ export function analyzeBelts(
 
   return {
     beltSpeed: ctx.beltLimit,
-    multiBeltInputs: options.multiBeltInputs !== false,
+    allowDoubleFeed: options.allowDoubleFeed !== false,
     nodes,
     devices: Array.from(devices.entries())
       .map(([deviceId, d]) => ({ deviceId, ...d }))

@@ -79,17 +79,13 @@ export function BeltSummaryPanel({ report }: { report: BeltReport }) {
                                 className="text-[11px] leading-snug text-[var(--error)] bg-[var(--error-dim)]/30 border border-[var(--error)]/40 px-2 py-1 rounded"
                             >
                                 <span className="font-bold">{w.producedItem}</span>:{" "}
-                                <MachineWarningText
-                                    warning={w}
-                                    device={deviceName(w.deviceId)}
-                                    multiBeltInputs={report.multiBeltInputs}
-                                />
+                                <MachineWarningText warning={w} device={deviceName(w.deviceId)} />
                             </div>
                         ))}
                         {report.warnings.length === 0 && (
                             <span className="text-xs text-[var(--success)]">
-                                {report.multiBeltInputs
-                                    ? "Every machine can be fed and drained at full speed."
+                                {report.allowDoubleFeed
+                                    ? "Every machine input fits its belt (Linen uses two)."
                                     : "Every machine fits on one belt per item."}
                             </span>
                         )}

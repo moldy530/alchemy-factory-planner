@@ -115,7 +115,7 @@ export interface PlannerConfig {
   selfFuel?: boolean; // If true, fuel is produced internally; if false, treated as external input
   selfFertilizer?: boolean; // If true, fertilizer is produced internally; if false, treated as external input
   planParallelLines?: boolean; // Plan parallel belt lines for flows over the belt limit (default true)
-  multiBeltInputs?: boolean; // Machines may take one ingredient from several belts via spare input ports (default true)
+  allowDoubleFeed?: boolean; // Let Linen take Linen Thread from two belts (both assembler inputs) (default true)
 }
 
 export interface ResearchState {

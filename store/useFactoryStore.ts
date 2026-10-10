@@ -67,7 +67,7 @@ const DEFAULT_FACTORY_CONFIG: Omit<
     selfFuel: true,
     selfFertilizer: true,
     planParallelLines: true,
-    multiBeltInputs: true,
+    allowDoubleFeed: true,
 };
 
 /** Run the planner and belt analysis for a factory with the global research levels. */
@@ -90,7 +90,7 @@ function computeFactory(factory: FactoryData, research: ResearchState) {
     const beltReport = analyzeBelts(productionTrees, calculationConfig, {
         planParallelLines: factory.config.planParallelLines ?? true,
         lineOverrides: factory.lineOverrides ?? {},
-        multiBeltInputs: factory.config.multiBeltInputs ?? true,
+        allowDoubleFeed: factory.config.allowDoubleFeed ?? true,
     });
 
     return { productionTrees, beltReport };

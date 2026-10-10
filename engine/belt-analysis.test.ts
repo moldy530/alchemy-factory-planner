@@ -60,11 +60,11 @@ planners.forEach(({ name, fn }) => {
       expect(flax.machinesBuilt).toBe(8);
     });
 
-    test("linen assembler needs 330 thread/min, fed through both input ports (no error)", () => {
+    test("linen assembler needs 330 thread/min, fed from two belts (the Linen exception, no error)", () => {
       const linen = nodeFor(report, "Linen");
       const thread = linen.perMachineInputs.find((i) => i.itemName === "Linen Thread")!;
       expect(thread.perMachineRate).toBeCloseTo(330, 3);
-      // One ingredient, two assembler ports: Linen Thread on two belts = 330/min
+      // Linen takes Linen Thread in both assembler inputs: two belts = 330/min
       expect(thread.beltsPerMachine).toBe(2);
       expect(linen.machineWarnings).toHaveLength(0);
       expect(report.warnings).toHaveLength(0);
@@ -80,9 +80,9 @@ planners.forEach(({ name, fn }) => {
   });
 });
 
-describe("Single-belt feeding (multiBeltInputs off)", () => {
+describe("Linen double-feed off", () => {
   const cfg = config({ targets: [{ item: "Bandage", rate: 30 }] });
-  const report = analyzeBelts(calculateProductionLP(cfg), cfg, { planParallelLines: true, multiBeltInputs: false });
+  const report = analyzeBelts(calculateProductionLP(cfg), cfg, { planParallelLines: true, allowDoubleFeed: false });
 
   test("linen assembler flagged for 330 thread/min on one belt", () => {
     const linen = nodeFor(report, "Linen");
@@ -94,7 +94,7 @@ describe("Single-belt feeding (multiBeltInputs off)", () => {
     expect(w.beltsPerMachine).toBe(2);
     // 300 thread/min total ÷ 165 per belt → 2 assemblers at 150/330 ≈ 45% load
     expect(w.machinesAtPartialLoad).toBe(2);
-    expect(report.multiBeltInputs).toBe(false);
+    expect(report.allowDoubleFeed).toBe(false);
     expect(report.warnings.map((x) => x.producedItem)).toEqual(["Linen"]);
   });
 

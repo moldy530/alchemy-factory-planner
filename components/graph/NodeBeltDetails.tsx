@@ -40,6 +40,10 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                         <GitFork size={10} />
                         {linePlan.lines} lines × {formatRate(linePlan.ratePerLine)}/m
                     </span>
+                    <span className="text-[var(--text-muted)]">
+                        Demand split evenly: each line at {formatPercent(linePlan.ratePerLine / output.beltSpeed)} of{" "}
+                        {formatRate(output.beltSpeed, 0)}/m
+                    </span>
                     {linePlan.exactMachines > 0 && (
                         <span>
                             {linePlan.producersPerLine} {device}/line · {linePlan.machinesBuilt} built (
@@ -79,7 +83,7 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                 >
                     <AlertTriangle size={11} className="shrink-0 mt-px" />
                     <span>
-                        <MachineWarningText warning={w} device={device} multiBeltInputs={belt.multiBeltInputs} />
+                        <MachineWarningText warning={w} device={device} />
                     </span>
                 </div>
             ))}

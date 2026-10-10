@@ -113,13 +113,13 @@ export function FactorySettingsPanel({
         selfFuel: activeFactory.config.selfFuel ?? true,
         selfFertilizer: activeFactory.config.selfFertilizer ?? true,
         planParallelLines: activeFactory.config.planParallelLines ?? true,
-        multiBeltInputs: activeFactory.config.multiBeltInputs ?? true,
+        allowDoubleFeed: activeFactory.config.allowDoubleFeed ?? true,
     };
 
     const sortedFertilizers = [...fertilizers].sort((a, b) => (a.nutrient_value || 0) - (b.nutrient_value || 0));
     const sortedFuels = [...fuels].sort((a, b) => (a.heat_value || 0) - (b.heat_value || 0));
 
-    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer" | "planParallelLines" | "multiBeltInputs", value: string | boolean) => {
+    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer" | "planParallelLines" | "allowDoubleFeed", value: string | boolean) => {
         updateFactoryConfig(activeFactory.id, { [field]: value });
     };
 
@@ -217,12 +217,12 @@ export function FactorySettingsPanel({
                     <label className="flex items-center gap-2 mt-2 text-xs text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors">
                         <input
                             type="checkbox"
-                            checked={config.multiBeltInputs}
-                            onChange={(e) => updateConfig("multiBeltInputs", e.target.checked)}
+                            checked={config.allowDoubleFeed}
+                            onChange={(e) => updateConfig("allowDoubleFeed", e.target.checked)}
                             className="accent-[var(--accent-gold)] cursor-pointer"
                         />
-                        <span>Feed machines from multiple belts</span>
-                        <InfoTooltip text="Spare input ports can take the same ingredient from another belt (e.g. Linen Thread into both assembler ports). Off: one belt per ingredient per machine." />
+                        <span>Feed Linen from two belts</span>
+                        <InfoTooltip text="Each machine input is capped at one belt. Linen is the exception: it can take Linen Thread in both assembler inputs. Off: Linen is capped at one belt too." />
                     </label>
                 </div>
 

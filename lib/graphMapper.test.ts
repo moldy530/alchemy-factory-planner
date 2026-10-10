@@ -268,7 +268,7 @@ describe("Graph Mapper belt edges", () => {
     expect(edges.every((e) => e.type === "smoothstep")).toBe(true);
   });
 
-  test("split flows draw parallel strokes; doubled-up inputs are not errors", () => {
+  test("split flows draw parallel strokes; Linen's two-belt input is not an error", () => {
     const report = analyzeBelts(trees, config, { planParallelLines: true });
     const { nodes, edges } = generateGraph(trees, {}, report);
 
@@ -284,7 +284,7 @@ describe("Graph Mapper belt edges", () => {
     expect((flaxToFiber.data as BeltEdgeData).strokes).toBe(MAX_VISUAL_LINES);
     expect(flaxToFiber.label).toContain("×8 lines");
 
-    // Linen Thread → Linen: 330/min per assembler, fed through both input ports
+    // Linen Thread → Linen: 330/min per assembler, fed from two belts
     const threadToLinen = edgeBetween(edges, "linenthread-prod", "linen-prod");
     expect((threadToLinen.data as BeltEdgeData).state).toBe("split");
 

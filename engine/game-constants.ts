@@ -28,12 +28,13 @@ export const FACTORY = {
 export const FLUID_CATEGORIES = ["liquid", "oil", "essence"] as const;
 
 /**
- * Input ports per device. A recipe with fewer ingredients than ports can feed
- * one ingredient from several belts (e.g. Linen: Linen Thread into both
- * assembler ports). Devices not listed get one port per ingredient.
+ * Every machine input is capped at one belt. Exceptions: recipes whose single
+ * ingredient can fill several input ports of the machine, keyed by recipe id
+ * with the number of belts it may use. Linen takes Linen Thread in both
+ * assembler inputs; other assembler recipes take two different ingredients.
  */
-export const MACHINE_INPUT_PORTS: Record<string, number> = {
-  assembler: 2,
+export const DOUBLE_FED_RECIPES: Record<string, number> = {
+  linen: 2,
 };
 
 /** Tolerance for "exactly at the limit" comparisons (e.g. 165.0000001 vs 165). */
@@ -57,8 +58,7 @@ export function factorySpeedMultiplier(level: number): number {
     : 1 + FACTORY.tierBreak * FACTORY.perLevel + (l - FACTORY.tierBreak) * FACTORY.perLevelAfterBreak;
 }
 
-/** Input ports available on a device for a recipe with `ingredientCount` belt inputs. */
-export function inputPortsFor(deviceId: string | undefined, ingredientCount: number): number {
-  const ports = deviceId ? MACHINE_INPUT_PORTS[deviceId.toLowerCase()] : undefined;
-  return Math.max(ingredientCount, ports ?? ingredientCount);
+/** Belts one machine may use for a recipe's input (1 unless the recipe is double-fed). */
+export function inputBeltsAllowed(recipeId: string | undefined): number {
+  return (recipeId && DOUBLE_FED_RECIPES[recipeId]) || 1;
 }
