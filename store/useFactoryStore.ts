@@ -14,11 +14,13 @@ import { calculateProduction } from "../engine/planner";
 import { calculateProductionLP } from "../engine/lp-planner";
 import {
     FactoryState,
+    LineOverride,
     PlannerConfig,
     PlannerMode,
     ProductionNode,
     ResearchState,
 } from "../engine/types";
+import { analyzeBelts, BeltReport, LineMode } from "../engine/belt-analysis";
 import { generateGraph } from "../lib/graphMapper";
 
 // Extended Factory Data to include visual state
@@ -26,6 +28,7 @@ export interface FactoryData extends FactoryState {
     nodes: Node[];
     edges: Edge[];
     productionTrees: ProductionNode[];
+    beltReport?: BeltReport | null; // Derived, not persisted
     viewport: Viewport;
     active: boolean;
 }
@@ -63,7 +66,33 @@ const DEFAULT_FACTORY_CONFIG: Omit<
     selectedFuel: "",
     selfFuel: true,
     selfFertilizer: true,
+    planParallelLines: true,
 };
+
+/** Run the planner and belt analysis for a factory with the global research levels. */
+function computeFactory(factory: FactoryData, research: ResearchState) {
+    const calculationConfig: PlannerConfig = {
+        targets: factory.targets,
+        availableResources: factory.availableResources,
+        ...factory.config,
+        ...research,
+        selectedFertilizer: factory.config.selectedFertilizer,
+        selectedFuel: factory.config.selectedFuel,
+        selfFuel: factory.config.selfFuel,
+        selfFertilizer: factory.config.selfFertilizer,
+    };
+
+    const productionTrees = factory.plannerMode === "lp"
+        ? calculateProductionLP(calculationConfig)
+        : calculateProduction(calculationConfig);
+
+    const beltReport = analyzeBelts(productionTrees, calculationConfig, {
+        planParallelLines: factory.config.planParallelLines ?? true,
+        lineOverrides: factory.lineOverrides ?? {},
+    });
+
+    return { productionTrees, beltReport };
+}
 
 interface FactoryStore {
     // State
@@ -99,6 +128,7 @@ interface FactoryStore {
     onViewportChange: (viewport: Viewport) => void;
     setViewMode: (id: string, mode: "graph" | "list") => void;
     setPlannerMode: (id: string, mode: PlannerMode) => void;
+    setLineOverride: (id: string, nodeKey: string, mode: LineMode) => void;
     resetFactoryLayout: (id: string) => void;
 }
 
@@ -119,6 +149,7 @@ export const useFactoryStore = create<FactoryStore>()(
                     config: DEFAULT_FACTORY_CONFIG,
                     viewMode: "graph",
                     plannerMode: "lp",
+                    lineOverrides: {},
                     nodes: [],
                     edges: [],
                     productionTrees: [],
@@ -231,6 +262,19 @@ export const useFactoryStore = create<FactoryStore>()(
                 get().calculateAndLayout();
             },
 
+            setLineOverride: (id, nodeKey, mode) => {
+                set((state) => ({
+                    factories: state.factories.map((f) => {
+                        if (f.id !== id) return f;
+                        const lineOverrides: Record<string, LineOverride> = { ...(f.lineOverrides ?? {}) };
+                        if (mode === "inherit") delete lineOverrides[nodeKey];
+                        else lineOverrides[nodeKey] = mode;
+                        return { ...f, lineOverrides };
+                    }),
+                }));
+                get().calculateAndLayout();
+            },
+
             calculateAndLayout: () => {
                 const state = get();
                 const activeId = state.activeFactoryId;
@@ -251,20 +295,7 @@ export const useFactoryStore = create<FactoryStore>()(
                     return;
                 }
 
-                const calculationConfig: PlannerConfig = {
-                    targets: factory.targets,
-                    availableResources: factory.availableResources,
-                    ...factory.config,
-                    ...state.research,
-                    selectedFertilizer: factory.config.selectedFertilizer,
-                    selectedFuel: factory.config.selectedFuel,
-                    selfFuel: factory.config.selfFuel,
-                    selfFertilizer: factory.config.selfFertilizer,
-                };
-
-                const productionNodes = factory.plannerMode === "lp"
-                    ? calculateProductionLP(calculationConfig)
-                    : calculateProduction(calculationConfig);
+                const { productionTrees, beltReport } = computeFactory(factory, state.research);
 
                 const currentNodes = factory.nodes;
                 const savedPositions: Record<string, { x: number; y: number }> = {};
@@ -272,11 +303,11 @@ export const useFactoryStore = create<FactoryStore>()(
                     savedPositions[n.id] = n.position;
                 });
 
-                const { nodes, edges } = generateGraph(productionNodes, savedPositions);
+                const { nodes, edges } = generateGraph(productionTrees, savedPositions, beltReport);
 
                 set((s) => ({
                     factories: s.factories.map((f) =>
-                        f.id === activeId ? { ...f, nodes, edges, productionTrees: productionNodes } : f
+                        f.id === activeId ? { ...f, nodes, edges, productionTrees, beltReport } : f
                     ),
                 }));
             },
@@ -286,28 +317,15 @@ export const useFactoryStore = create<FactoryStore>()(
                 const factory = state.factories.find((f) => f.id === id);
                 if (!factory || factory.targets.length === 0) return;
 
-                const calculationConfig: PlannerConfig = {
-                    targets: factory.targets,
-                    availableResources: factory.availableResources,
-                    ...factory.config,
-                    ...state.research,
-                    selectedFertilizer: factory.config.selectedFertilizer,
-                    selectedFuel: factory.config.selectedFuel,
-                    selfFuel: factory.config.selfFuel,
-                    selfFertilizer: factory.config.selfFertilizer,
-                };
+                const { productionTrees, beltReport } = computeFactory(factory, state.research);
 
-                const productionNodes = factory.plannerMode === "lp"
-                    ? calculateProductionLP(calculationConfig)
-                    : calculateProduction(calculationConfig);
-
-                const { nodes, edges } = generateGraph(productionNodes, {});
+                const { nodes, edges } = generateGraph(productionTrees, {}, beltReport);
 
                 const newViewport = { x: 0, y: 0, zoom: 1 };
 
                 set((s) => ({
                     factories: s.factories.map((f) =>
-                        f.id === id ? { ...f, nodes, edges, productionTrees: productionNodes, viewport: newViewport } : f
+                        f.id === id ? { ...f, nodes, edges, productionTrees, beltReport, viewport: newViewport } : f
                     ),
                 }));
             },
@@ -349,6 +367,7 @@ export const useFactoryStore = create<FactoryStore>()(
                 factories: state.factories.map((f) => ({
                     ...f,
                     productionTrees: [], // Don't persist - will be recalculated
+                    beltReport: null,
                     nodes: f.nodes.map((n) => ({
                         ...n,
                         // Strip any circular data from node.data if present

@@ -96,6 +96,7 @@ describe("checkMachineFlow", () => {
     expect(check!.beltsPerMachine).toBe(2);
     expect(check!.maxLoadOnOneBelt).toBeCloseTo(0.5, 5);
     expect(check!.machinesAtPartialLoad).toBe(2);
+    expect(check!.partialLoad).toBeCloseTo(150 / 330, 5);
   });
 });
 

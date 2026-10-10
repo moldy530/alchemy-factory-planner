@@ -111,6 +111,7 @@ export interface PlannerConfig {
   selectedFuel?: string;
   selfFuel?: boolean; // If true, fuel is produced internally; if false, treated as external input
   selfFertilizer?: boolean; // If true, fertilizer is produced internally; if false, treated as external input
+  planParallelLines?: boolean; // Plan parallel belt lines for flows over the belt limit (default true)
 }
 
 export interface ResearchState {
@@ -128,6 +129,9 @@ export interface ResearchState {
 
 export type PlannerMode = "recursive" | "lp";
 
+/** Per-node override for parallel-line planning. Absent = inherit the factory setting. */
+export type LineOverride = "on" | "off";
+
 export interface FactoryState {
   id: string;
   name: string;
@@ -136,4 +140,5 @@ export interface FactoryState {
   config: Omit<PlannerConfig, "targets" | "targetItem" | "targetRate" | "availableResources">;
   viewMode: "graph" | "list";
   plannerMode: PlannerMode;
+  lineOverrides?: Record<string, LineOverride>; // Keyed by production node key
 }

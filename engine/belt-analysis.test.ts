@@ -68,7 +68,7 @@ planners.forEach(({ name, fn }) => {
       expect(w.direction).toBe("input");
       expect(w.perMachineRate).toBeCloseTo(330, 3);
       expect(w.beltsPerMachine).toBe(2);
-      // 300 thread/min total ÷ 165 per belt → 2 machines at ~91% load
+      // 300 thread/min total ÷ 165 per belt → 2 machines, each at 150/330 ≈ 45% load
       expect(w.machinesAtPartialLoad).toBe(2);
       expect(report.warnings.some((x) => x.producedItem === "Linen")).toBe(true);
     });

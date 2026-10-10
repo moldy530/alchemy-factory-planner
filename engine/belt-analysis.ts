@@ -5,7 +5,7 @@
  * and whether any single machine needs more than one belt can carry.
  */
 import recipesData from "../data/recipes.json";
-import { PlannerConfig, ProductionNode, Recipe } from "./types";
+import { LineOverride, PlannerConfig, ProductionNode, Recipe } from "./types";
 import { buildEfficiencyContext, isAlchemyMachine } from "./lp-planner/efficiency";
 import { EfficiencyContext } from "./lp-planner/types";
 import { getEffectiveRecipeTime, getItem, normalizeItemId } from "./item-utils";
@@ -20,8 +20,7 @@ import {
   planParallelLines,
 } from "./belt";
 
-/** Per-node override for parallel-line planning. Absent = inherit the global setting. */
-export type LineOverride = "on" | "off";
+export type { LineOverride };
 export type LineMode = LineOverride | "inherit";
 
 export interface BeltPlanOptions {

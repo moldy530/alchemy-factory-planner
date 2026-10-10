@@ -45,6 +45,8 @@ export interface MachineFlowCheck {
   maxLoadOnOneBelt: number;
   /** Machines needed if each runs at partial load on a single belt */
   machinesAtPartialLoad: number;
+  /** Fraction of full speed each of those machines runs at */
+  partialLoad: number;
 }
 
 /** Belts needed for a flow. A non-zero flow needs at least one line. */
@@ -107,6 +109,7 @@ export function checkMachineFlow(
   totalRate: number,
 ): MachineFlowCheck | null {
   if (beltSpeed <= 0 || perMachineRate <= beltSpeed + RATE_EPSILON) return null;
+  const machinesAtPartialLoad = Math.max(1, Math.ceil(totalRate / beltSpeed - RATE_EPSILON));
   return {
     itemName,
     direction,
@@ -114,7 +117,8 @@ export function checkMachineFlow(
     beltSpeed,
     beltsPerMachine: Math.ceil(perMachineRate / beltSpeed - RATE_EPSILON),
     maxLoadOnOneBelt: beltSpeed / perMachineRate,
-    machinesAtPartialLoad: Math.ceil(totalRate / beltSpeed - RATE_EPSILON),
+    machinesAtPartialLoad,
+    partialLoad: machinesAtPartialLoad > 0 ? totalRate / (machinesAtPartialLoad * perMachineRate) : 0,
   };
 }
 
