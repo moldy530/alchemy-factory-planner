@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AlertTriangle, Factory, GitFork } from "lucide-react";
+import { AlertTriangle, Factory, GitFork, Scale } from "lucide-react";
 import { BeltReport } from "../../engine/belt-analysis";
 import { getDevice } from "../../engine/lp-planner/model-builder";
 import { formatRate } from "../../lib/beltDisplay";
@@ -34,7 +34,7 @@ export function BeltSummaryPanel({ report }: { report: BeltReport }) {
                 </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[220px] overflow-y-auto custom-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 max-h-[220px] overflow-y-auto custom-scrollbar">
                 <div className="flex flex-col gap-2">
                     <SectionHeader icon={<Factory size={10} />} title="Machines (exact → built)" />
                     <div className="flex flex-col gap-1.5">
@@ -84,10 +84,29 @@ export function BeltSummaryPanel({ report }: { report: BeltReport }) {
                         ))}
                         {report.warnings.length === 0 && (
                             <span className="text-xs text-[var(--success)]">
-                                {report.allowDoubleFeed
-                                    ? "Every machine input fits its belt (Linen uses two)."
-                                    : "Every machine fits on one belt per item."}
+                                Every machine input fits its belt.
                             </span>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                    <SectionHeader icon={<Scale size={10} />} title="Surplus / shortfall" />
+                    <div className="flex flex-col gap-1.5">
+                        {report.surpluses.map((x) => (
+                            <div key={x.nodeKey} className="flex justify-between text-xs bg-[var(--background-deep)]/40 px-2 py-1 rounded">
+                                <span className="text-[var(--text-secondary)]">{x.itemName}</span>
+                                <span
+                                    className="font-mono font-bold"
+                                    style={{ color: x.surplus > 0 ? "var(--info)" : "var(--warning)" }}
+                                >
+                                    {x.surplus > 0 ? "+" : "−"}
+                                    {formatRate(Math.abs(x.surplus))}/m
+                                </span>
+                            </div>
+                        ))}
+                        {report.surpluses.length === 0 && (
+                            <span className="text-xs text-[var(--text-muted)] italic">Production matches demand</span>
                         )}
                     </div>
                 </div>

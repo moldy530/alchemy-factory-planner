@@ -19,8 +19,10 @@ export function CustomNode({ data }: { data: NodeData }) {
     const beltState = belt ? beltDisplayState(belt) : nodeData.isBeltSaturated ? "error" : "ok";
     const isError = beltState === "error" && !isTarget;
     const stateLabel = belt ? beltStateLabel(belt) : nodeData.isBeltSaturated ? "Limit" : "";
-    const showMachinesBuilt =
-        belt && belt.machinesBuilt > 0 && Math.abs(belt.machinesBuilt - nodeData.deviceCount) > 0.005;
+    // Rounded modes headline the whole machines you build; exact mode keeps the solver's fraction
+    const isRounded = !!belt?.build;
+    const headlineMachines = isRounded ? belt!.machinesBuilt : nodeData.deviceCount;
+    const differsFromExact = !!belt && belt.machinesBuilt > 0 && Math.abs(belt.machinesBuilt - nodeData.deviceCount) > 0.005;
 
     // Use netOutputRate if available (LP planner sets this for self-consuming items),
     // then displayRate (graphMapper calculated), otherwise use rate (gross production)
@@ -100,15 +102,17 @@ export function CustomNode({ data }: { data: NodeData }) {
                     <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] bg-[var(--background-deep)]/50 p-1.5 rounded">
                         <Settings size={12} className="text-[var(--accent-purple)]" />
                         <span className="text-[var(--accent-gold-bright)] font-bold">
-                            {nodeData.deviceCount.toLocaleString(undefined, {
+                            {headlineMachines.toLocaleString(undefined, {
                                 maximumFractionDigits: 2,
                             })}
                             x
                         </span>
                         <span className="truncate max-w-[100px]">{nodeData.deviceId}</span>
-                        {showMachinesBuilt && (
+                        {differsFromExact && (
                             <span className="ml-auto text-[10px] text-[var(--text-muted)] whitespace-nowrap">
-                                → {belt.machinesBuilt} built
+                                {isRounded
+                                    ? `${nodeData.deviceCount.toLocaleString(undefined, { maximumFractionDigits: 2 })} exact`
+                                    : `→ ${belt!.machinesBuilt} built`}
                             </span>
                         )}
                     </div>

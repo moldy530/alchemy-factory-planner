@@ -68,7 +68,6 @@ const DEFAULT_FACTORY_CONFIG: Omit<
     selfFuel: true,
     selfFertilizer: true,
     planParallelLines: true,
-    allowDoubleFeed: true,
     machineRounding: DEFAULT_ROUNDING,
 };
 
@@ -100,7 +99,6 @@ function computeFactory(factory: FactoryData, research: ResearchState) {
     const beltReport = analyzeBelts(productionTrees, calculationConfig, {
         planParallelLines: factory.config.planParallelLines ?? true,
         lineOverrides: factory.lineOverrides ?? {},
-        allowDoubleFeed: factory.config.allowDoubleFeed ?? true,
         machineRounding: factory.config.machineRounding ?? DEFAULT_ROUNDING,
         roundingOverrides: factory.roundingOverrides ?? {},
     });

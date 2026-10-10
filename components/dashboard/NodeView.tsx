@@ -76,11 +76,16 @@ export function NodeView({
                             <span className="flex items-center gap-1">
                                 <Settings className="w-3 h-3 text-[var(--accent-purple)]" />
                                 <span className="text-[var(--accent-gold-bright)] font-bold">
-                                    {node.deviceCount.toLocaleString(undefined, {
+                                    {(belt?.build ? belt.machinesBuilt : node.deviceCount).toLocaleString(undefined, {
                                         maximumFractionDigits: 1,
                                     })}
                                 </span>
                                 <span className="opacity-75">x Device</span>
+                                {belt?.build && (
+                                    <span className="opacity-60">
+                                        ({node.deviceCount.toLocaleString(undefined, { maximumFractionDigits: 2 })} exact)
+                                    </span>
+                                )}
                             </span>
                             {node.heatConsumption > 0 && (
                                 <span className="flex items-center gap-1 border-l border-[var(--border)] pl-3">

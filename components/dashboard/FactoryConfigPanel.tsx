@@ -1,5 +1,6 @@
 import { Plus, Settings, Trash2 } from "lucide-react";
 import { Item } from "../../engine/types";
+import { DEFAULT_ROUNDING } from "../../engine/belt-analysis";
 import { useFactoryStore } from "../../store/useFactoryStore";
 import { InfoTooltip } from "../ui/InfoTooltip";
 import { OrnatePanel } from "../ui/OrnatePanel";
@@ -113,15 +114,21 @@ export function FactorySettingsPanel({
         selfFuel: activeFactory.config.selfFuel ?? true,
         selfFertilizer: activeFactory.config.selfFertilizer ?? true,
         planParallelLines: activeFactory.config.planParallelLines ?? true,
-        allowDoubleFeed: activeFactory.config.allowDoubleFeed ?? true,
+        machineRounding: activeFactory.config.machineRounding ?? DEFAULT_ROUNDING,
     };
 
     const sortedFertilizers = [...fertilizers].sort((a, b) => (a.nutrient_value || 0) - (b.nutrient_value || 0));
     const sortedFuels = [...fuels].sort((a, b) => (a.heat_value || 0) - (b.heat_value || 0));
 
-    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer" | "planParallelLines" | "allowDoubleFeed", value: string | boolean) => {
+    const updateConfig = (field: "selectedFertilizer" | "selectedFuel" | "selfFuel" | "selfFertilizer" | "planParallelLines" | "machineRounding", value: string | boolean) => {
         updateFactoryConfig(activeFactory.id, { [field]: value });
     };
+
+    const roundingOptions = [
+        { value: "up", label: "Round up (whole machines, surplus)" },
+        { value: "down", label: "Round down (whole machines, shortfall)" },
+        { value: "exact", label: "Exact (fractional, throttled)" },
+    ];
 
     const plannerOptions = [
         { value: "recursive", label: "Recursive (Tree-based)" },
@@ -214,16 +221,20 @@ export function FactorySettingsPanel({
                         />
                         <span>Plan parallel lines for flows over the belt limit</span>
                     </label>
-                    <label className="flex items-center gap-2 mt-2 text-xs text-[var(--text-secondary)] cursor-pointer hover:text-[var(--text-primary)] transition-colors">
-                        <input
-                            type="checkbox"
-                            checked={config.allowDoubleFeed}
-                            onChange={(e) => updateConfig("allowDoubleFeed", e.target.checked)}
-                            className="accent-[var(--accent-gold)] cursor-pointer"
-                        />
-                        <span>Feed Linen from two belts</span>
-                        <InfoTooltip text="Each machine input is capped at one belt. Linen is the exception: it can take Linen Thread in both assembler inputs. Off: Linen is capped at one belt too." />
+                </div>
+
+                <div>
+                    <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1.5 flex items-center tracking-wide">
+                        Machine Count
+                        <InfoTooltip text="Machines run at full speed, so build whole machines: round up for a surplus or down for a shortfall. Override per item in the graph." />
                     </label>
+                    <SearchableSelect
+                        options={roundingOptions}
+                        value={config.machineRounding}
+                        onChange={(val) => updateConfig("machineRounding", val)}
+                        placeholder="Select rounding..."
+                        className="w-full bg-[var(--background-deep)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-xs text-[var(--text-secondary)] hover:border-[var(--border)]"
+                    />
                 </div>
 
                 <div>

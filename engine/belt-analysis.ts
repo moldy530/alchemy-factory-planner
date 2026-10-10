@@ -32,8 +32,6 @@ export const DEFAULT_ROUNDING: RoundingMode = "up";
 export interface BeltPlanOptions {
   planParallelLines: boolean;
   lineOverrides?: Record<string, LineOverride>;
-  /** Let double-fed recipes (Linen) take their ingredient from several belts (default true) */
-  allowDoubleFeed?: boolean;
   machineRounding?: RoundingMode;
   roundingOverrides?: Record<string, RoundingMode>;
 }
@@ -66,8 +64,6 @@ export interface NodeBeltInfo {
   perMachineInputs: MachineFlowInfo[];
   perMachineOutputs: MachineFlowInfo[];
   machineWarnings: MachineFlowCheck[];
-  /** Whether double-fed recipes (Linen) were allowed several input belts */
-  allowDoubleFeed: boolean;
   /** Effective rounding for this node and whether it comes from the node override */
   roundingMode: RoundingMode;
   roundingChoice: RoundingChoice;
@@ -83,7 +79,6 @@ export interface MachineWarning extends MachineFlowCheck {
 
 export interface BeltReport {
   beltSpeed: number;
-  allowDoubleFeed: boolean;
   nodes: Record<string, NodeBeltInfo>;
   devices: { deviceId: string; exact: number; built: number }[];
   lines: { itemName: string; rate: number; lines: number }[];
@@ -264,7 +259,7 @@ export function analyzeNode(
   const machineWarnings: MachineFlowCheck[] = [];
   if (node.deviceCount > RATE_EPSILON) {
     // Each input is capped at one belt per machine, except double-fed recipes (Linen)
-    const beltsAllowed = options.allowDoubleFeed === false ? 1 : inputBeltsAllowed(node.recipeId);
+    const beltsAllowed = inputBeltsAllowed(node.recipeId);
     perMachineInputs.forEach((f) => {
       if (f.isFluid) return;
       f.beltsPerMachine = Math.min(beltsAllowed, Math.max(1, Math.ceil(f.perMachineRate / beltSpeed - RATE_EPSILON)));
@@ -306,7 +301,6 @@ export function analyzeNode(
     perMachineInputs,
     perMachineOutputs,
     machineWarnings,
-    allowDoubleFeed: options.allowDoubleFeed !== false,
     roundingMode: rounding.mode,
     roundingChoice: rounding.choice,
     build,
@@ -354,7 +348,6 @@ export function analyzeBelts(
 
   return {
     beltSpeed: ctx.beltLimit,
-    allowDoubleFeed: options.allowDoubleFeed !== false,
     nodes,
     devices: Array.from(devices.entries())
       .map(([deviceId, d]) => ({ deviceId, ...d }))

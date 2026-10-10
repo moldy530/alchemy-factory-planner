@@ -3,11 +3,12 @@ import { NodeBeltInfo } from "../../engine/belt-analysis";
 import { BELT_STATE_COLOR, formatPercent, formatRate } from "../../lib/beltDisplay";
 import { BeltBar } from "../ui/BeltBar";
 import { LineModeToggle } from "../dashboard/LineModeToggle";
+import { RoundingToggle } from "../dashboard/RoundingToggle";
 import { MachineWarningText } from "../dashboard/MachineWarningText";
 
 /** Belt utilization, parallel-line breakdown and per-machine checks for one graph node. */
 export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
-    const { output, linePlan } = belt;
+    const { output, linePlan, build } = belt;
     const device = belt.deviceId ?? "machine";
     const showToggle = !belt.isFluid && (output.linesNeeded > 1 || belt.lineMode !== "inherit");
 
@@ -34,16 +35,36 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                 </div>
             )}
 
+            {build && (
+                <div className="flex flex-col gap-0.5 text-[10px] text-[var(--text-secondary)]">
+                    <span className="font-mono">
+                        {build.machines} {device} × {formatRate(build.perMachineRate)}/m = {formatRate(build.actualRate)}/m
+                    </span>
+                    {Math.abs(build.surplus) > 0.05 && (
+                        <span
+                            className="font-bold"
+                            style={{ color: build.surplus > 0 ? "var(--info)" : "var(--warning)" }}
+                        >
+                            {build.surplus > 0
+                                ? `+${formatRate(build.surplus)}/m surplus`
+                                : `${formatRate(-build.surplus)}/m short of ${formatRate(build.demandRate)}/m`}
+                        </span>
+                    )}
+                </div>
+            )}
+
             {linePlan && (
                 <div className="flex flex-col gap-0.5 text-[10px] text-[var(--text-secondary)] bg-[var(--info)]/10 border border-[var(--info)]/30 rounded p-1.5">
                     <span className="flex items-center gap-1 font-bold text-[var(--info)]">
                         <GitFork size={10} />
                         {linePlan.lines} lines × {formatRate(linePlan.ratePerLine)}/m
                     </span>
-                    <span className="text-[var(--text-muted)]">
-                        Demand split evenly: each line at {formatPercent(linePlan.ratePerLine / output.beltSpeed)} of{" "}
-                        {formatRate(output.beltSpeed, 0)}/m
-                    </span>
+                    {!build && (
+                        <span className="text-[var(--text-muted)]">
+                            Demand split evenly: each line at {formatPercent(linePlan.ratePerLine / output.beltSpeed)} of{" "}
+                            {formatRate(output.beltSpeed, 0)}/m
+                        </span>
+                    )}
                     {linePlan.exactMachines > 0 && (
                         <span>
                             {linePlan.producersPerLine} {device}/line · {linePlan.machinesBuilt} built (
@@ -87,6 +108,13 @@ export function NodeBeltDetails({ belt }: { belt: NodeBeltInfo }) {
                     </span>
                 </div>
             ))}
+
+            {belt.machinesExact > 0 && (
+                <div className="flex items-center justify-between gap-2 text-[9px] uppercase tracking-wide text-[var(--text-muted)]">
+                    <span>Rounding</span>
+                    <RoundingToggle nodeKey={belt.nodeKey} choice={belt.roundingChoice} />
+                </div>
+            )}
 
             {showToggle && (
                 <div className="flex items-center justify-between gap-2 text-[9px] uppercase tracking-wide text-[var(--text-muted)]">
