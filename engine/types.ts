@@ -116,6 +116,7 @@ export interface PlannerConfig {
   selfFertilizer?: boolean; // If true, fertilizer is produced internally; if false, treated as external input
   planParallelLines?: boolean; // Plan parallel belt lines for flows over the belt limit (default true)
   allowDoubleFeed?: boolean; // Let Linen take Linen Thread from two belts (both assembler inputs) (default true)
+  machineRounding?: RoundingMode; // Whole machines at full speed: round up/down, or exact fractions (default "up")
 }
 
 export interface ResearchState {
@@ -136,6 +137,9 @@ export type PlannerMode = "recursive" | "lp";
 /** Per-node override for parallel-line planning. Absent = inherit the factory setting. */
 export type LineOverride = "on" | "off";
 
+/** Machine count rounding. "exact" keeps the solver's fractions (machines throttled to demand). */
+export type RoundingMode = "exact" | "up" | "down";
+
 export interface FactoryState {
   id: string;
   name: string;
@@ -145,4 +149,5 @@ export interface FactoryState {
   viewMode: "graph" | "list";
   plannerMode: PlannerMode;
   lineOverrides?: Record<string, LineOverride>; // Keyed by production node key
+  roundingOverrides?: Record<string, RoundingMode>; // Keyed by production node key
 }

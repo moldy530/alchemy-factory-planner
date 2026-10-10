@@ -16,11 +16,12 @@ import {
     FactoryState,
     LineOverride,
     PlannerConfig,
+    RoundingMode,
     PlannerMode,
     ProductionNode,
     ResearchState,
 } from "../engine/types";
-import { analyzeBelts, BeltReport, LineMode } from "../engine/belt-analysis";
+import { analyzeBelts, BeltReport, DEFAULT_ROUNDING, LineMode, RoundingChoice } from "../engine/belt-analysis";
 import { generateGraph } from "../lib/graphMapper";
 
 // Extended Factory Data to include visual state
@@ -68,7 +69,16 @@ const DEFAULT_FACTORY_CONFIG: Omit<
     selfFertilizer: true,
     planParallelLines: true,
     allowDoubleFeed: true,
+    machineRounding: DEFAULT_ROUNDING,
 };
+
+/** Set or clear (for "inherit") one entry of a per-node override map. */
+function withOverride<T extends string>(map: Record<string, T> | undefined, key: string, value: T | "inherit") {
+    const next: Record<string, T> = { ...(map ?? {}) };
+    if (value === "inherit") delete next[key];
+    else next[key] = value;
+    return next;
+}
 
 /** Run the planner and belt analysis for a factory with the global research levels. */
 function computeFactory(factory: FactoryData, research: ResearchState) {
@@ -91,6 +101,8 @@ function computeFactory(factory: FactoryData, research: ResearchState) {
         planParallelLines: factory.config.planParallelLines ?? true,
         lineOverrides: factory.lineOverrides ?? {},
         allowDoubleFeed: factory.config.allowDoubleFeed ?? true,
+        machineRounding: factory.config.machineRounding ?? DEFAULT_ROUNDING,
+        roundingOverrides: factory.roundingOverrides ?? {},
     });
 
     return { productionTrees, beltReport };
@@ -131,6 +143,7 @@ interface FactoryStore {
     setViewMode: (id: string, mode: "graph" | "list") => void;
     setPlannerMode: (id: string, mode: PlannerMode) => void;
     setLineOverride: (id: string, nodeKey: string, mode: LineMode) => void;
+    setRoundingOverride: (id: string, nodeKey: string, mode: RoundingChoice) => void;
     resetFactoryLayout: (id: string) => void;
 }
 
@@ -152,6 +165,7 @@ export const useFactoryStore = create<FactoryStore>()(
                     viewMode: "graph",
                     plannerMode: "lp",
                     lineOverrides: {},
+                    roundingOverrides: {},
                     nodes: [],
                     edges: [],
                     productionTrees: [],
@@ -266,13 +280,22 @@ export const useFactoryStore = create<FactoryStore>()(
 
             setLineOverride: (id, nodeKey, mode) => {
                 set((state) => ({
-                    factories: state.factories.map((f) => {
-                        if (f.id !== id) return f;
-                        const lineOverrides: Record<string, LineOverride> = { ...(f.lineOverrides ?? {}) };
-                        if (mode === "inherit") delete lineOverrides[nodeKey];
-                        else lineOverrides[nodeKey] = mode;
-                        return { ...f, lineOverrides };
-                    }),
+                    factories: state.factories.map((f) =>
+                        f.id === id
+                            ? { ...f, lineOverrides: withOverride<LineOverride>(f.lineOverrides, nodeKey, mode) }
+                            : f
+                    ),
+                }));
+                get().calculateAndLayout();
+            },
+
+            setRoundingOverride: (id, nodeKey, mode) => {
+                set((state) => ({
+                    factories: state.factories.map((f) =>
+                        f.id === id
+                            ? { ...f, roundingOverrides: withOverride<RoundingMode>(f.roundingOverrides, nodeKey, mode) }
+                            : f
+                    ),
                 }));
                 get().calculateAndLayout();
             },

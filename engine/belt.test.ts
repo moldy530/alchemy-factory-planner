@@ -6,6 +6,7 @@ import {
   linesNeeded,
   nurseryOutputPerMachine,
   planParallelLines,
+  roundBuild,
 } from "./belt";
 import { beltSpeedForLevel, factorySpeedMultiplier, inputBeltsAllowed } from "./game-constants";
 
@@ -73,6 +74,59 @@ describe("planParallelLines", () => {
     const plan = planParallelLines(100, 1.4, 165);
     expect(plan.lines).toBe(1);
     expect(plan.machinesBuilt).toBe(2);
+  });
+});
+
+describe("roundBuild", () => {
+  const nurseries = 1260 / 165; // 7.64 flax nurseries at 165/min each
+  const grinders = 1260 / 55; // 22.9 grinders at 55/min each
+
+  test("round up: 8 nurseries × 165 = 1,320/min, +60 surplus, one per line", () => {
+    const b = roundBuild(1260, nurseries, 165, 165, "up", true);
+    expect(b.machines).toBe(8);
+    expect(b.lines).toBe(8);
+    expect(b.producersPerLine).toBe(1);
+    expect(b.actualRate).toBeCloseTo(1320, 6);
+    expect(b.surplus).toBeCloseTo(60, 6);
+  });
+
+  test("round down: 7 nurseries × 165 = 1,155/min, 105 short", () => {
+    const b = roundBuild(1260, nurseries, 165, 165, "down", true);
+    expect(b.machines).toBe(7);
+    expect(b.lines).toBe(7);
+    expect(b.actualRate).toBeCloseTo(1155, 6);
+    expect(b.surplus).toBeCloseTo(-105, 6);
+  });
+
+  test("round up grinders with parallel lines: 8 lines × 3 = 24, each line full", () => {
+    const b = roundBuild(1260, grinders, 55, 165, "up", true);
+    expect(b.machines).toBe(24);
+    expect(b.actualRate).toBeCloseTo(1320, 6);
+  });
+
+  test("round up without parallel lines: ceil(machines)", () => {
+    const b = roundBuild(1260, grinders, 55, 165, "up", false);
+    expect(b.machines).toBe(23);
+    expect(b.actualRate).toBeCloseTo(1265, 6);
+  });
+
+  test("round down grinders: 22 × 55 = 1,210/min over 8 lines", () => {
+    const b = roundBuild(1260, grinders, 55, 165, "down", true);
+    expect(b.machines).toBe(22);
+    expect(b.lines).toBe(8);
+    expect(b.actualRate).toBeCloseTo(1210, 6);
+  });
+
+  test("round down never builds zero machines", () => {
+    expect(roundBuild(10, 0.3, 33, 165, "down", true).machines).toBe(1);
+  });
+
+  test("a line never carries more than one belt", () => {
+    // 2 machines at 100/min on one line would be 200, capped at 165
+    const b = roundBuild(150, 1.5, 100, 165, "up", true);
+    expect(b.lines).toBe(1);
+    expect(b.machines).toBe(2);
+    expect(b.actualRate).toBe(165);
   });
 });
 

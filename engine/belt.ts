@@ -33,6 +33,20 @@ export interface ParallelLinePlan {
 
 export type MachineFlowDirection = "input" | "output";
 
+/** Whole machines running at full speed, rounded up or down from the solver's fraction. */
+export interface RoundedBuild {
+  mode: "up" | "down";
+  machines: number;
+  perMachineRate: number;
+  /** What the built machines actually produce (capped at one belt per line) */
+  actualRate: number;
+  demandRate: number;
+  /** actualRate - demandRate: positive = surplus, negative = shortfall */
+  surplus: number;
+  lines: number;
+  producersPerLine: number;
+}
+
 export interface MachineFlowCheck {
   itemName: string;
   direction: MachineFlowDirection;
@@ -87,6 +101,52 @@ export function planParallelLines(rate: number, exactMachines: number, beltSpeed
     exactMachines,
     producersPerLine,
     machinesBuilt: lines * producersPerLine,
+  };
+}
+
+/**
+ * Round a fractional machine count to whole machines running at full speed.
+ * - up:   enough machines to meet demand (with parallel lines: whole machines per line)
+ * - down: at most the solver's count (min 1), accepting a shortfall
+ * Each line carries at most one belt, so output per line is capped at belt speed.
+ */
+export function roundBuild(
+  demandRate: number,
+  exactMachines: number,
+  perMachineRate: number,
+  beltSpeed: number,
+  mode: "up" | "down",
+  parallelLines: boolean,
+): RoundedBuild {
+  let machines: number;
+  let lines: number;
+  let producersPerLine: number;
+  let actualRate: number;
+
+  if (mode === "up") {
+    lines = parallelLines ? Math.max(1, linesNeeded(demandRate, beltSpeed)) : 1;
+    producersPerLine = Math.max(1, Math.ceil(exactMachines / lines - RATE_EPSILON));
+    machines = lines * producersPerLine;
+    actualRate = parallelLines
+      ? lines * Math.min(producersPerLine * perMachineRate, beltSpeed)
+      : machines * perMachineRate;
+  } else {
+    machines = Math.max(1, Math.floor(exactMachines + RATE_EPSILON));
+    const raw = machines * perMachineRate;
+    lines = parallelLines ? Math.max(1, linesNeeded(raw, beltSpeed)) : 1;
+    producersPerLine = Math.ceil(machines / lines - RATE_EPSILON);
+    actualRate = parallelLines ? Math.min(raw, lines * beltSpeed) : raw;
+  }
+
+  return {
+    mode,
+    machines,
+    perMachineRate,
+    actualRate,
+    demandRate,
+    surplus: actualRate - demandRate,
+    lines,
+    producersPerLine,
   };
 }
 

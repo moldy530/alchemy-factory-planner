@@ -46,7 +46,9 @@ planners.forEach(({ name, fn }) => {
 
     test("flax fiber 1,260/min → 8 lines, 3 grinders per line", () => {
       const fiber = nodeFor(report, "Flax Fiber");
-      expect(fiber.output.rate).toBeCloseTo(1260, 3);
+      // Demand is 1,260; rounded up, 24 grinders at full speed fill 8 lines: 1,320
+      expect(fiber.build?.demandRate).toBeCloseTo(1260, 3);
+      expect(fiber.output.rate).toBeCloseTo(1320, 3);
       expect(fiber.output.linesNeeded).toBe(8);
       expect(fiber.output.status).toBe("split");
       expect(fiber.deviceId).toBe("grinder");
@@ -58,6 +60,10 @@ planners.forEach(({ name, fn }) => {
       const flax = nodeFor(report, "Flax");
       expect(flax.machinesExact).toBeCloseTo(1260 / 165, 3);
       expect(flax.machinesBuilt).toBe(8);
+      // Each nursery runs at the full 165/min: 1,320/min, 60 surplus
+      expect(flax.build?.actualRate).toBeCloseTo(1320, 3);
+      expect(flax.linePlan?.ratePerLine).toBeCloseTo(165, 3);
+      expect(report.surpluses.find((x) => x.itemName === "Flax")?.surplus).toBeCloseTo(60, 3);
     });
 
     test("linen assembler needs 330 thread/min, fed from two belts (the Linen exception, no error)", () => {
@@ -77,6 +83,41 @@ planners.forEach(({ name, fn }) => {
       expect(grinder.built).toBeGreaterThanOrEqual(Math.ceil(grinder.exact));
       expect(report.lines.find((l) => l.itemName === "Flax Fiber")!.lines).toBe(8);
     });
+  });
+});
+
+describe("Machine rounding", () => {
+  const cfg = config({ targets: [{ item: "Bandage", rate: 30 }] });
+  const roots = calculateProductionLP(cfg);
+
+  test("exact: fractional machines throttled to demand (157.5/min per flax line)", () => {
+    const report = analyzeBelts(roots, cfg, { planParallelLines: true, machineRounding: "exact" });
+    const flax = nodeFor(report, "Flax");
+    expect(flax.build).toBeUndefined();
+    expect(flax.output.rate).toBeCloseTo(1260, 3);
+    expect(flax.linePlan?.ratePerLine).toBeCloseTo(157.5, 3);
+    expect(report.surpluses).toHaveLength(0);
+  });
+
+  test("down: 7 nurseries × 165 = 1,155/min, 105 short", () => {
+    const report = analyzeBelts(roots, cfg, { planParallelLines: true, machineRounding: "down" });
+    const flax = nodeFor(report, "Flax");
+    expect(flax.machinesBuilt).toBe(7);
+    expect(flax.output.rate).toBeCloseTo(1155, 3);
+    expect(flax.output.linesNeeded).toBe(7);
+    expect(flax.build?.surplus).toBeCloseTo(-105, 3);
+  });
+
+  test("per-node override beats the factory setting", () => {
+    const key = nodeFor(analyzeBelts(roots, cfg, { planParallelLines: true }), "Flax").nodeKey;
+    const report = analyzeBelts(roots, cfg, {
+      planParallelLines: true,
+      machineRounding: "up",
+      roundingOverrides: { [key]: "down" },
+    });
+    expect(nodeFor(report, "Flax").roundingChoice).toBe("down");
+    expect(nodeFor(report, "Flax").machinesBuilt).toBe(7);
+    expect(nodeFor(report, "Flax Fiber").roundingMode).toBe("up");
   });
 });
 

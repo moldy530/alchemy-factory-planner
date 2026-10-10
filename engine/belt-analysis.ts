@@ -5,7 +5,7 @@
  * and whether any single machine needs more than one belt can carry.
  */
 import recipesData from "../data/recipes.json";
-import { LineOverride, PlannerConfig, ProductionNode, Recipe } from "./types";
+import { LineOverride, PlannerConfig, ProductionNode, Recipe, RoundingMode } from "./types";
 import { buildEfficiencyContext, isAlchemyMachine } from "./lp-planner/efficiency";
 import { EfficiencyContext } from "./lp-planner/types";
 import { getEffectiveRecipeTime, getItem, normalizeItemId } from "./item-utils";
@@ -14,20 +14,28 @@ import {
   BeltUtilization,
   MachineFlowCheck,
   ParallelLinePlan,
+  RoundedBuild,
   beltUtilization,
   checkMachineFlow,
   consumersPerBelt,
   planParallelLines,
+  roundBuild,
 } from "./belt";
 
-export type { LineOverride };
+export type { LineOverride, RoundingMode };
 export type LineMode = LineOverride | "inherit";
+export type RoundingChoice = RoundingMode | "inherit";
+
+/** Default when neither the factory nor the node says otherwise: you can't build part of a machine. */
+export const DEFAULT_ROUNDING: RoundingMode = "up";
 
 export interface BeltPlanOptions {
   planParallelLines: boolean;
   lineOverrides?: Record<string, LineOverride>;
   /** Let double-fed recipes (Linen) take their ingredient from several belts (default true) */
   allowDoubleFeed?: boolean;
+  machineRounding?: RoundingMode;
+  roundingOverrides?: Record<string, RoundingMode>;
 }
 
 export interface MachineFlowInfo {
@@ -60,6 +68,11 @@ export interface NodeBeltInfo {
   machineWarnings: MachineFlowCheck[];
   /** Whether double-fed recipes (Linen) were allowed several input belts */
   allowDoubleFeed: boolean;
+  /** Effective rounding for this node and whether it comes from the node override */
+  roundingMode: RoundingMode;
+  roundingChoice: RoundingChoice;
+  /** Whole machines at full speed; absent in exact mode or for nodes without machines */
+  build?: RoundedBuild;
 }
 
 export interface MachineWarning extends MachineFlowCheck {
@@ -75,6 +88,8 @@ export interface BeltReport {
   devices: { deviceId: string; exact: number; built: number }[];
   lines: { itemName: string; rate: number; lines: number }[];
   warnings: MachineWarning[];
+  /** Nodes whose rounded build over- or under-produces the demand */
+  surpluses: { nodeKey: string; itemName: string; surplus: number; mode: "up" | "down" }[];
 }
 
 const recipesById = new Map<string, Recipe>(
@@ -97,6 +112,15 @@ export function resolveLineMode(nodeKey: string, options: BeltPlanOptions): { mo
   const override = options.lineOverrides?.[nodeKey];
   if (override) return { mode: override, active: override === "on" };
   return { mode: "inherit", active: options.planParallelLines };
+}
+
+export function resolveRounding(
+  nodeKey: string,
+  options: BeltPlanOptions,
+): { choice: RoundingChoice; mode: RoundingMode } {
+  const override = options.roundingOverrides?.[nodeKey];
+  if (override) return { choice: override, mode: override };
+  return { choice: "inherit", mode: options.machineRounding ?? DEFAULT_ROUNDING };
 }
 
 /**
@@ -197,22 +221,45 @@ export function analyzeNode(
   const beltSpeed = ctx.beltLimit;
   const isFluid = isFluidItem(node.itemName);
   const { mode, active } = resolveLineMode(nodeKey, options);
-  const output = beltUtilization(node.rate, beltSpeed, { isFluid, parallelLines: active });
-
-  const linePlan =
-    active && !isFluid && output.linesNeeded > 1
-      ? planParallelLines(node.rate, node.deviceCount, beltSpeed)
-      : undefined;
-  const machinesBuilt = linePlan
-    ? linePlan.machinesBuilt
-    : node.deviceCount > RATE_EPSILON
-      ? Math.ceil(node.deviceCount - RATE_EPSILON)
-      : 0;
+  const rounding = resolveRounding(nodeKey, options);
+  const splitLines = active && !isFluid;
 
   const recipe = node.recipeId && !node.isRaw ? recipesById.get(node.recipeId) : undefined;
   const flows = recipe ? perMachineFlows(recipe, ctx) : { inputs: [], outputs: [] };
   const perMachineInputs = flows.inputs.map((f) => toFlowInfo(f, beltSpeed));
   const perMachineOutputs = flows.outputs.map((f) => toFlowInfo(f, beltSpeed));
+
+  // Whole machines at full speed produce their full rate, not the exact demand
+  const primaryRate = perMachineOutputs.find((o) => o.itemName === node.itemName)?.perMachineRate ?? 0;
+  const build =
+    rounding.mode !== "exact" && node.deviceCount > RATE_EPSILON && primaryRate > RATE_EPSILON
+      ? roundBuild(node.rate, node.deviceCount, primaryRate, beltSpeed, rounding.mode, splitLines)
+      : undefined;
+
+  const output = beltUtilization(build ? build.actualRate : node.rate, beltSpeed, {
+    isFluid,
+    parallelLines: active,
+  });
+
+  let linePlan: ParallelLinePlan | undefined;
+  if (splitLines && output.linesNeeded > 1) {
+    linePlan = build
+      ? {
+          lines: build.lines,
+          ratePerLine: build.actualRate / build.lines,
+          exactMachines: node.deviceCount,
+          producersPerLine: build.producersPerLine,
+          machinesBuilt: build.machines,
+        }
+      : planParallelLines(node.rate, node.deviceCount, beltSpeed);
+  }
+  const machinesBuilt = build
+    ? build.machines
+    : linePlan
+      ? linePlan.machinesBuilt
+      : node.deviceCount > RATE_EPSILON
+        ? Math.ceil(node.deviceCount - RATE_EPSILON)
+        : 0;
 
   const machineWarnings: MachineFlowCheck[] = [];
   if (node.deviceCount > RATE_EPSILON) {
@@ -260,6 +307,9 @@ export function analyzeNode(
     perMachineOutputs,
     machineWarnings,
     allowDoubleFeed: options.allowDoubleFeed !== false,
+    roundingMode: rounding.mode,
+    roundingChoice: rounding.choice,
+    build,
   };
 }
 
@@ -273,10 +323,15 @@ export function analyzeBelts(
   const devices = new Map<string, { exact: number; built: number }>();
   const lines = new Map<string, { rate: number; lines: number }>();
   const warnings: MachineWarning[] = [];
+  const surpluses: BeltReport["surpluses"] = [];
 
   collectPlanNodes(roots).forEach((node, key) => {
     const info = analyzeNode(node, ctx, options);
     nodes[key] = info;
+
+    if (info.build && Math.abs(info.build.surplus) > 0.05) {
+      surpluses.push({ nodeKey: key, itemName: info.itemName, surplus: info.build.surplus, mode: info.build.mode });
+    }
 
     if (info.deviceId && info.machinesExact > RATE_EPSILON) {
       const d = devices.get(info.deviceId) || { exact: 0, built: 0 };
@@ -308,5 +363,6 @@ export function analyzeBelts(
       .map(([itemName, l]) => ({ itemName, ...l }))
       .sort((a, b) => b.lines - a.lines || a.itemName.localeCompare(b.itemName)),
     warnings,
+    surpluses: surpluses.sort((a, b) => a.surplus - b.surplus),
   };
 }
