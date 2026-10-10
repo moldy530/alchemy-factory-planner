@@ -9,7 +9,7 @@ import { LineOverride, PlannerConfig, ProductionNode, Recipe, RoundingMode } fro
 import { buildEfficiencyContext, isAlchemyMachine } from "./lp-planner/efficiency";
 import { EfficiencyContext } from "./lp-planner/types";
 import { getEffectiveRecipeTime, getItem, normalizeItemId } from "./item-utils";
-import { FLUID_CATEGORIES, RATE_EPSILON, inputBeltsAllowed } from "./game-constants";
+import { FLUID_CATEGORIES, FLUID_ITEMS, RATE_EPSILON, inputBeltsAllowed } from "./game-constants";
 import { collectPlanGraph, nodeKeyOf, splitEdgeKey } from "./plan-graph";
 import { FlowEdge, FlowNode, simulateFlow } from "./flow";
 import {
@@ -109,6 +109,7 @@ const recipesById = new Map<string, Recipe>(
 export function isFluidItem(itemRef: string): boolean {
   const item = getItem(itemRef);
   if (!item) return false;
+  if ((FLUID_ITEMS as readonly string[]).includes(item.id)) return true;
   const categories: string[] = Array.isArray(item.category) ? item.category : [item.category];
   return categories.some((c) => (FLUID_CATEGORIES as readonly string[]).includes(c));
 }

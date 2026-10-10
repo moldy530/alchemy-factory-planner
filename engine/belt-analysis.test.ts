@@ -207,6 +207,8 @@ describe("Liquids", () => {
     expect(isFluidItem("Sulfuric Acid")).toBe(true);
     expect(isFluidItem("Quicksilver")).toBe(true);
     expect(isFluidItem("Brine")).toBe(true);
+    expect(isFluidItem("Steam")).toBe(true); // category is only "fuel", listed in FLUID_ITEMS
+    expect(isFluidItem("Charcoal")).toBe(false);
     expect(isFluidItem("Flax Fiber")).toBe(false);
   });
 

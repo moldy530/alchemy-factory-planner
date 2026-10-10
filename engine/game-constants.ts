@@ -27,6 +27,9 @@ export const FACTORY = {
  */
 export const FLUID_CATEGORIES = ["liquid", "oil", "essence"] as const;
 
+/** Pipe items whose data category doesn't say so (Steam is only "fuel"). Item ids. */
+export const FLUID_ITEMS = ["steam"] as const;
+
 /**
  * Every machine input is capped at one belt. Exceptions: recipes whose single
  * ingredient can fill several input ports of the machine, keyed by recipe id
