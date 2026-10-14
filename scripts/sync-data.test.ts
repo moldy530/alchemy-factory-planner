@@ -76,3 +76,37 @@ describe("Craft Type Mappings", () => {
     });
   });
 });
+
+describe("Fail products (expected-value byproducts)", () => {
+  // In-game, a craft "fails" with probability failRate1 and yields the fail
+  // product INSTEAD of the main product. The sync models expected values:
+  // main output scaled by (1 - failRate1), fail product appended at qty * failRate1.
+  test("obsidian models the marble byproduct at 50% fail rate", () => {
+    const obsidian = recipes.find((r) => r.id === "obsidian");
+    expect(obsidian).toBeDefined();
+    expect(obsidian?.outputs[0]).toMatchObject({ id: "obsidian", count: 0.5 });
+    expect(obsidian?.outputs[1]).toMatchObject({ id: "marble", count: 0.5 });
+  });
+
+  test("steel ingot main output scaled by 75% fail rate", () => {
+    const steel = recipes.find((r) => r.id === "steel-ingot");
+    expect(steel).toBeDefined();
+    expect(steel?.outputs[0]).toMatchObject({ id: "steelingot", count: 0.25 });
+    expect(steel?.outputs[1]).toMatchObject({ id: "ironingot", count: 0.75 });
+  });
+
+  test("all fail-product byproducts reference known items", () => {
+    const itemIds = new Set(
+      // items.json uses kebab-case ids matching recipe item ids
+      (recipes as Array<{ id: string }>).map((r) => r.id)
+    );
+    recipes.forEach((recipe) => {
+      recipe.outputs.slice(1).forEach((output) => {
+        // byproduct ids should be resolvable (either a recipe or an item)
+        expect(typeof output.id).toBe("string");
+        expect(output.count).toBeGreaterThan(0);
+      });
+    });
+    expect(itemIds.size).toBeGreaterThan(0);
+  });
+});

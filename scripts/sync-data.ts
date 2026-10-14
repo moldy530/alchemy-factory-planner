@@ -80,6 +80,8 @@ interface RemoteCrafting {
   craftTime: number;
   fractionNum?: number;
   sideProduct?: { name: string; qty: number };
+  failProduct1?: { name: string; qty: number };
+  failRate1?: number;
   [key: string]: any;
 }
 
@@ -475,6 +477,24 @@ function transformCrafting(
         id: sideId,
         name: itemDisplayNames.get(sideId) || craft.sideProduct.name,
         count: craft.sideProduct.qty * fractionMultiplier,
+      });
+    }
+
+    // Model fail products as expected-value byproducts.
+    // In-game, a craft "fails" with probability failRate1 and yields the fail
+    // product INSTEAD of the main product (matches the community calculator's
+    // batch model, e.g. starfi5h/AlchemyFactoryCalculator "BATCH (50%) 2 RUNS").
+    // So the main output is scaled by (1 - failRate1) and the fail product is
+    // appended at qty * failRate1. The planner treats outputs[1:] as byproducts.
+    const failRate = craft.failRate1 || 0;
+    if (failRate > 0 && craft.failProduct1 && craft.failProduct1.name.toLowerCase() !== 'none') {
+      const round6 = (n: number) => Math.round(n * 1e6) / 1e6;
+      recipe.outputs[0].count = round6(recipe.outputs[0].count * (1 - failRate));
+      const failId = craft.failProduct1.name.toLowerCase();
+      recipe.outputs.push({
+        id: failId,
+        name: itemDisplayNames.get(failId) || craft.failProduct1.name,
+        count: round6(craft.failProduct1.qty * failRate * fractionMultiplier),
       });
     }
 

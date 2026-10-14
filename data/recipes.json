@@ -911,6 +911,11 @@
       {
         "id": "coke",
         "name": "Coke",
+        "count": 0.5
+      },
+      {
+        "id": "charcoal",
+        "name": "Charcoal",
         "count": 1
       }
     ],
@@ -955,7 +960,12 @@
       {
         "id": "steelingot",
         "name": "Steel Ingot",
-        "count": 1
+        "count": 0.25
+      },
+      {
+        "id": "ironingot",
+        "name": "Iron Ingot",
+        "count": 0.75
       }
     ],
     "time": 4,
@@ -1209,7 +1219,12 @@
       {
         "id": "salt",
         "name": "Salt",
-        "count": 1
+        "count": 0.333333
+      },
+      {
+        "id": "sand",
+        "name": "Sand",
+        "count": 4
       }
     ],
     "time": 6,
@@ -1277,7 +1292,12 @@
       {
         "id": "copperpowder2",
         "name": "Copper Powder",
-        "count": 1
+        "count": 0.5
+      },
+      {
+        "id": "copperpowder",
+        "name": "Impure Copper Powder",
+        "count": 0.5
       }
     ],
     "time": 6,
@@ -1515,7 +1535,12 @@
       {
         "id": "malachite",
         "name": "Malachite",
-        "count": 1
+        "count": 0.5
+      },
+      {
+        "id": "shard1",
+        "name": "Crude Shard",
+        "count": 0.5
       }
     ],
     "time": 12,
@@ -2343,7 +2368,12 @@
       {
         "id": "silverpowder3",
         "name": "Silver Powder",
-        "count": 1
+        "count": 0.2
+      },
+      {
+        "id": "silverpowder",
+        "name": "Crude Silver Powder",
+        "count": 0.8
       }
     ],
     "time": 6.4,
@@ -2387,7 +2417,12 @@
       {
         "id": "obsidian",
         "name": "Obsidian",
-        "count": 1
+        "count": 0.5
+      },
+      {
+        "id": "marble",
+        "name": "Marble",
+        "count": 0.5
       }
     ],
     "time": 6,
@@ -2536,7 +2571,12 @@
       {
         "id": "lapislazuli",
         "name": "Lapis Lazuli",
-        "count": 1
+        "count": 0.666667
+      },
+      {
+        "id": "crystal1",
+        "name": "Shattered Crystal",
+        "count": 0.333333
       }
     ],
     "time": 12,
@@ -2743,7 +2783,12 @@
       {
         "id": "golddust3",
         "name": "Gold Dust",
-        "count": 1
+        "count": 0.7
+      },
+      {
+        "id": "golddust2",
+        "name": "Impure Gold Dust",
+        "count": 0.3
       }
     ],
     "time": 8,
