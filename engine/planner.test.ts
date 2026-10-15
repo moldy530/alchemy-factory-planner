@@ -707,3 +707,41 @@ describe("LP Planner - Circular Dependencies", () => {
     console.log(`✓ Total rate accessible: ${totalRate.toFixed(1)}/min`);
   });
 });
+
+describe("Fuel from outside the factory is only bought for heat", () => {
+  test("Charcoal as bought fuel is still produced when a recipe uses it as an ingredient", () => {
+    const config: PlannerConfig = {
+      targets: [{ item: "Charcoal Powder", rate: 10 }],
+      availableResources: [],
+      fuelEfficiency: 0,
+      alchemySkill: 0,
+      factoryEfficiency: 0,
+      logisticsEfficiency: 0,
+      throwingEfficiency: 0,
+      fertilizerEfficiency: 0,
+      salesAbility: 0,
+      negotiationSkill: 0,
+      customerMgmt: 0,
+      relicKnowledge: 0,
+      selectedFuel: "Charcoal",
+      selfFuel: false,
+    };
+    const nodes: ProductionNode[] = [];
+    const seen = new Set<ProductionNode>();
+    const walk = (n: ProductionNode) => {
+      if (seen.has(n)) return;
+      seen.add(n);
+      nodes.push(n);
+      n.inputs.forEach(walk);
+    };
+    calculateProductionLP(config).forEach(walk);
+    const charcoal = (raw: boolean) =>
+      nodes
+        .filter((n) => n.itemName === "Charcoal" && !!n.isRaw === raw && !n.isConsumptionReference)
+        .reduce((sum, n) => sum + n.rate, 0);
+    // The grinder's charcoal ingredient must be produced, not bought
+    expect(charcoal(false)).toBeGreaterThanOrEqual(10 - 1e-6);
+    // Only the crucible/grinder heat is bought
+    expect(charcoal(true)).toBeLessThan(10);
+  });
+});

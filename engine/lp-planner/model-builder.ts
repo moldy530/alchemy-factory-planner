@@ -58,22 +58,21 @@ export function buildLPModel(
   const fuelId = normalizeItemId(ctx.selectedFuel);
   const fertilizerId = ctx.selectedFertilizer ? normalizeItemId(ctx.selectedFertilizer) : null;
 
+  // Fuel/fertilizer that is not self-produced is bought ONLY for heat and nursery
+  // feed. Raw purchases are pinned to exactly that use via link_bought_<id> == 0
+  // constraints; anything used as an ingredient (or target) must be produced, so
+  // fuel/fertilizer recipes stay in the model.
+  const buyFuel = !ctx.selfFuel;
+  const buyFertilizer = !ctx.selfFertilizer && fertilizerId !== null;
+  const boughtItems = new Set<string>();
+  const addBoughtUse = (coeffs: Map<string, number>, itemId: string, perActivation: number) => {
+    const key = `link_bought_${itemId}`;
+    boughtItems.add(itemId);
+    coeffs.set(key, (coeffs.get(key) ?? 0) - perActivation);
+  };
+
   // Build item flow coefficients for each recipe
   allRecipes.forEach((recipe) => {
-    // Skip recipes that produce fuel/fertilizer if self-production is disabled
-    const recipeProducesFuel = !ctx.selfFuel && recipe.outputs.some(output => {
-      const outputId = output.id || normalizeItemId(output.name);
-      return outputId === fuelId;
-    });
-    const recipeProducesFertilizer = !ctx.selfFertilizer && fertilizerId && recipe.outputs.some(output => {
-      const outputId = output.id || normalizeItemId(output.name);
-      return outputId === fertilizerId;
-    });
-
-    if (recipeProducesFuel || recipeProducesFertilizer) {
-      return; // Skip this recipe
-    }
-
     const recipeVar = `recipe_${recipe.id}`;
     const recipeCoeffs = new Map<string, number>();
 
@@ -185,6 +184,9 @@ export function buildLPModel(
 
         const current = recipeCoeffs.get(fertilizerId) || 0;
         recipeCoeffs.set(fertilizerId, current - fertilizerPerActivation);
+        if (buyFertilizer) {
+          addBoughtUse(recipeCoeffs, fertilizerId, fertilizerPerActivation);
+        }
 
         if (!itemConsumedBy.has(fertilizerId)) {
           itemConsumedBy.set(fertilizerId, new Set());
@@ -221,6 +223,9 @@ export function buildLPModel(
 
         const current = recipeCoeffs.get(fuelId) || 0;
         recipeCoeffs.set(fuelId, current - fuelPerActivation);
+        if (buyFuel) {
+          addBoughtUse(recipeCoeffs, fuelId, fuelPerActivation);
+        }
 
         if (!itemConsumedBy.has(fuelId)) {
           itemConsumedBy.set(fuelId, new Set());
@@ -261,22 +266,14 @@ export function buildLPModel(
     const availableRate = availableResources.get(itemName) || 0;
     let isRawMaterial = !itemProducedBy.has(itemName) || itemProducedBy.get(itemName)!.size === 0;
 
-    // Force fuel/fertilizer to be raw materials if self-production is disabled
-    const fuelId = normalizeItemId(ctx.selectedFuel);
-    const fertilizerId = ctx.selectedFertilizer ? normalizeItemId(ctx.selectedFertilizer) : null;
-
-    if (!ctx.selfFuel && itemName === fuelId) {
-      isRawMaterial = true;
-    }
-    if (!ctx.selfFertilizer && fertilizerId && itemName === fertilizerId) {
-      isRawMaterial = true;
-    }
-
     // Create raw material variable if needed
     if (isRawMaterial) {
       const rawVar = `raw_${itemName}`;
       const rawCoeffs = new Map<string, number>();
       rawCoeffs.set(itemName, 1); // raw purchase adds 1 per unit
+      if (boughtItems.has(itemName)) {
+        rawCoeffs.set(`link_bought_${itemName}`, 1);
+      }
       variables.set(rawVar, rawCoeffs);
     }
 
@@ -287,6 +284,25 @@ export function buildLPModel(
     const rhs = isTarget ? targetRate - availableRate : -availableRate;
 
     constraints.set(`item_${itemName}`, { min: rhs });
+  });
+
+  // Fuel/fertilizer that is bought (not self-produced) needs a raw purchase variable
+  // even when it has production recipes; the link constraint below pins it to exactly
+  // the heat/nursery-feed use.
+  for (const itemId of boughtItems) {
+    const rawVar = `raw_${itemId}`;
+    if (!variables.has(rawVar)) {
+      const rawCoeffs = new Map<string, number>();
+      rawCoeffs.set(itemId, 1);
+      rawCoeffs.set(`link_bought_${itemId}`, 1);
+      variables.set(rawVar, rawCoeffs);
+    }
+  }
+
+  // Pin bought fuel/fertilizer purchases to exactly the heat/feed use:
+  // raw purchase - heat/feed consumption == 0, so ingredient/target use must be produced.
+  boughtItems.forEach((itemId) => {
+    constraints.set(`link_bought_${itemId}`, { equal: 0 });
   });
 
   // Build objective: minimize cost of raw materials
@@ -308,9 +324,10 @@ export function buildLPModel(
     const varDef: Record<string, number> = {};
 
     // Add constraint coefficients
-    itemCoeffs.forEach((coeff, itemName) => {
+    // (link_bought_* keys address their own constraints; everything else is an item flow)
+    itemCoeffs.forEach((coeff, key) => {
       if (Math.abs(coeff) > EPSILON) {
-        varDef[`item_${itemName}`] = coeff;
+        varDef[key.startsWith("link_") ? key : `item_${key}`] = coeff;
       }
     });
 

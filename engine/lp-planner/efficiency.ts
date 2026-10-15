@@ -17,10 +17,12 @@ export function calculateAlchemyBonus(level: number): number {
  * Calculate throwing efficiency bonus percentage
  * Levels 1-12: +25% per level
  * Levels 13+: +5% per level
+ * Capped at level 92 (12 + 80 repeats, per DT_UpgradePoints in the game data)
  */
 export function calculateThrowingBonus(level: number): number {
-  if (level <= 12) return level * 0.25;
-  return (12 * 0.25) + ((level - 12) * 0.05);
+  const capped = Math.min(92, level);
+  if (capped <= 12) return capped * 0.25;
+  return (12 * 0.25) + ((capped - 12) * 0.05);
 }
 
 /**

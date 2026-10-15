@@ -527,7 +527,8 @@ function linkProductionNodes(
           // Calculate how much comes from production vs raw (if raw is available)
           const rawFertRate = nodes.get(`${fertId}-raw`)?.rate || 0;
           const totalFertAvailable = fertFlow.produced + rawFertRate;
-          const prodPortion = totalFertAvailable > 0 ? fertFlow.produced / totalFertAvailable : 1;
+          // Fertilizer from outside the factory is all bought (the LP pins purchases to nursery feed)
+          const prodPortion = !ctx.selfFertilizer ? 0 : totalFertAvailable > 0 ? fertFlow.produced / totalFertAvailable : 1;
 
           // Fertilizer is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
@@ -563,7 +564,7 @@ function linkProductionNodes(
           // If there's also production, the raw portion is proportional to raw supply
           const rawFertRate = rawNode.rate;
           const totalFertAvailable = (fertFlow?.produced || 0) + rawFertRate;
-          const rawPortion = totalFertAvailable > 0 ? rawFertRate / totalFertAvailable : 1;
+          const rawPortion = !ctx.selfFertilizer || totalFertAvailable <= 0 ? 1 : rawFertRate / totalFertAvailable;
           const rawInputRate = fertilizerRate * rawPortion;
 
           nodeInputs.add(rawNodeId);
@@ -600,7 +601,8 @@ function linkProductionNodes(
           // Calculate how much comes from production vs raw (if raw is available)
           const rawFuelRate = nodes.get(`${fuelId}-raw`)?.rate || 0;
           const totalFuelAvailable = fuelFlow.produced + rawFuelRate;
-          const prodPortion = totalFuelAvailable > 0 ? fuelFlow.produced / totalFuelAvailable : 1;
+          // Fuel from outside the factory is all bought (the LP pins purchases to heat use)
+          const prodPortion = !ctx.selfFuel ? 0 : totalFuelAvailable > 0 ? fuelFlow.produced / totalFuelAvailable : 1;
 
           // Fuel is produced - link to production nodes
           // Note: We create consumption references even for cycles so they appear in the graph
@@ -636,7 +638,7 @@ function linkProductionNodes(
           // If there's also production, the raw portion is proportional to raw supply
           const rawFuelRate = rawNode.rate;
           const totalFuelAvailable = (fuelFlow?.produced || 0) + rawFuelRate;
-          const rawPortion = totalFuelAvailable > 0 ? rawFuelRate / totalFuelAvailable : 1;
+          const rawPortion = !ctx.selfFuel || totalFuelAvailable <= 0 ? 1 : rawFuelRate / totalFuelAvailable;
           const rawInputRate = fuelRate * rawPortion;
 
           nodeInputs.add(rawNodeId);

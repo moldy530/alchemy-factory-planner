@@ -6,10 +6,15 @@ import { getLayoutedElements } from "../components/graph/layout";
 /**
  * Transforms ProductionNode trees into ReactFlow Nodes and Edges,
  * applies the Dagre layout, and respects saved positions.
+ *
+ * When options.splitBoxesAtBeltLimit is set, merged nodes whose rate exceeds
+ * one belt are split into ceil(rate / beltLimit) boxes, each at most one belt
+ * of output, so each box represents a buildable production block.
  */
 export function generateGraph(
     rootNodes: ProductionNode[],
-    savedPositions: Record<string, { x: number; y: number }> = {}
+    savedPositions: Record<string, { x: number; y: number }> = {},
+    options: { splitBoxesAtBeltLimit?: boolean } = {}
 ): { nodes: Node[]; edges: Edge[] } {
     if (rootNodes.length === 0) return { nodes: [], edges: [] };
 
@@ -67,16 +72,20 @@ export function generateGraph(
             return;
         }
 
-        // Cycle detection: if we're already visiting this node in current path, stop
-        if (visiting.has(key)) {
-            return;
-        }
+        // Cycle detection happens below, after the edge is recorded: a node already
+        // on the current path is not re-traversed, but the edge closing the
+        // production loop must still be drawn.
 
         // Record Relationship & Rate for production nodes (skip if already traversed as consumption ref)
         if (parentName && !traversedConsumptionKeys.has(key)) {
             const edgeKey = `${key}___${parentName}`;
             const currentRate = edgeRates.get(edgeKey) || 0;
             edgeRates.set(edgeKey, currentRate + node.rate);
+        }
+
+        // Cycle detection: if we're already visiting this node in current path, stop
+        if (visiting.has(key)) {
+            return;
         }
 
         // Check if we've already processed this exact object
@@ -112,6 +121,11 @@ export function generateGraph(
     }
 
     rootNodes.forEach((root) => traverse(root));
+
+    // Optionally split boxes that exceed one belt into per-belt boxes
+    if (options.splitBoxesAtBeltLimit) {
+        splitOversizedNodes(mergedNodes, edgeRates);
+    }
 
     // Calculate consumption for each item (how much is being consumed internally)
     // Skip consumption references - they're just edges showing fuel/fertilizer flow
@@ -260,4 +274,86 @@ export function generateGraph(
     });
 
     return { nodes: nodesWithSavedPositions, edges: layouted.edges };
+}
+
+/**
+ * Split merged nodes whose rate exceeds one belt into ceil(rate / beltLimit)
+ * boxes, each carrying at most one belt of output. Edges to/from the split
+ * node are divided evenly across the new boxes. Target (sink) nodes are never
+ * split. After splitting, no box exceeds its belt limit, so the red
+ * "over belt" indicator no longer appears on split boxes.
+ */
+function splitOversizedNodes(
+    mergedNodes: Map<string, ProductionNode>,
+    edgeRates: Map<string, number>
+): void {
+    interface Split {
+        key: string;
+        parts: ProductionNode[];
+    }
+    const splits: Split[] = [];
+
+    mergedNodes.forEach((node, key) => {
+        if (node.isTarget) return;
+        const beltLimit = node.beltLimit || 60;
+        if (beltLimit <= 0 || node.rate <= beltLimit) return;
+        const n = Math.ceil(node.rate / beltLimit);
+        if (n <= 1) return;
+
+        const parts: ProductionNode[] = [];
+        let remaining = node.rate;
+        for (let i = 0; i < n; i++) {
+            const partRate = Math.min(beltLimit, remaining);
+            remaining -= partRate;
+            const share = node.rate > 0 ? partRate / node.rate : 0;
+            parts.push({
+                ...node,
+                id: `${key}__belt${i + 1}`,
+                itemName: `${node.itemName} (${i + 1}/${n})`,
+                rate: partRate,
+                deviceCount: node.deviceCount * share,
+                heatConsumption: node.heatConsumption * share,
+                suppliedRate: (node.suppliedRate || 0) * share,
+                netOutputRate: node.netOutputRate !== undefined ? node.netOutputRate * share : undefined,
+                isBeltSaturated: false,
+                inputs: [],
+                byproducts: [],
+            });
+        }
+        splits.push({ key, parts });
+    });
+
+    for (const { key, parts } of splits) {
+        const n = parts.length;
+        mergedNodes.delete(key);
+        for (const part of parts) {
+            mergedNodes.set(part.id!, part);
+        }
+
+        // Divide edges touching the split node evenly across the new boxes
+        const rewritten = new Map<string, number>();
+        edgeRates.forEach((rate, edgeKey) => {
+            const sep = edgeKey.lastIndexOf("___");
+            const source = edgeKey.slice(0, sep);
+            const target = edgeKey.slice(sep + 3);
+            if (source === key && target === key) {
+                // Self-loop: give each box its proportional share
+                for (const part of parts) {
+                    rewritten.set(`${part.id}___${part.id}`, rate / n);
+                }
+            } else if (source === key) {
+                for (const part of parts) {
+                    rewritten.set(`${part.id}___${target}`, rate / n);
+                }
+            } else if (target === key) {
+                for (const part of parts) {
+                    rewritten.set(`${source}___${part.id}`, rate / n);
+                }
+            } else {
+                rewritten.set(edgeKey, rate);
+            }
+        });
+        edgeRates.clear();
+        rewritten.forEach((v, k) => edgeRates.set(k, v));
+    }
 }

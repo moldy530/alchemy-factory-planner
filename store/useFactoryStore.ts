@@ -272,7 +272,9 @@ export const useFactoryStore = create<FactoryStore>()(
                     savedPositions[n.id] = n.position;
                 });
 
-                const { nodes, edges } = generateGraph(productionNodes, savedPositions);
+                const { nodes, edges } = generateGraph(productionNodes, savedPositions, {
+                    splitBoxesAtBeltLimit: factory.config.splitBoxesAtBeltLimit,
+                });
 
                 set((s) => ({
                     factories: s.factories.map((f) =>
@@ -301,7 +303,9 @@ export const useFactoryStore = create<FactoryStore>()(
                     ? calculateProductionLP(calculationConfig)
                     : calculateProduction(calculationConfig);
 
-                const { nodes, edges } = generateGraph(productionNodes, {});
+                const { nodes, edges } = generateGraph(productionNodes, {}, {
+                    splitBoxesAtBeltLimit: factory.config.splitBoxesAtBeltLimit,
+                });
 
                 const newViewport = { x: 0, y: 0, zoom: 1 };
 

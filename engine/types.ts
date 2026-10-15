@@ -111,6 +111,7 @@ export interface PlannerConfig {
   selectedFuel?: string;
   selfFuel?: boolean; // If true, fuel is produced internally; if false, treated as external input
   selfFertilizer?: boolean; // If true, fertilizer is produced internally; if false, treated as external input
+  splitBoxesAtBeltLimit?: boolean; // If true, graph boxes exceeding one belt are split into per-belt boxes
 }
 
 export interface ResearchState {

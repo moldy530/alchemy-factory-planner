@@ -68,6 +68,7 @@ export function GlobalResearchPanel() {
                     onChange={(v: number) => setResearch("throwingEfficiency", v)}
                     color="text-sky-400"
                     description={`Catapult Rate ${Math.round((1 + calculateThrowingBonus(research.throwingEfficiency)) * 100)}%`}
+                    maxLevel={92}
                 />
                 <ResearchControl
                     label="Factory Eff"
