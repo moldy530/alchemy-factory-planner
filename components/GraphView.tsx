@@ -8,9 +8,14 @@ import "@xyflow/react/dist/style.css";
 import { RotateCcw, Maximize, Minimize } from "lucide-react";
 import { useState, useEffect } from "react";
 import { CustomNode } from "./graph/CustomNode";
+import { BeltEdge } from "./graph/BeltEdge";
 
 const nodeTypes = {
   custom: CustomNode,
+};
+
+const edgeTypes = {
+  belt: BeltEdge,
 };
 
 import { useFactoryStore } from "../store/useFactoryStore";
@@ -127,6 +132,7 @@ export function GraphView() {
         onMoveEnd={(e, viewport) => onViewportChange?.(viewport)}
         defaultViewport={defaultViewport}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         style={{ width: "100%", height: "100%" }}
         minZoom={0.1}
         maxZoom={4}

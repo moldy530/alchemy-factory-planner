@@ -233,10 +233,11 @@ planners.forEach(({ name, fn: calculateFn }) => {
   });
 
   test("Fertilizer tier changes nursery growth speed (issue #19)", () => {
+    // Max Logistics (480/min belt) so the nursery belt cap doesn't mask fertilizer speed
     const base: PlannerConfig = {
       targets: [{ item: "Flax", rate: 60 }],
       availableResources: [],
-      fuelEfficiency: 0, alchemySkill: 0, factoryEfficiency: 0, logisticsEfficiency: 0,
+      fuelEfficiency: 0, alchemySkill: 0, factoryEfficiency: 0, logisticsEfficiency: 92,
       throwingEfficiency: 0, fertilizerEfficiency: 0, salesAbility: 0, negotiationSkill: 0,
       customerMgmt: 0, relicKnowledge: 0, selfFertilizer: false,
     };

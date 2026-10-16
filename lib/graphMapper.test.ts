@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { generateGraph } from "./graphMapper";
+import { Edge } from "@xyflow/react";
+import { generateGraph, BeltEdgeData, MAX_VISUAL_LINES } from "./graphMapper";
 import { calculateProductionLP } from "../engine/lp-planner/index";
+import { analyzeBelts, NodeBeltInfo } from "../engine/belt-analysis";
 import { PlannerConfig, ProductionNode } from "../engine/types";
 
 describe("Graph Mapper", () => {
@@ -41,7 +43,8 @@ describe("Graph Mapper", () => {
     const rawNodes = nodes.filter((n: any) => n.data.isRaw);
     const logsNode = rawNodes.find((n: any) => n.data.itemName === "Logs");
     expect(logsNode).toBeDefined();
-    expect(logsNode.data.rate).toBe(10);
+    // 1 Logs → 200 Planks, so 10 planks/min needs 0.05 logs/min (matches planner.test.ts)
+    expect(logsNode.data.rate).toBeCloseTo(0.05, 4);
   });
 
   test("should handle circular dependencies with correct net output rates", () => {
@@ -238,6 +241,60 @@ describe("Graph Mapper", () => {
   });
 });
 
+describe("Graph Mapper belt edges", () => {
+  const config: PlannerConfig = {
+    targets: [{ item: "Bandage", rate: 30 }],
+    availableResources: [],
+    fuelEfficiency: 0,
+    alchemySkill: 0,
+    factoryEfficiency: 7,
+    logisticsEfficiency: 7,
+    throwingEfficiency: 0,
+    fertilizerEfficiency: 0,
+    salesAbility: 0,
+    negotiationSkill: 0,
+    customerMgmt: 0,
+    relicKnowledge: 0,
+    selectedFertilizer: "Growth Potion",
+    selfFertilizer: false,
+  };
+  const trees = calculateProductionLP(config);
+
+  const edgeBetween = (edges: Edge[], from: string, to: string) =>
+    edges.find((e) => e.source.startsWith(from) && e.target.startsWith(to))!;
+
+  test("without a report, edges keep the original smoothstep style", () => {
+    const { edges } = generateGraph(trees);
+    expect(edges.every((e) => e.type === "smoothstep")).toBe(true);
+  });
+
+  test("split flows draw parallel strokes; Linen's two-belt input is not an error", () => {
+    const report = analyzeBelts(trees, config, { planParallelLines: true });
+    const { nodes, edges } = generateGraph(trees, {}, report);
+
+    // Flax Fiber → Linen Thread: 900/min → 6 lines
+    const fiberToThread = edgeBetween(edges, "flaxfiber-prod", "linenthread-prod");
+    expect(fiberToThread.type).toBe("belt");
+    expect((fiberToThread.data as BeltEdgeData).state).toBe("split");
+    expect((fiberToThread.data as BeltEdgeData).lines).toBe(6);
+    expect((fiberToThread.data as BeltEdgeData).strokes).toBe(6);
+
+    // Flax → Flax Fiber: 1,260/min → 8 lines, drawn as 6 and labelled ×8
+    const flaxToFiber = edgeBetween(edges, "flax-prod", "flaxfiber-prod");
+    expect((flaxToFiber.data as BeltEdgeData).strokes).toBe(MAX_VISUAL_LINES);
+    expect(flaxToFiber.label).toContain("×8 lines");
+
+    // Linen Thread → Linen: 330/min per assembler, fed from two belts
+    const threadToLinen = edgeBetween(edges, "linenthread-prod", "linen-prod");
+    expect((threadToLinen.data as BeltEdgeData).state).toBe("split");
+
+    // Nodes carry their belt info
+    const linen = nodes.find((n) => n.id.startsWith("linen-prod"));
+    const linenBelt = (linen!.data as { belt: NodeBeltInfo }).belt;
+    expect(linenBelt.machineWarnings).toHaveLength(0);
+    expect(linenBelt.perMachineInputs[0].beltsPerMachine).toBe(2);
+  });
+});
 describe("Graph Mapper - loops", () => {
   test("the edge that closes a production loop is drawn", () => {
     const node = (id: string, itemName: string): ProductionNode => ({
@@ -281,7 +338,7 @@ describe("Graph Mapper - split boxes at belt limit", () => {
     const ingot = node("ingot-prod", "Iron Ingot", 120);
     plate.inputs.push(ingot);
 
-    const { nodes, edges } = generateGraph([plate], {}, { splitBoxesAtBeltLimit: true });
+    const { nodes, edges } = generateGraph([plate], {}, null, { splitBoxesAtBeltLimit: true });
 
     const boxes = nodes.filter((n) => {
       const d = n.data as { itemName: string; isTarget?: boolean };
@@ -317,7 +374,7 @@ describe("Graph Mapper - split boxes at belt limit", () => {
 
   test("remainder box gets the leftover rate", () => {
     const plate = node("plate-prod", "Iron Plate", 130);
-    const { nodes } = generateGraph([plate], {}, { splitBoxesAtBeltLimit: true });
+    const { nodes } = generateGraph([plate], {}, null, { splitBoxesAtBeltLimit: true });
     const boxes = nodes.filter((n) => {
       const d = n.data as { itemName: string; isTarget?: boolean };
       return !d.isTarget && d.itemName.startsWith("Iron Plate");

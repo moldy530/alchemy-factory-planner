@@ -81,9 +81,10 @@ export function SearchableSelect({
         if (open && containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect();
 
+            // The dropdown is position: fixed, so viewport coordinates are used as-is
             setDropdownStyles({
-                top: rect.bottom + window.scrollY + 4, // +4 for slight gap
-                left: rect.left + window.scrollX,
+                top: rect.bottom + 4, // +4 for slight gap
+                left: rect.left,
                 width: rect.width
             });
         }

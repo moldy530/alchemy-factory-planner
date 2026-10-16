@@ -8,21 +8,13 @@ import {
     calculateSalesBonus,
     calculateCustomerMgmtBonus,
 } from "../../engine/lp-planner/efficiency";
+import { beltSpeedForLevel, factorySpeedMultiplier } from "../../engine/game-constants";
 
 // Helper functions to calculate bonuses based on skill level
-function calculateBeltSpeed(level: number): number {
-    const cappedLevel = Math.min(92, level);
-    return cappedLevel <= 12
-        ? 60 + cappedLevel * 15
-        : 60 + (12 * 15) + ((cappedLevel - 12) * 3);
-}
+const calculateBeltSpeed = beltSpeedForLevel;
 
 function calculateProductionSpeed(level: number): number {
-    const cappedLevel = Math.min(92, level);
-    const multiplier = cappedLevel <= 12
-        ? 1 + cappedLevel * 0.25
-        : 1 + (12 * 0.25) + ((cappedLevel - 12) * 0.05);
-    return Math.round(multiplier * 100);
+    return Math.round(factorySpeedMultiplier(level) * 100);
 }
 
 export function GlobalResearchPanel() {

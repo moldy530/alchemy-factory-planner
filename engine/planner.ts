@@ -2,6 +2,7 @@ import devicesData from "../data/devices.json";
 import recipesData from "../data/recipes.json";
 import { Device, Item, PlannerConfig, ProductionNode, Recipe } from "./types";
 import { normalizeItemId, getItem, getAllItems, getEffectiveRecipeTime } from "./item-utils";
+import { beltSpeedForLevel, factorySpeedMultiplier } from "./game-constants";
 
 // Index data for fast lookups
 const itemsMap = new Map<string, Item>();
@@ -63,8 +64,8 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
     } = config;
 
     // Modifiers
-    // Factory Efficiency: +25% per level (Linear)
-    const speedMultiplier = 1 + factoryEfficiency * 0.25;
+    // Factory Efficiency: +25% per level (tiered, see game-constants)
+    const speedMultiplier = factorySpeedMultiplier(factoryEfficiency);
 
     // Fuel Efficiency: +10% per level
     const fuelMultiplier = 1 + fuelEfficiency * 0.1;
@@ -72,7 +73,7 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
     // Alchemy Skill: +6% per level (Base 100% + 6% per level, multiplier logic)
     const alchemyMultiplier = 1 + alchemySkill * 0.06;
 
-    const beltLimit = 60 + logisticsEfficiency * 15;
+    const beltLimit = beltSpeedForLevel(logisticsEfficiency);
 
     // Create a mutable pool of available resources
     const resourcePool = new Map<string, number>();
@@ -241,7 +242,10 @@ function solveNode(
         if (fertilizerItem && item.required_nutrients) {
             const nutrientValue = fertilizerItem.nutrient_value || 0;
             // Growth is nutrient-driven: cycle time = nutrients per cycle / fertilizer delivery rate
-            const growthTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, 1 + ctx.fertilizerEfficiency * 0.1);
+            const growthTime = getEffectiveRecipeTime(recipe, ctx.selectedFertilizer, 1 + ctx.fertilizerEfficiency * 0.1, {
+                beltSpeed: ctx.beltLimit,
+                speedMultiplier: ctx.speedMultiplier,
+            });
             itemsPerMinPerMachine = (outputCount / growthTime) * 60 * ctx.speedMultiplier;
 
             // Fertilizer consumption: nutrients are per OUTPUT ITEM, not per cycle
