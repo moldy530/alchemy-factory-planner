@@ -1,5 +1,6 @@
 import { Plus, Settings, Trash2 } from "lucide-react";
 import { Item } from "../../engine/types";
+import { normalizeItemId } from "../../engine/item-utils";
 import { DEFAULT_ROUNDING } from "../../engine/belt-analysis";
 import { useFactoryStore } from "../../store/useFactoryStore";
 import { InfoTooltip } from "../ui/InfoTooltip";
@@ -21,7 +22,7 @@ export function ProductionTargetsPanel({
     const targets = activeFactory.targets;
 
     const addTarget = () => {
-        const newTargets = [...targets, { item: items[0].name, rate: 10 }];
+        const newTargets = [...targets, { item: items[0].id, rate: 10 }];
         updateFactoryTargets(activeFactory.id, newTargets);
     };
 
@@ -60,8 +61,8 @@ export function ProductionTargetsPanel({
                     >
                         <div className="flex-1 w-24">
                             <SearchableSelect
-                                options={items.map((i) => ({ value: i.name, label: i.name }))}
-                                value={target.item}
+                                options={items.map((i) => ({ value: i.id, label: i.name }))}
+                                value={normalizeItemId(target.item)}
                                 onChange={(val) => updateTarget(idx, "item", val)}
                                 className="bg-transparent text-[var(--accent-gold-bright)] font-medium text-xs hover:bg-[var(--surface)] border-none p-0 h-auto"
                             />
@@ -279,7 +280,7 @@ export function AvailableResourcesPanel({ items }: AvailableResourcesPanelProps)
     const resources = activeFactory.availableResources || [];
 
     const addResource = () => {
-        const newResources = [...resources, { item: items[0].name, rate: 10 }];
+        const newResources = [...resources, { item: items[0].id, rate: 10 }];
         updateFactoryAvailableResources(activeFactory.id, newResources);
     };
 
@@ -322,8 +323,8 @@ export function AvailableResourcesPanel({ items }: AvailableResourcesPanelProps)
                     >
                         <div className="flex-1 w-24">
                             <SearchableSelect
-                                options={items.map((i) => ({ value: i.name, label: i.name }))}
-                                value={res.item}
+                                options={items.map((i) => ({ value: i.id, label: i.name }))}
+                                value={normalizeItemId(res.item)}
                                 onChange={(val) => updateResource(idx, "item", val)}
                                 className="bg-transparent text-[var(--success)] font-medium text-xs hover:bg-[var(--surface)] border-none p-0 h-auto"
                             />
