@@ -1,3 +1,4 @@
+import { resolveRecipeOverrides } from "./recipe-selection";
 import devicesData from "../data/devices.json";
 import recipesData from "../data/recipes.json";
 import { Device, Item, PlannerConfig, ProductionNode, Recipe } from "./types";
@@ -31,6 +32,7 @@ getAllItems().forEach((item) => {
 });
 
 interface CalcContext {
+    recipeOverrides: Map<string, Recipe>;
     speedMultiplier: number;
     fuelMultiplier: number;
     alchemyMultiplier: number;
@@ -87,6 +89,7 @@ export function calculateProduction(config: PlannerConfig): ProductionNode[] {
     }
 
     const ctx: CalcContext = {
+        recipeOverrides: resolveRecipeOverrides(config.recipeOverrides),
         speedMultiplier,
         fuelMultiplier,
         alchemyMultiplier,
@@ -185,7 +188,7 @@ function solveNode(
         return createRawNode(requiredRate, requiredRate > ctx.beltLimit);
     }
 
-    const recipe = recipes[0];
+    const recipe = ctx.recipeOverrides.get(itemId) ?? recipes[0];
 
     // 2. Calculate Machines Needed
     let outputCount = 0;

@@ -1,3 +1,4 @@
+import { isRecipeAllowed, resolveRecipeOverrides } from "../recipe-selection";
 import { Model, Constraint } from "yalps";
 import devicesData from "../../data/devices.json";
 import recipesData from "../../data/recipes.json";
@@ -71,8 +72,11 @@ export function buildLPModel(
     coeffs.set(key, (coeffs.get(key) ?? 0) - perActivation);
   };
 
+  const selectedRecipes = resolveRecipeOverrides(config.recipeOverrides);
+
   // Build item flow coefficients for each recipe
   allRecipes.forEach((recipe) => {
+    if (!isRecipeAllowed(recipe, selectedRecipes)) return;
     const recipeVar = `recipe_${recipe.id}`;
     const recipeCoeffs = new Map<string, number>();
 

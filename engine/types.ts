@@ -95,6 +95,7 @@ export interface ProductionNode {
 }
 
 export interface PlannerConfig {
+  recipeOverrides?: Record<string, string>; // Canonical item ID -> recipe ID; absent = automatic
   targetItem?: string; // Optional for legacy/single compat
   targetRate?: number;
   targets: { item: string; rate: number }[]; // New multi-target support

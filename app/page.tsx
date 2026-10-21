@@ -1,6 +1,6 @@
-
 "use client";
 
+import { RecipeChoicesPanel } from "../components/dashboard/RecipeChoicesPanel";
 import { AlchemyIcon } from "@/components/icons/AlchemyIcon";
 import { useEffect, useMemo, useState, Suspense } from "react";
 import { GraphView } from "../components/GraphView";
@@ -173,6 +173,8 @@ export default function PlannerPage() {
         {/* Panel 3: IO Summary */}
         <IOSummaryPanel stats={stats} ioSummary={ioSummary} />
       </div>
+
+      <RecipeChoicesPanel />
 
       {activeFactory.beltReport && productionTrees.length > 0 && (
         <BeltSummaryPanel report={activeFactory.beltReport} />
