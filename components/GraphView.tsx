@@ -5,10 +5,13 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { RotateCcw, Maximize, Minimize } from "lucide-react";
-import { useState, useEffect } from "react";
+import { RotateCcw, Maximize, Minimize, Route } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
 import { CustomNode } from "./graph/CustomNode";
 import { BeltEdge } from "./graph/BeltEdge";
+import { ConnectionEditingContext } from "./graph/ConnectionEditingContext";
+import { ConnectionEditor } from "./graph/ConnectionEditor";
+import { sideFromHandle } from "../lib/edge-routing";
 
 const nodeTypes = {
   custom: CustomNode,
@@ -16,11 +19,12 @@ const nodeTypes = {
 
 const edgeTypes = {
   belt: BeltEdge,
+  smoothstep: BeltEdge,
 };
 
 import { useFactoryStore } from "../store/useFactoryStore";
 
-function GraphControls() {
+function GraphControls({ editingConnections, onEditConnections }: { editingConnections: boolean; onEditConnections: () => void }) {
   const { activeFactoryId, resetFactoryLayout } = useFactoryStore();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { fitView } = useReactFlow();
@@ -74,6 +78,15 @@ function GraphControls() {
   return (
     <div className="absolute top-4 right-4 z-10 flex gap-2">
       <button
+        type="button"
+        onClick={onEditConnections}
+        aria-pressed={editingConnections}
+        className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-lg border border-[var(--border)] hover:border-[var(--accent-purple-dim)] shadow-lg text-xs font-bold transition-all cursor-pointer"
+      >
+        <Route size={14} className="text-[var(--accent-purple)]" />
+        {editingConnections ? "Done editing lines" : "Edit lines"}
+      </button>
+      <button
         onClick={toggleFullscreen}
         className="flex items-center gap-2 bg-[var(--surface)] hover:bg-[var(--surface-elevated)] text-[var(--text-primary)] px-3 py-1.5 rounded-lg border border-[var(--border)] hover:border-[var(--accent-purple-dim)] shadow-lg text-xs font-bold transition-all hover:glow-purple-subtle"
         title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
@@ -103,22 +116,31 @@ function GraphControls() {
 }
 
 export function GraphView() {
+  const [editingConnections, setEditingConnections] = useState(false);
   const {
     factories,
     activeFactoryId,
     onNodesChange,
     onEdgesChange,
     onViewportChange,
+    setEdgeLayout,
   } = useFactoryStore();
 
   const activeFactory = factories.find((f) => f.id === activeFactoryId);
+  // Shared box ports can have several overlapping endpoints. Only the selected
+  // connection should offer draggable ends, so another line cannot steal a drag.
+  const graphEdges = useMemo(() => (activeFactory?.edges ?? []).map(edge => ({
+    ...edge,
+    reconnectable: editingConnections && !!edge.selected,
+  })), [activeFactory?.edges, editingConnections]);
 
   // If no factory is active, we probably shouldn't render, but let's handle it gracefully or rely on parent
   if (!activeFactory) return null;
 
-  const { nodes, edges, viewport: defaultViewport } = activeFactory;
+  const { nodes, viewport: defaultViewport } = activeFactory;
 
   return (
+    <ConnectionEditingContext.Provider value={editingConnections}>
     <div className="graph-fullscreen-container absolute inset-0 bg-[var(--background-deep)]/80">
       {/* Subtle arcane pattern overlay */}
       <div className="absolute inset-0 bg-arcane-pattern opacity-20 pointer-events-none"></div>
@@ -126,9 +148,20 @@ export function GraphView() {
       <ReactFlow
         key={activeFactory.id}
         nodes={nodes}
-        edges={edges}
+        edges={graphEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        edgesReconnectable={false}
+        elevateEdgesOnSelect={editingConnections}
+        nodesConnectable={editingConnections}
+        onReconnect={(edge, connection) => {
+          // A visual edit must never connect different production steps.
+          if (connection.source !== edge.source || connection.target !== edge.target) return;
+          setEdgeLayout(activeFactory.id, edge.id, {
+            sourceSide: sideFromHandle(connection.sourceHandle, "right"),
+            targetSide: sideFromHandle(connection.targetHandle, "left"),
+          });
+        }}
         onMoveEnd={(e, viewport) => onViewportChange?.(viewport)}
         defaultViewport={defaultViewport}
         nodeTypes={nodeTypes}
@@ -139,9 +172,11 @@ export function GraphView() {
       >
         <Background color="#352a4d" gap={24} size={1} />
         <Controls />
-        <GraphControls />
+        <GraphControls editingConnections={editingConnections} onEditConnections={() => setEditingConnections(!editingConnections)} />
+        {editingConnections && <ConnectionEditor />}
       </ReactFlow>
     </div>
+    </ConnectionEditingContext.Provider>
   );
 }
 

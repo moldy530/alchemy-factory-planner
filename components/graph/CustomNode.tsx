@@ -1,10 +1,10 @@
-import { Handle, Position } from "@xyflow/react";
 import { AlertTriangle, Flame, Settings } from "lucide-react";
 import { ProductionNode } from "../../engine/types";
 import { NodeBeltInfo } from "../../engine/belt-analysis";
 import { BELT_STATE_COLOR, beltDisplayState, beltStateLabel } from "../../lib/beltDisplay";
 import { cn } from "../../lib/utils";
 import { NodeBeltDetails } from "./NodeBeltDetails";
+import { ConnectionHandles } from "./ConnectionHandles";
 
 type NodeData = ProductionNode & { displayRate?: number; belt?: NodeBeltInfo; targetDemand?: number };
 
@@ -161,20 +161,7 @@ export function CustomNode({ data }: { data: NodeData }) {
                 {belt && !isTarget && <NodeBeltDetails belt={belt} />}
             </div>
 
-            {/* Handles for Edges */}
-            <Handle
-                type="target"
-                position={Position.Left}
-                className="!w-2.5 !h-2.5 !bg-[var(--accent-purple-dim)] !border-2 !border-[var(--surface)]"
-            />
-            {/* Targets usually don't have source, but we leave it flexible */}
-            {!isTarget && (
-                <Handle
-                    type="source"
-                    position={Position.Right}
-                    className="!w-2.5 !h-2.5 !bg-[var(--accent-gold-dim)] !border-2 !border-[var(--surface)]"
-                />
-            )}
+            <ConnectionHandles isTarget={isTarget} />
         </div>
     );
 }

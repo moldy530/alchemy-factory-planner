@@ -23,9 +23,11 @@ import {
 } from "../engine/types";
 import { analyzeBelts, BeltReport, DEFAULT_ROUNDING, LineMode, RoundingChoice } from "../engine/belt-analysis";
 import { generateGraph } from "../lib/graphMapper";
+import { applyEdgeLayouts, EdgeLayout, EdgeLayouts } from "../lib/edge-routing";
 
 // Extended Factory Data to include visual state
 export interface FactoryData extends FactoryState {
+    edgeLayouts?: EdgeLayouts;
     nodes: Node[];
     edges: Edge[];
     productionTrees: ProductionNode[];
@@ -143,6 +145,8 @@ interface FactoryStore {
     setLineOverride: (id: string, nodeKey: string, mode: LineMode) => void;
     setRoundingOverride: (id: string, nodeKey: string, mode: RoundingChoice) => void;
     resetFactoryLayout: (id: string) => void;
+    setEdgeLayout: (id: string, edgeId: string, updates: Partial<EdgeLayout>) => void;
+    resetEdgeLayout: (id: string, edgeId: string) => void;
 }
 
 export const useFactoryStore = create<FactoryStore>()(
@@ -298,6 +302,30 @@ export const useFactoryStore = create<FactoryStore>()(
                 get().calculateAndLayout();
             },
 
+            setEdgeLayout: (id, edgeId, updates) => {
+                set(state => ({
+                    factories: state.factories.map(factory => {
+                        if (factory.id !== id || !factory.edges.some(edge => edge.id === edgeId)) return factory;
+                        const edgeLayouts = {
+                            ...factory.edgeLayouts,
+                            [edgeId]: { ...factory.edgeLayouts?.[edgeId], ...updates },
+                        };
+                        return { ...factory, edgeLayouts, edges: applyEdgeLayouts(factory.edges, edgeLayouts) };
+                    }),
+                }));
+            },
+
+            resetEdgeLayout: (id, edgeId) => {
+                set(state => ({
+                    factories: state.factories.map(factory => {
+                        if (factory.id !== id) return factory;
+                        const edgeLayouts = { ...factory.edgeLayouts };
+                        delete edgeLayouts[edgeId];
+                        return { ...factory, edgeLayouts, edges: applyEdgeLayouts(factory.edges, edgeLayouts) };
+                    }),
+                }));
+            },
+
             calculateAndLayout: () => {
                 const state = get();
                 const activeId = state.activeFactoryId;
@@ -332,7 +360,7 @@ export const useFactoryStore = create<FactoryStore>()(
 
                 set((s) => ({
                     factories: s.factories.map((f) =>
-                        f.id === activeId ? { ...f, nodes, edges, productionTrees, beltReport } : f
+                        f.id === activeId ? { ...f, nodes, edges: applyEdgeLayouts(edges, f.edgeLayouts), productionTrees, beltReport } : f
                     ),
                 }));
             },
@@ -352,7 +380,7 @@ export const useFactoryStore = create<FactoryStore>()(
 
                 set((s) => ({
                     factories: s.factories.map((f) =>
-                        f.id === id ? { ...f, nodes, edges, productionTrees, beltReport, viewport: newViewport } : f
+                        f.id === id ? { ...f, nodes, edges, edgeLayouts: {}, productionTrees, beltReport, viewport: newViewport } : f
                     ),
                 }));
             },
